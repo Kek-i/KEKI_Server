@@ -1,7 +1,6 @@
-package com.example.keki.store.service;
+package com.example.keki.post.service;
 
-import com.example.keki.store.repository.PostRepository;
-import com.example.keki.user.repository.UserRepository;
+import com.example.keki.post.repository.PostRepository;
 import org.springframework.stereotype.Service;
 
 @Service

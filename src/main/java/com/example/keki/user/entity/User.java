@@ -2,15 +2,18 @@ package com.example.keki.user.entity;
 
 import com.example.keki.common.BaseEntity;
 import com.example.keki.common.Role;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 
+@Getter
 @Entity
 @NoArgsConstructor
 @DynamicInsert
-public class UserEntity extends BaseEntity {
+public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userIdx;
@@ -34,5 +37,14 @@ public class UserEntity extends BaseEntity {
     @Column(nullable = false)
     private Role role;
 
+    @Builder
+    public User(String nickname, String email, String provider, String accessToken, String refreshToken, Role role){
+        this.nickname = nickname;
+        this.email = email;
+        this.provider = provider;
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+        this.role = role;
+    }
 
 }

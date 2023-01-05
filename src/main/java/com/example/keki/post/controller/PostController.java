@@ -1,7 +1,6 @@
-package com.example.keki.store.controller;
+package com.example.keki.post.controller;
 
-import com.example.keki.store.service.PostService;
-import com.example.keki.user.service.UserService;
+import com.example.keki.post.service.PostService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
