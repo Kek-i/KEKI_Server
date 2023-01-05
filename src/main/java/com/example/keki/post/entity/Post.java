@@ -20,7 +20,7 @@ public class Post extends BaseEntity {
     //dessertIdx 추가 필요
 
     @ManyToOne
-    @JoinColumn(nullable = false, name = "productIdx")
+    @JoinColumn(nullable = false, name = "userIdx")
     private User userIdx;
 
     @Column(nullable = false, length = 300)
