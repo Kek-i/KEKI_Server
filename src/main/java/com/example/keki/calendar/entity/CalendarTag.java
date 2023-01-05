@@ -1,13 +1,12 @@
 package com.example.keki.calendar.entity;
 
+import com.example.keki.common.Tag;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Getter
 @Entity
@@ -18,4 +17,17 @@ public class CalendarTag {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long calendarTagIdx;
 
+    @ManyToOne
+    @JoinColumn(nullable = false, name = "calendarIdx")
+    private Calendar calendar;
+
+    @ManyToOne
+    @JoinColumn(nullable = false, name = "tagIdx")
+    private Tag tag;
+
+    @Builder
+    public CalendarTag(Calendar calendar, Tag tag) {
+        this.calendar = calendar;
+        this.tag = tag;
+    }
 }
