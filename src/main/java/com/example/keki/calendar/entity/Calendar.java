@@ -1,7 +1,6 @@
 package com.example.keki.calendar.entity;
 
-import com.example.keki.common.CalendarCategory;
-import com.example.keki.common.Role;
+import com.example.keki.calendar.CalendarCategory;
 import com.example.keki.user.entity.User;
 import lombok.Builder;
 import lombok.Getter;

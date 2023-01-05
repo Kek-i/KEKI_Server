@@ -1,4 +1,4 @@
-package com.example.keki.common;
+package com.example.keki.calendar;
 
 import lombok.Getter;
 
