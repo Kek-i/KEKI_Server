@@ -17,8 +17,8 @@ public class Store {
     private Long storeIdx;
 
     @OneToOne
-    @JoinColumn(name = "productIdx")
-    private User userIdx;
+    @JoinColumn(name = "userIdx")
+    private User user;
 
     @Column(nullable = false, length = 100)
     private String address;
@@ -42,8 +42,8 @@ public class Store {
     private String businessNumber;
 
     @Builder
-    public Store(User userIdx, String address, String introduction, String orderUrl, String businessName, String brandName, String businessAddress, String businessNumber) {
-        this.userIdx = userIdx;
+    public Store(User user, String address, String introduction, String orderUrl, String businessName, String brandName, String businessAddress, String businessNumber) {
+        this.user = user;
         this.address = address;
         this.introduction = introduction;
         this.orderUrl = orderUrl;
