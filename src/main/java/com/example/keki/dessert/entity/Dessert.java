@@ -1,9 +1,7 @@
 package com.example.keki.dessert.entity;
 
 import com.example.keki.common.BaseEntity;
-import com.example.keki.common.Role;
 import com.example.keki.user.entity.Store;
-import com.example.keki.user.entity.User;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,7 +20,7 @@ public class Dessert extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(nullable = false, name = "storeIdx")
-    private Store storeIdx;
+    private Store store;
 
     @Column(nullable = false, length = 100)
     private String dessertName;
@@ -34,8 +32,8 @@ public class Dessert extends BaseEntity {
     private String dessertDescription;
 
     @Builder
-    public Dessert(Store storeIdx, String dessertName, int dessertPrice, String dessertDescription) {
-        this.storeIdx = storeIdx;
+    public Dessert(Store store, String dessertName, int dessertPrice, String dessertDescription) {
+        this.store = store;
         this.dessertName = dessertName;
         this.dessertPrice = dessertPrice;
         this.dessertDescription = dessertDescription;

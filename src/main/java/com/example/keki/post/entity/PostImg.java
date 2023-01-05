@@ -10,22 +10,21 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor
 @DynamicInsert
-public class PostLike {
+public class PostImg {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long postLikeIdx;
+    private Long postImgIdx;
 
     @ManyToOne
     @JoinColumn(nullable = false, name = "postIdx")
     private Post post;
 
-    @ManyToOne
-    @JoinColumn(nullable = false, name = "userIdx")
-    private User user;
+    @Column(nullable = false, length = 300)
+    private String imgUrl;
 
     @Builder
-    public PostLike(Post post, User user) {
+    public PostImg(Post post, String imgUrl) {
         this.post = post;
-        this.user = user;
+        this.imgUrl = imgUrl;
     }
 }
