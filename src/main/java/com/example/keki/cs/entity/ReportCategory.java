@@ -1,4 +1,4 @@
-package com.example.keki.CS.entity;
+package com.example.keki.cs.entity;
 
 import lombok.Getter;
 
