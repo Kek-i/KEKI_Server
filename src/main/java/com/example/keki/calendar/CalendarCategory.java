@@ -17,13 +17,13 @@ public enum CalendarCategory {
         this.name = name;
     }
 
-    public static CalendarCategory getContractStatusByNum(int number){
+    public static CalendarCategory getCalendarCategoryByNum(int number){
         return Arrays.stream(CalendarCategory.values())
                 .filter(r -> r.getNumber()==number)
                 .findAny().orElse(null);
     }
 
-    public static CalendarCategory getContractStatusByName(String name){
+    public static CalendarCategory getCalendarCategoryByName(String name){
         return Arrays.stream(CalendarCategory.values())
                 .filter(r -> r.getName().equals(name))
                 .findAny().orElse(null);

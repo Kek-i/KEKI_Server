@@ -16,13 +16,13 @@ public enum Role {
         this.name = name;
     }
 
-    public static Role getContractStatusByNum(int number){
+    public static Role getRoleByNum(int number){
         return Arrays.stream(Role.values())
                 .filter(r -> r.getNumber()==number)
                 .findAny().orElse(null);
     }
 
-    public static Role getContractStatusByName(String name){
+    public static Role getRoleByName(String name){
         return Arrays.stream(Role.values())
                 .filter(r -> r.getName().equals(name))
                 .findAny().orElse(null);
