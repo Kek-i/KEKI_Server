@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = "/searchHistories")
+@RequestMapping(value = "/histories")
 @RequiredArgsConstructor
-public class SearchHistoryController {
+public class HistoryController {
     private SearchHistoryService searchHistoryService;
 
 }
