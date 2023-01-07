@@ -30,6 +30,9 @@ dependencies {
 
 	// Jasypt: DB 암호화
 	implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.4'
+
+	//Swagger
+	implementation 'org.springdoc:springdoc-openapi-ui:1.6.14'
 }
 
 tasks.named('test') {
