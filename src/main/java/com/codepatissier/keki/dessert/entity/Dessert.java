@@ -1,7 +1,7 @@
 package com.codepatissier.keki.dessert.entity;
 
 import com.codepatissier.keki.common.BaseEntity;
-import com.codepatissier.keki.user.entity.Store;
+import com.codepatissier.keki.stores.entity.Store;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

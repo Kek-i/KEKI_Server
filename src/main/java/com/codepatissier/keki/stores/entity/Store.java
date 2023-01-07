@@ -1,5 +1,6 @@
-package com.codepatissier.keki.user.entity;
+package com.codepatissier.keki.stores.entity;
 
+import com.codepatissier.keki.user.entity.User;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
