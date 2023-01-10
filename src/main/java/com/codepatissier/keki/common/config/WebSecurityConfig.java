@@ -19,9 +19,6 @@ public class WebSecurityConfig  extends WebSecurityConfigurerAdapter {
                 .cors()
                 .and()
                 .authorizeRequests()
-                .antMatchers(SWAGGER_WHITELIST).permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .httpBasic();
+                .antMatchers(SWAGGER_WHITELIST).permitAll();
     }
 }
