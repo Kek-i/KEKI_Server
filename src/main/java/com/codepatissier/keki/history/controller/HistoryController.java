@@ -39,9 +39,9 @@ public class HistoryController {
     /**
      * token 변경후에 pathVariable 삭제 할 예정이에요!
      */
-    // 최근 게시물
+    // 최근 본 케이크 조회
     @ResponseBody
-    @GetMapping("/popular-recent-posts/{userIdx}")
+    @GetMapping("/recent-posts/{userIdx}")
     public BaseResponse<List<PostSearchRes>> recentSearchCake(@PathVariable("userIdx")Long userIdx){
         try{
             return new BaseResponse<>(this.postHistoryService.recentSearchPost(userIdx));
