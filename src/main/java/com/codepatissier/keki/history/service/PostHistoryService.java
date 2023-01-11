@@ -22,7 +22,7 @@ public class PostHistoryService {
     private final PostHistoryRepository postHistoryRepository;
     private final UserRepository userRepository;
 
-    public List<PostSearchRes> recentSearchCake(Long userIdx) throws BaseException {
+    public List<PostSearchRes> recentSearchPost(Long userIdx) throws BaseException {
         try{
             User user = this.userRepository.findById(userIdx)
                     .orElseThrow(() -> new BaseException(BaseResponseStatus.INVALID_USER_IDX));
