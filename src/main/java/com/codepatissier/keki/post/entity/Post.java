@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -30,10 +32,14 @@ public class Post extends BaseEntity {
     @Column(nullable = false, length = 300)
     private String postDescription;
 
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "post", orphanRemoval = true)
+    private List<PostImg> images = new ArrayList<>();
+
     @Builder
-    public Post(Dessert dessert, User user, String postDescription) {
+    public Post(Dessert dessert, User user, String postDescription, List<PostImg> images) {
         this.dessert = dessert;
         this.user = user;
         this.postDescription = postDescription;
+        this.images = images;
     }
 }

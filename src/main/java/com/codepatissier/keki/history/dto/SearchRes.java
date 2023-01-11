@@ -7,6 +7,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RecentSearchRes {
+public class SearchRes {
     private String searchWord;
 }

@@ -10,5 +10,5 @@ import java.util.Optional;
 
 @Repository
 public interface SearchHistoryRepository extends JpaRepository<SearchHistory, Long> {
-    List<SearchHistory> findTop5ByUserOrderByCreatedDateDesc(User user);
+    List<SearchHistory> findTop5ByUserAndStatusOrderByCreatedDateDesc(User user, String status);
 }
