@@ -7,7 +7,9 @@ import com.codepatissier.keki.store.service.StoreService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import static com.codepatissier.keki.common.BaseResponseStatus.*;
+
+import javax.validation.Valid;
+
 
 @Tag(name = "stores", description = "판매자 API")
 @RestController
@@ -22,23 +24,7 @@ public class StoreController {
      */
     @ResponseBody
     @PostMapping("/signup")
-    public BaseResponse<String> createSeller(@RequestBody PostStoreReq postStoreReq) {
-        // 형식적 validation
-        if (postStoreReq.getAddress() == null) {
-            return new BaseResponse<>(POST_STORES_EMPTY_ADDRESS);
-        }
-        if (postStoreReq.getBusinessName() == null) {
-            return new BaseResponse<>(POST_STORES_EMPTY_BUSINESSNAME);
-        }
-        if (postStoreReq.getBrandName() == null) {
-            return new BaseResponse<>(POST_STORES_EMPTY_BRANDNAME);
-        }
-        if (postStoreReq.getBusinessAddress() == null) {
-            return new BaseResponse<>(POST_STORES_EMPTY_BUSINESSADDRESS);
-        }
-        if (postStoreReq.getBusinessNumber() == null) {
-            return new BaseResponse<>(POST_STORES_EMPTY_BUSINESSNUMBER);
-        }
+    public BaseResponse<String> createSeller(@Valid @RequestBody PostStoreReq postStoreReq) {
         try {
             storeService.createSeller(postStoreReq);
             return new BaseResponse<>("회원 가입이 완료되었습니다!");
