@@ -2,6 +2,7 @@ package com.codepatissier.keki.store.controller;
 
 import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.BaseResponse;
+import com.codepatissier.keki.store.dto.GetProfileRes;
 import com.codepatissier.keki.store.dto.GetStoreInfoRes;
 import com.codepatissier.keki.store.dto.PostStoreReq;
 import com.codepatissier.keki.store.service.StoreService;
@@ -53,9 +54,19 @@ public class StoreController {
     }
 
     /**
-     * 판매자 마이페이지 조회
-     * GET /stores/mypage
+     * 판매자 프로필 조회
+     * [GET] /stores/mypage
      */
+    @ResponseBody
+    @GetMapping("/mypage/{storeIdx}")
+    public BaseResponse<List<GetProfileRes>> getMyPage(@PathVariable("storeIdx") Long storeIdx) {
+        try {
+            List<GetProfileRes> getProfileRes = storeService.getProfile(storeIdx);
+            return new BaseResponse<>(getProfileRes);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
 
     /**
      * 판매자 프로필 정보 수정

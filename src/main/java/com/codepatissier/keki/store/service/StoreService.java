@@ -1,6 +1,7 @@
 package com.codepatissier.keki.store.service;
 
 import com.codepatissier.keki.common.BaseException;
+import com.codepatissier.keki.store.dto.GetProfileRes;
 import com.codepatissier.keki.store.dto.GetStoreInfoRes;
 import com.codepatissier.keki.store.dto.PostStoreReq;
 import com.codepatissier.keki.store.entity.Store;
@@ -42,6 +43,18 @@ public class StoreService {
             List<Store> store = storeRepository.findByStoreIdx(storeIdx);
             return store.stream()
                     .map(storeInfo -> new GetStoreInfoRes(storeInfo.getBusinessName(), storeInfo.getBrandName(), storeInfo.getBusinessAddress(), storeInfo.getBusinessNumber()))
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // 가게 프로필 조회 (가게 사진, 이름, 소개)
+    public List<GetProfileRes> getProfile(Long storeIdx) throws BaseException {
+        try {
+            List<Store> store = storeRepository.findByStoreIdx(storeIdx);
+            return store.stream()
+                    .map(profile -> new GetProfileRes(profile.getIntroduction()))
                     .collect(Collectors.toList());
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
