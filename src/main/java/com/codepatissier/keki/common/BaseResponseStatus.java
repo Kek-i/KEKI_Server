@@ -12,17 +12,44 @@ public enum BaseResponseStatus {
     /**
      *  2000: Request 오류
      */
-    // post
-    INVALID_POSTS_SIZE(false, 2100, "리스트 사이즈는 1 이상이어야 합니다."),
+    // users(2000~2099)
+
+
+    // stores(2100~2199)
+
+
+    // posts(2200~2299)
+    INVALID_POSTS_SIZE(false, 2200, "리스트 사이즈는 1 이상이어야 합니다."),
+
+    // desserts(2300~2399)
+
+
+    // calendars(2400~2499)
+
+
+    // histories(2500~2599)
+
 
     /**
      *  3000: Response 오류
      */
-    // store
-    INVALID_STORE_IDX(false, 3000, "존재하지 않는 스토어입니다."),
+    // users(3000~3099)
 
-    // post
-    INVALID_POST_IDX(false, 3100, "존재하지 않는 피드입니다."),
+
+    // stores(3100~3199)
+    INVALID_STORE_IDX(false, 3100, "존재하지 않는 스토어입니다."),
+
+    // posts(3200~3299)
+    INVALID_POST_IDX(false, 3200, "존재하지 않는 피드입니다."),
+
+    // desserts(3300~3399)
+
+
+    // calendars(3400~3499)
+
+
+    // histories(3500~3599)
+
 
     /**
      * 4000: DB, Server 오류
