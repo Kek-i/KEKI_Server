@@ -1,7 +1,6 @@
 package com.codepatissier.keki.post.service;
 
 import com.codepatissier.keki.common.BaseException;
-import com.codepatissier.keki.common.BaseResponseStatus;
 import com.codepatissier.keki.post.dto.GetStorePostsRes;
 import com.codepatissier.keki.post.entity.PostImg;
 import com.codepatissier.keki.post.repository.PostRepository;
@@ -27,34 +26,34 @@ public class PostService {
             Store store = this.storeRepository.findById(storeIdx)
                     .orElseThrow(() -> new BaseException(INVALID_STORE_IDX));
 
-            List<GetStorePostsRes.Item> postList = cursorIdx == null?
+            List<GetStorePostsRes.Feed> postList = cursorIdx == null?
                     this.getItemList(store, page):
                     this.getItemListWithCursor(store, cursorIdx, page);
 
             Long lastIdxOfList = getLastIdxOfList(postList);
             return new GetStorePostsRes(postList, lastIdxOfList, hasNext(lastIdxOfList));
         } catch (Exception e){
-            throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
+            throw new BaseException(DATABASE_ERROR);
         }
     }
 
     /**
      * 최초 조회
      */
-    private List<GetStorePostsRes.Item> getItemList(Store store, Pageable page) {
+    private List<GetStorePostsRes.Feed> getItemList(Store store, Pageable page) {
         return this.postRepository.findByStoreOrderByPostIdxDesc(store, page).stream()
-                .map(post -> new GetStorePostsRes.Item(post.getPostIdx(),
+                .map(post -> new GetStorePostsRes.Feed(post.getPostIdx(),
                         this.representPostImgUrl(post.getImages()))).collect(Collectors.toList());
     }
 
     /**
      * 최초 아닌 조회
      */
-    private List<GetStorePostsRes.Item> getItemListWithCursor(Store store, Long cursorIdx, Pageable page) throws BaseException {
+    private List<GetStorePostsRes.Feed> getItemListWithCursor(Store store, Long cursorIdx, Pageable page) throws BaseException {
         this.postRepository.findById(cursorIdx).orElseThrow(() -> new BaseException(INVALID_POST_IDX));
 
         return this.postRepository.findByStoreAndPostIdxLessThanOrderByPostIdxDesc(store, cursorIdx, page).stream()
-                .map(post -> new GetStorePostsRes.Item(post.getPostIdx(),
+                .map(post -> new GetStorePostsRes.Feed(post.getPostIdx(),
                         this.representPostImgUrl(post.getImages()))).collect(Collectors.toList());
     }
 
@@ -69,7 +68,7 @@ public class PostService {
     /**
      * @return 피드 목록의 마지막 피드 idx
      */
-    private static Long getLastIdxOfList(List<GetStorePostsRes.Item> postList) {
+    private static Long getLastIdxOfList(List<GetStorePostsRes.Feed> postList) {
         return postList.isEmpty() ?
                 null : postList.get(postList.size() - 1).getPostIdx();
     }

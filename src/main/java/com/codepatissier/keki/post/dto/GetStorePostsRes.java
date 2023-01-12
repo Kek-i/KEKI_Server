@@ -11,14 +11,14 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GetStorePostsRes {
-    private List<Item> items;
+    private List<Feed> feeds;
     private Long cursorIdx;
     private boolean hasNext;
 
     @AllArgsConstructor
     @NoArgsConstructor
     @Getter
-    public static class Item{
+    public static class Feed {
         private Long postIdx;
         private String postImgUrl;
     }
