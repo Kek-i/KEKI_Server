@@ -1,11 +1,17 @@
 package com.codepatissier.keki.store.service;
 
 import com.codepatissier.keki.common.BaseException;
+import com.codepatissier.keki.store.dto.GetStoreInfoRes;
 import com.codepatissier.keki.store.dto.PostStoreReq;
 import com.codepatissier.keki.store.entity.Store;
 import com.codepatissier.keki.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import static com.codepatissier.keki.common.BaseResponseStatus.*;
 
 @Service
@@ -26,6 +32,18 @@ public class StoreService {
                     .businessNumber(postStoreReq.getBusinessNumber())
                     .build();
             this.storeRepository.save(store);
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // 사업자 정보 조회
+    public List<GetStoreInfoRes> getStoreInfo(Long storeIdx) throws BaseException {
+        try {
+            Optional<Store> store = storeRepository.findById(storeIdx);
+            return store.stream()
+                    .map(storeInfo -> new GetStoreInfoRes(storeInfo.getBusinessName(), storeInfo.getBrandName(), storeInfo.getBusinessAddress(), storeInfo.getBusinessNumber()))
+                    .collect(Collectors.toList());
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
