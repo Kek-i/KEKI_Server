@@ -32,6 +32,8 @@ public class PostService {
 
             Long lastIdxOfList = getLastIdxOfList(postList);
             return new GetStorePostsRes(postList, lastIdxOfList, hasNext(lastIdxOfList));
+        } catch (BaseException e){
+            throw e;
         } catch (Exception e){
             throw new BaseException(DATABASE_ERROR);
         }
