@@ -1,5 +1,6 @@
-package com.codepatissier.keki.stores.entity;
+package com.codepatissier.keki.store.entity;
 
+import com.codepatissier.keki.common.BaseEntity;
 import com.codepatissier.keki.user.entity.User;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,7 +13,7 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor
 @DynamicInsert
-public class Store {
+public class Store extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long storeIdx;
@@ -30,15 +31,22 @@ public class Store {
     @Column
     private String orderUrl;
 
+    /**
+     * 사업자 정보
+     */
+    // 대표자명
     @Column(nullable = false, length = 50)
     private String businessName;
 
+    // 가게 이름
     @Column(nullable = false, length = 50)
     private String brandName;
 
+    // 사업자 주소
     @Column(nullable = false, length = 100)
     private String businessAddress;
 
+    // 사업자 등록번호
     @Column(nullable = false, length = 100)
     private String businessNumber;
 

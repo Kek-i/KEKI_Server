@@ -4,7 +4,7 @@ plugins {
 	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
 }
 
-group = 'com.example'
+group = 'com.codepatissier'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
@@ -31,8 +31,11 @@ dependencies {
 	// Jasypt: DB 암호화
 	implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.4'
 
-	//Swagger
+	// Swagger
 	implementation 'org.springdoc:springdoc-openapi-ui:1.6.14'
+
+	// @Valid
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 }
 
 tasks.named('test') {
