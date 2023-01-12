@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
+import static com.codepatissier.keki.common.BaseResponseStatus.SUCCESS;
+
 
 @Tag(name = "stores", description = "판매자 API")
 @RestController
@@ -29,7 +31,7 @@ public class StoreController {
     public BaseResponse<String> createSeller(@Valid @RequestBody PostStoreReq postStoreReq) {
         try {
             storeService.createSeller(postStoreReq);
-            return new BaseResponse<>("회원 가입이 완료되었습니다!");
+            return new BaseResponse<>(SUCCESS);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
