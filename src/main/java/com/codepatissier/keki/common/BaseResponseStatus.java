@@ -4,7 +4,18 @@ import lombok.Getter;
 
 @Getter
 public enum BaseResponseStatus {
-    SUCCESS(true, 1000, "요청에 성공하였습니다.");
+    SUCCESS(true, 1000, "요청에 성공하였습니다."),
+    /**
+     * users: RESPONSE
+     */
+    INVALID_USER_IDX(true, 2000, "사용자를 찾을 수 없습니다."),
+
+    /**
+     * histories: REQUEST
+     */
+    
+    
+    DATABASE_ERROR(false, 4000, "데이터베이스 연결에 실패했습니다."),;
 
     private final boolean isSuccess;
     private final int code;
