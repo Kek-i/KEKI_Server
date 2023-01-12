@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.codepatissier.keki.common.BaseResponseStatus.*;
@@ -39,7 +40,7 @@ public class StoreService {
     // 사업자 정보 조회
     public List<GetStoreInfoRes> getStoreInfo(Long storeIdx) throws BaseException {
         try {
-            List<Store> store = storeRepository.findByStoreIdx(storeIdx);
+            Optional<Store> store = storeRepository.findById(storeIdx);
             return store.stream()
                     .map(storeInfo -> new GetStoreInfoRes(storeInfo.getBusinessName(), storeInfo.getBrandName(), storeInfo.getBusinessAddress(), storeInfo.getBusinessNumber()))
                     .collect(Collectors.toList());
