@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum BaseResponseStatus {
+
     /**
      * 1000: 요청 성공
      */
