@@ -35,7 +35,7 @@ public enum BaseResponseStatus {
      *  3000: Response 오류
      */
     // users(3000~3099)
-
+    INVALID_USER_IDX(false, 3000, "사용자를 찾을 수 없습니다."),
 
     // stores(3100~3199)
     INVALID_STORE_IDX(false, 3100, "존재하지 않는 스토어입니다."),
