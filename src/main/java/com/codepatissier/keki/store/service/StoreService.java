@@ -40,10 +40,13 @@ public class StoreService {
     // 사업자 정보 조회
     public List<GetStoreInfoRes> getStoreInfo(Long storeIdx) throws BaseException {
         try {
-            Optional<Store> store = storeRepository.findById(storeIdx);
+            List<Store> store = (List<Store>) storeRepository.findById(storeIdx)
+                    .orElseThrow(() -> new BaseException(INVALID_STORE_IDX));
             return store.stream()
                     .map(storeInfo -> new GetStoreInfoRes(storeInfo.getBusinessName(), storeInfo.getBrandName(), storeInfo.getBusinessAddress(), storeInfo.getBusinessNumber()))
                     .collect(Collectors.toList());
+        } catch (BaseException exception) {
+            throw exception;
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
