@@ -1,7 +1,7 @@
 package com.codepatissier.keki.post.repository;
 
 import com.codepatissier.keki.post.entity.Post;
-import com.codepatissier.keki.stores.entity.Store;
+import com.codepatissier.keki.store.entity.Store;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
