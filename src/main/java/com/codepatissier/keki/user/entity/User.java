@@ -27,6 +27,9 @@ public class User extends BaseEntity {
     @Column(nullable = false, length = 10)
     private String provider;
 
+    @Column(length = 300)
+    private String profileImg;
+
     @Column(nullable = false)
     private String accessToken;
 
