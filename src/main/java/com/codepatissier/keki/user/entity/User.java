@@ -29,11 +29,8 @@ public class User extends BaseEntity {
 
     @Column(length = 300)
     private String profileImg;
-
-    @Column(nullable = false)
     private String accessToken;
 
-    @Column(nullable = false)
     private String refreshToken;
 
     @Enumerated(EnumType.STRING)
