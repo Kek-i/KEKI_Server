@@ -46,7 +46,7 @@ public enum BaseResponseStatus {
     INVALID_POST_IDX(false, 3200, "존재하지 않는 피드입니다."),
 
     // desserts(3300~3399)
-
+    INVALID_DESSERT_IDX(false, 3300, "존재하지 않는 디저트입니다."),
 
     // calendars(3400~3499)
     INVALID_CALENDAR_TAG(false, 3400, "캘린더 TAG를 찾을 수 없습니다."),
