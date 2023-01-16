@@ -19,7 +19,7 @@ import java.util.Date;
 public class Calendar extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int calendarIdx;
+    private Long calendarIdx;
 
     @ManyToOne
     @JoinColumn(nullable = false, name = "userIdx")
