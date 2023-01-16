@@ -64,4 +64,19 @@ public class HistoryController {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
+    /**
+     * Token 없이 사용 가능 api
+     */
+    // 인기 검색어
+    @ResponseBody
+    @GetMapping("/popular-searches")
+    public BaseResponse<List<SearchRes>> getPopularSearches(){
+        try{
+            return new BaseResponse<>(this.searchHistoryService.getPopularSearches());
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
 }
