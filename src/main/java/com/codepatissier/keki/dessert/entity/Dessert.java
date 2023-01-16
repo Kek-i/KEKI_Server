@@ -31,11 +31,15 @@ public class Dessert extends BaseEntity {
     @Column(nullable = false, length = 300)
     private String dessertDescription;
 
+    @Column(length = 300)
+    private String dessertImg;
+
     @Builder
-    public Dessert(Store store, String dessertName, int dessertPrice, String dessertDescription) {
+    public Dessert(Store store, String dessertName, int dessertPrice, String dessertDescription, String dessertImg) {
         this.store = store;
         this.dessertName = dessertName;
         this.dessertPrice = dessertPrice;
         this.dessertDescription = dessertDescription;
+        this.dessertImg = dessertImg;
     }
 }
