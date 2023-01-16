@@ -26,7 +26,9 @@ public enum BaseResponseStatus {
 
 
     // calendars(2400~2499)
-
+    NULL_TITLE(false, 2400, "캘린더 제목을 입력해주세요."),
+    NULL_KIND_OF_CALENDARS(false, 2401, "캘린더 종류를 선택해주세요."),
+    NULL_DATE(false, 2402, "날짜를 입력해주세요."),
 
     // histories(2500~2599)
 
@@ -47,7 +49,8 @@ public enum BaseResponseStatus {
 
 
     // calendars(3400~3499)
-
+    INVALID_CALENDAR_TAG(false, 3400, "캘린더 TAG를 찾을 수 없습니다."),
+    INVALID_TAG(false, 3401, "TAG를 찾을 수 없습니다."),
 
     // histories(3500~3599)
 
