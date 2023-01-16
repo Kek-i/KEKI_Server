@@ -16,7 +16,7 @@ public class DessertImg {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long dessertImgIdx;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(nullable = false, name = "dessertIdx")
     private Dessert dessert;
 
