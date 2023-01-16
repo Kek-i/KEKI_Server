@@ -53,13 +53,11 @@ public class StoreService {
     }
 
     // 가게 프로필 조회 (가게 사진, 이름, 소개)
-    public List<GetProfileRes> getStoreProfile(Long storeIdx) throws BaseException {
+    public GetProfileRes getStoreProfile(Long storeIdx) throws BaseException {
         try {
-            storeRepository.findById(storeIdx).orElseThrow(() -> new BaseException(INVALID_STORE_IDX));
+            Store store = storeRepository.findById(storeIdx).orElseThrow(() -> new BaseException(INVALID_STORE_IDX));
 
-            return storeRepository.findById(storeIdx).stream()
-                    .map(profile -> new GetProfileRes(profile.getUser().getNickname(), profile.getUser().getProfileImg(), profile.getIntroduction()))
-                    .collect(Collectors.toList());
+            return new GetProfileRes(store.getUser().getNickname(), store.getUser().getProfileImg(), store.getIntroduction());
         } catch (BaseException e) {
             throw e;
         } catch (Exception e) {
