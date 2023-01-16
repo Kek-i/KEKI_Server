@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.codepatissier.keki.common.BaseResponseStatus.*;
@@ -40,10 +41,13 @@ public class StoreService {
     // 사업자 정보 조회
     public List<GetStoreInfoRes> getStoreInfo(Long storeIdx) throws BaseException {
         try {
-            List<Store> store = storeRepository.findByStoreIdx(storeIdx);
+            List<Store> store = (List<Store>) storeRepository.findById(storeIdx)
+                    .orElseThrow(() -> new BaseException(INVALID_STORE_IDX));
             return store.stream()
                     .map(storeInfo -> new GetStoreInfoRes(storeInfo.getBusinessName(), storeInfo.getBrandName(), storeInfo.getBusinessAddress(), storeInfo.getBusinessNumber()))
                     .collect(Collectors.toList());
+        } catch (BaseException exception) {
+            throw exception;
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }

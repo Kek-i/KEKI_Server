@@ -27,10 +27,10 @@ public class User extends BaseEntity {
     @Column(nullable = false, length = 10)
     private String provider;
 
-    @Column(nullable = false)
+    @Column(length = 300)
+    private String profileImg;
     private String accessToken;
 
-    @Column(nullable = false)
     private String refreshToken;
 
     @Enumerated(EnumType.STRING)

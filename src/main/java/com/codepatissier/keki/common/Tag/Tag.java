@@ -1,4 +1,4 @@
-package com.codepatissier.keki.common;
+package com.codepatissier.keki.common.Tag;
 
 import lombok.Builder;
 import lombok.NoArgsConstructor;
