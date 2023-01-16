@@ -31,15 +31,15 @@ public class Dessert extends BaseEntity {
     @Column(nullable = false, length = 300)
     private String dessertDescription;
 
-    @OneToOne(fetch = FetchType.EAGER, mappedBy = "dessert", orphanRemoval = true)
-    private DessertImg image;
+    @Column(length = 300)
+    private String dessertImg;
 
     @Builder
-    public Dessert(Store store, String dessertName, int dessertPrice, String dessertDescription, DessertImg image) {
+    public Dessert(Store store, String dessertName, int dessertPrice, String dessertDescription, String dessertImg) {
         this.store = store;
         this.dessertName = dessertName;
         this.dessertPrice = dessertPrice;
         this.dessertDescription = dessertDescription;
-        this.image = image;
+        this.dessertImg = dessertImg;
     }
 }
