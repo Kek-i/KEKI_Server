@@ -26,7 +26,7 @@ public class CalendarController {
     @PostMapping("/{userIdx}")
     public BaseResponse<String> createCalendar(@PathVariable("userIdx") Long userIdx, @RequestBody CalendarReq calendarReq){
         try{
-            if(calendarReq.getHashTags().size() == 0 || calendarReq.getHashTags() == null) return new BaseResponse<>(BaseResponseStatus.INVALID_POSTS_SIZE);
+            if(calendarReq.getHashTags().size() < 1 || calendarReq.getHashTags() == null) return new BaseResponse<>(BaseResponseStatus.INVALID_POSTS_SIZE);
             if(calendarReq.getTitle().equals("") || calendarReq.getTitle() == null) return new BaseResponse<>(BaseResponseStatus.NULL_TITLE);
             // 캘린더 LocalDataFormat 에러가 나면 해결하는 api 생성 필요
             if(calendarReq.getDate() == null || calendarReq.getDate().toString().equals("")) return new BaseResponse<>(BaseResponseStatus.NULL_DATE);
@@ -35,6 +35,20 @@ public class CalendarController {
             this.calendarService.createCalendar(userIdx, calendarReq);
             return new BaseResponse<>(BaseResponseStatus.SUCCESS);
         } catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
+     * token 변경후에 pathVariable 삭제 할 예정이에요!
+     */
+    @ResponseBody
+    @PatchMapping("/{calendarIdx}/users/{userIdx}")
+    public BaseResponse<String> deleteCalendar(@PathVariable("calendarIdx") Long calendarIdx, @PathVariable("userIdx") Long userIdx){
+        try{
+            this.calendarService.deleteCalendar(calendarIdx, userIdx);
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS);
+        }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
         }
     }
