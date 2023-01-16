@@ -1,6 +1,6 @@
 package com.codepatissier.keki.post.entity;
 
-import com.codepatissier.keki.common.Tag;
+import com.codepatissier.keki.common.Tag.Tag;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
