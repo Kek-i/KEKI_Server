@@ -15,8 +15,8 @@ import com.codepatissier.keki.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import static com.codepatissier.keki.common.Constant.ACTIVE_STATUS;
+import static com.codepatissier.keki.common.Constant.INACTIVE_STATUS;
 
 @Service
 @RequiredArgsConstructor
@@ -56,4 +56,30 @@ public class CalendarService {
                 .build());
     }
 
+    public void deleteCalendar(Long calendarIdx, Long userIdx) throws BaseException{
+        User user = this.userRepository.findById(userIdx).
+                orElseThrow(() -> new BaseException(BaseResponseStatus.INVALID_USER_IDX));
+
+        Calendar calendar = this.calendarRepository.findById(calendarIdx)
+                .orElseThrow(()-> new BaseException(BaseResponseStatus.INVALID_CALENDAR_IDX));
+
+        if(!calendar.getUser().equals(user) || user.getStatus().equals(INACTIVE_STATUS)){
+            throw new BaseException(BaseResponseStatus.INVALID_USER_AND_STATUS);
+        }
+        changeCalendarStatus(calendar, INACTIVE_STATUS);
+        changeCalendarTagStatus(calendar, INACTIVE_STATUS);
+    }
+
+    private void changeCalendarTagStatus(Calendar calendar, String status){
+        this.calendarTagRepository.findByCalendar(calendar).stream()
+                .forEach(tag -> {
+                    tag.setStatus(status);
+                    this.calendarTagRepository.save(tag);
+                });
+    }
+
+    private void changeCalendarStatus(Calendar calendar, String status) {
+        calendar.setStatus(status);
+        this.calendarRepository.save(calendar);
+    }
 }
