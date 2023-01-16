@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -31,11 +33,15 @@ public class Dessert extends BaseEntity {
     @Column(nullable = false, length = 300)
     private String dessertDescription;
 
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "dessert", orphanRemoval = true)
+    private List<DessertImg> images = new ArrayList<>();
+
     @Builder
-    public Dessert(Store store, String dessertName, int dessertPrice, String dessertDescription) {
+    public Dessert(Store store, String dessertName, int dessertPrice, String dessertDescription, List<DessertImg> images) {
         this.store = store;
         this.dessertName = dessertName;
         this.dessertPrice = dessertPrice;
         this.dessertDescription = dessertDescription;
+        this.images = images;
     }
 }
