@@ -41,7 +41,7 @@ public class StoreController {
     /**
      * 판매자 사업자 정보 조회
      * [GET] /stores/store-info
-     * return businessName, brandName, businessAddress, businessNumber
+     * @return businessName, brandName, businessAddress, businessNumber
      */
     // Token 변경 후 Path Variable 삭제
     @ResponseBody
@@ -57,13 +57,14 @@ public class StoreController {
 
     /**
      * 판매자 프로필 조회
-     * [GET] /stores/mypage
+     * [GET] /stores/profile
      */
+    // Token 변경 후 Path Variable 삭제
     @ResponseBody
-    @GetMapping("/mypage/{storeIdx}")
-    public BaseResponse<List<GetProfileRes>> getMyPage(@PathVariable("storeIdx") Long storeIdx) {
+    @GetMapping("/profile/{storeIdx}")
+    public BaseResponse<List<GetProfileRes>> getStoreProfile(@PathVariable("storeIdx") Long storeIdx) {
         try {
-            List<GetProfileRes> getProfileRes = storeService.getProfile(storeIdx);
+            List<GetProfileRes> getProfileRes = storeService.getStoreProfile(storeIdx);
             return new BaseResponse<>(getProfileRes);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());

@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.codepatissier.keki.common.BaseResponseStatus.*;
@@ -54,12 +53,15 @@ public class StoreService {
     }
 
     // 가게 프로필 조회 (가게 사진, 이름, 소개)
-    public List<GetProfileRes> getProfile(Long storeIdx) throws BaseException {
+    public List<GetProfileRes> getStoreProfile(Long storeIdx) throws BaseException {
         try {
-            List<Store> store = storeRepository.findByStoreIdx(storeIdx);
-            return store.stream()
-                    .map(profile -> new GetProfileRes(profile.getIntroduction()))
+            storeRepository.findById(storeIdx).orElseThrow(() -> new BaseException(INVALID_STORE_IDX));
+
+            return storeRepository.findById(storeIdx).stream()
+                    .map(profile -> new GetProfileRes(profile.getUser().getNickname(), profile.getUser().getProfileImg(), profile.getIntroduction()))
                     .collect(Collectors.toList());
+        } catch (BaseException e) {
+            throw e;
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
