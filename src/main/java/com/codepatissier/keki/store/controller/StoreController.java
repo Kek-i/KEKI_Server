@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 import static com.codepatissier.keki.common.BaseResponseStatus.SUCCESS;
 
@@ -46,9 +45,9 @@ public class StoreController {
     // Token 변경 후 Path Variable 삭제
     @ResponseBody
     @GetMapping("/store-info/{storeIdx}")
-    public BaseResponse<List<GetStoreInfoRes>> getStoreInfo(@PathVariable("storeIdx") Long storeIdx) {
+    public BaseResponse<GetStoreInfoRes> getStoreInfo(@PathVariable("storeIdx") Long storeIdx) {
         try {
-            List<GetStoreInfoRes> getStoreInfoRes = storeService.getStoreInfo(storeIdx);
+            GetStoreInfoRes getStoreInfoRes = storeService.getStoreInfo(storeIdx);
             return new BaseResponse<>(getStoreInfoRes);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());

@@ -9,9 +9,6 @@ import com.codepatissier.keki.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import static com.codepatissier.keki.common.BaseResponseStatus.*;
 
 @Service
@@ -38,13 +35,11 @@ public class StoreService {
     }
 
     // 사업자 정보 조회
-    public List<GetStoreInfoRes> getStoreInfo(Long storeIdx) throws BaseException {
+    public GetStoreInfoRes getStoreInfo(Long storeIdx) throws BaseException {
         try {
-            List<Store> store = (List<Store>) storeRepository.findById(storeIdx)
-                    .orElseThrow(() -> new BaseException(INVALID_STORE_IDX));
-            return store.stream()
-                    .map(storeInfo -> new GetStoreInfoRes(storeInfo.getBusinessName(), storeInfo.getBrandName(), storeInfo.getBusinessAddress(), storeInfo.getBusinessNumber()))
-                    .collect(Collectors.toList());
+            Store store = storeRepository.findById(storeIdx).orElseThrow(() -> new BaseException(INVALID_STORE_IDX));
+
+            return new GetStoreInfoRes(store.getBusinessName(), store.getBrandName(), store.getBusinessAddress(), store.getBusinessNumber());
         } catch (BaseException exception) {
             throw exception;
         } catch (Exception e) {
