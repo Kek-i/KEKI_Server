@@ -1,6 +1,7 @@
 package com.codepatissier.keki.post.service;
 
 import com.codepatissier.keki.common.BaseException;
+import com.codepatissier.keki.common.Constant;
 import com.codepatissier.keki.cs.entity.Report;
 import com.codepatissier.keki.cs.entity.ReportCategory;
 import com.codepatissier.keki.cs.repository.ReportRepository;
@@ -8,6 +9,8 @@ import com.codepatissier.keki.post.dto.GetStorePostsRes;
 import com.codepatissier.keki.post.dto.PostReportReq;
 import com.codepatissier.keki.post.entity.Post;
 import com.codepatissier.keki.post.entity.PostImg;
+import com.codepatissier.keki.post.entity.PostLike;
+import com.codepatissier.keki.post.repository.PostLikeRepository;
 import com.codepatissier.keki.post.repository.PostRepository;
 import com.codepatissier.keki.store.entity.Store;
 import com.codepatissier.keki.store.repository.StoreRepository;
@@ -28,6 +31,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final StoreRepository storeRepository;
     private final UserRepository userRepository;
+    private final PostLikeRepository postLikeRepository;
     private final ReportRepository reportRepository;
 
     /**
@@ -47,6 +51,36 @@ public class PostService {
                     .post(post)
                     .build();
             this.reportRepository.save(report);
+        } catch (BaseException e) {
+            throw e;
+        } catch (Exception e){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     * 게시물 좋아요
+     */
+    public void doLike(Long postIdx) throws BaseException {
+        try {
+            User user = this.userRepository.findById(1L)
+                    .orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+            Post post = this.postRepository.findById(postIdx)
+                    .orElseThrow(() -> new BaseException(INVALID_POST_IDX));
+            PostLike postLike = this.postLikeRepository.findByPostAndUser(post, user);
+
+            if (postLike != null){
+                if(postLike.getStatus().equals(Constant.ACTIVE_STATUS))
+                    postLike.setStatus(Constant.INACTIVE_STATUS);
+                else if (postLike.getStatus().equals(Constant.INACTIVE_STATUS))
+                    postLike.setStatus(Constant.ACTIVE_STATUS);
+            } else {
+                postLike = PostLike.builder()
+                        .user(user)
+                        .post(post)
+                        .build();
+            }
+            this.postLikeRepository.save(postLike);
         } catch (BaseException e) {
             throw e;
         } catch (Exception e){

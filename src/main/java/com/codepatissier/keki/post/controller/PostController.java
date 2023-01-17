@@ -57,4 +57,19 @@ public class PostController {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
+    /**
+     * 게시물 좋아요/취소
+     * [POST] /posts/:postIdx/like
+     */
+    @ResponseBody
+    @PostMapping("/{postIdx}/like")
+    public BaseResponse<String> doLike(@PathVariable Long postIdx){
+        try{
+            this.postService.doLike(postIdx);
+            return new BaseResponse<>(SUCCESS);
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
 }
