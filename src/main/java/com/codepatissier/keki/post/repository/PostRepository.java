@@ -12,5 +12,8 @@ import java.util.List;
 public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findByStoreOrderByPostIdxDesc(Store store, Pageable page);
     List<Post> findByStoreAndPostIdxLessThanOrderByPostIdxDesc(Store store, Long postIdx, Pageable page);
-    boolean existsByPostIdxLessThan(Long postIdx);
+    List<Post> findByDessert_DessertNameContainingOrderByPostIdxDesc(String word, Pageable page);
+    List<Post> findByDessert_DessertNameContainingAndPostIdxLessThanOrderByPostIdxDesc(String word, Long postIdx, Pageable page);
+    boolean existsByStoreAndPostIdxLessThan(Store store, Long postIdx);
+    boolean existsByDessert_DessertNameContainingAndPostIdxLessThan(String word, Long postIdx);
 }
