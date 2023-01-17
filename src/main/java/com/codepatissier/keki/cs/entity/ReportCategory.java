@@ -26,4 +26,10 @@ public enum ReportCategory {
                 .filter(cs -> cs.getName().equals(name))
                 .findAny().orElse(null);
     }
+
+    public static ReportCategory getReportCategoryByNumber(int number){
+        return Arrays.stream(ReportCategory.values())
+                .filter(cs -> cs.getNumber() == number)
+                .findAny().orElse(null);
+    }
 }

@@ -2,7 +2,9 @@ package com.codepatissier.keki.post.controller;
 
 import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.BaseResponse;
+import com.codepatissier.keki.cs.entity.ReportCategory;
 import com.codepatissier.keki.post.dto.GetStorePostsRes;
+import com.codepatissier.keki.post.dto.PostReportReq;
 import com.codepatissier.keki.post.service.PostService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +36,23 @@ public class PostController {
             if(size < 1) return new BaseResponse<>(INVALID_POSTS_SIZE);
 
             return new BaseResponse<>(this.postService.getPostList(storeIdx, cursorIdx, PageRequest.of(0, size)));
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
+     * 게시물 신고
+     * [POST] /posts/:postIdx/report
+     */
+    @ResponseBody
+    @PostMapping("/{postIdx}/report")
+    public BaseResponse<String> doReport(@RequestBody PostReportReq postReportReq, @PathVariable Long postIdx){
+        try{
+            if (ReportCategory.getReportCategoryByNumber(postReportReq.getReportNumber()) == null)
+                return new BaseResponse<>(INVALID_REPORT_CATEGORY);
+            this.postService.doReport(postReportReq, postIdx);
+            return new BaseResponse<>(SUCCESS);
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
         }
