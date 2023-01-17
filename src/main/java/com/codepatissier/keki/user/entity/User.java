@@ -5,11 +5,12 @@ import com.codepatissier.keki.common.Role;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 
-@Getter
+@Getter @Setter
 @Entity
 @NoArgsConstructor
 @DynamicInsert
@@ -18,19 +19,19 @@ public class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userIdx;
 
-    @Column(nullable = false, length = 30)
+    @Column(length = 30)
     private String nickname;
 
     @Column(nullable = false, length = 100)
     private String email;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)
-    private String provider;
+    private Provider provider;
 
-    @Column(nullable = false)
-    private String accessToken;
+    @Column(length = 300)
+    private String profileImg;
 
-    @Column(nullable = false)
     private String refreshToken;
 
     @Enumerated(EnumType.STRING)
@@ -38,13 +39,20 @@ public class User extends BaseEntity {
     private Role role;
 
     @Builder
-    public User(String nickname, String email, String provider, String accessToken, String refreshToken, Role role){
-        this.nickname = nickname;
+    public User(String email, Provider provider, Role role) {
         this.email = email;
         this.provider = provider;
-        this.accessToken = accessToken;
-        this.refreshToken = refreshToken;
         this.role = role;
     }
 
+    public void signup(String nickname, String refreshToken, Role role, String profileImg) {
+        this.nickname = nickname;
+        this.refreshToken = refreshToken;
+        this.role = role;
+        this.profileImg = profileImg;
+    }
+
+    public String getRole() {
+        return this.role.getName();
+    }
 }
