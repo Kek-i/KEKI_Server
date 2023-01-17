@@ -2,6 +2,7 @@ package com.codepatissier.keki.store.controller;
 
 import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.BaseResponse;
+import com.codepatissier.keki.store.dto.GetProfileRes;
 import com.codepatissier.keki.store.dto.GetStoreInfoRes;
 import com.codepatissier.keki.store.dto.PostStoreReq;
 import com.codepatissier.keki.store.service.StoreService;
@@ -10,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 import static com.codepatissier.keki.common.BaseResponseStatus.SUCCESS;
 
@@ -40,14 +40,14 @@ public class StoreController {
     /**
      * 판매자 사업자 정보 조회
      * [GET] /stores/store-info
-     * return businessName, brandName, businessAddress, businessNumber
+     * @return businessName, brandName, businessAddress, businessNumber
      */
     // Token 변경 후 Path Variable 삭제
     @ResponseBody
     @GetMapping("/store-info/{storeIdx}")
-    public BaseResponse<List<GetStoreInfoRes>> getStoreInfo(@PathVariable("storeIdx") Long storeIdx) {
+    public BaseResponse<GetStoreInfoRes> getStoreInfo(@PathVariable("storeIdx") Long storeIdx) {
         try {
-            List<GetStoreInfoRes> getStoreInfoRes = storeService.getStoreInfo(storeIdx);
+            GetStoreInfoRes getStoreInfoRes = storeService.getStoreInfo(storeIdx);
             return new BaseResponse<>(getStoreInfoRes);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
@@ -55,9 +55,20 @@ public class StoreController {
     }
 
     /**
-     * 판매자 마이페이지 조회
-     * GET /stores/mypage
+     * 판매자 프로필 조회
+     * [GET] /stores/profile
      */
+    // Token 변경 후 Path Variable 삭제
+    @ResponseBody
+    @GetMapping("/profile/{storeIdx}")
+    public BaseResponse<GetProfileRes> getStoreProfile(@PathVariable("storeIdx") Long storeIdx) {
+        try {
+            GetProfileRes getProfileRes = storeService.getStoreProfile(storeIdx);
+            return new BaseResponse<>(getProfileRes);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
 
     /**
      * 판매자 프로필 정보 수정

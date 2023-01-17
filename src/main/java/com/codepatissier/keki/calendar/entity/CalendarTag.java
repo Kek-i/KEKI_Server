@@ -1,6 +1,7 @@
 package com.codepatissier.keki.calendar.entity;
 
-import com.codepatissier.keki.common.Tag;
+import com.codepatissier.keki.common.BaseEntity;
+import com.codepatissier.keki.common.Tag.Tag;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +13,7 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor
 @DynamicInsert
-public class CalendarTag {
+public class CalendarTag extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long calendarTagIdx;
