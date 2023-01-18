@@ -21,6 +21,7 @@ public enum BaseResponseStatus {
 
     // posts(2200~2299)
     INVALID_POSTS_SIZE(false, 2200, "리스트 사이즈는 1 이상이어야 합니다."),
+    INVALID_REPORT_CATEGORY(false, 2201, "신고 카테고리를 찾을 수 없습니다."),
 
     // desserts(2300~2399)
 
