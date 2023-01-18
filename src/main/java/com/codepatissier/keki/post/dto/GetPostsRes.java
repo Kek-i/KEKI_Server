@@ -14,6 +14,7 @@ public class GetPostsRes {
     private List<Feed> feeds;
     private Long cursorIdx;
     private boolean hasNext;
+    private int numOfRows;
 
     @AllArgsConstructor
     @NoArgsConstructor
