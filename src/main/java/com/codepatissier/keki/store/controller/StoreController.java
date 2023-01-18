@@ -59,12 +59,11 @@ public class StoreController {
      * 판매자 프로필 조회
      * [GET] /stores/profile
      */
-    // Token 변경 후 Path Variable 삭제
     @ResponseBody
-    @GetMapping("/profile/{storeIdx}")
-    public BaseResponse<GetProfileRes> getStoreProfile(@PathVariable("storeIdx") Long storeIdx) {
+    @GetMapping("/profile")
+    public BaseResponse<GetProfileRes> getStoreProfile() {
         try {
-            GetProfileRes getProfileRes = storeService.getStoreProfile(storeIdx);
+            GetProfileRes getProfileRes = storeService.getStoreProfile(authService.getUserIdx());
             return new BaseResponse<>(getProfileRes);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
