@@ -7,6 +7,7 @@ import com.codepatissier.keki.history.dto.PostSearchRes;
 import com.codepatissier.keki.history.dto.SearchRes;
 import com.codepatissier.keki.history.service.PostHistoryService;
 import com.codepatissier.keki.history.service.SearchHistoryService;
+import com.codepatissier.keki.user.service.AuthService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -20,45 +21,37 @@ import java.util.List;
 public class HistoryController {
     private final SearchHistoryService searchHistoryService;
     private final PostHistoryService postHistoryService;
+    private final AuthService authService;
 
-    /**
-     * token 변경후에 pathVariable 삭제 할 예정이에요!
-     */
     // 최근 검색어
     @ResponseBody
-    @GetMapping("/recent-searches/{userIdx}")
-    public BaseResponse<List<SearchRes>> recentSearch(@PathVariable("userIdx")Long userIdx){
+    @GetMapping("/recent-searches")
+    public BaseResponse<List<SearchRes>> recentSearch(){
         try{
-            return new BaseResponse<>(this.searchHistoryService.recentSearch(userIdx));
+            return new BaseResponse<>(this.searchHistoryService.recentSearch(this.authService.getUserIdx()));
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
         }
 
     }
 
-    /**
-     * token 변경후에 pathVariable 삭제 할 예정이에요!
-     */
     // 최근 본 케이크 조회
     @ResponseBody
-    @GetMapping("/recent-posts/{userIdx}")
-    public BaseResponse<List<PostSearchRes>> recentSearchCake(@PathVariable("userIdx")Long userIdx){
+    @GetMapping("/recent-posts")
+    public BaseResponse<List<PostSearchRes>> recentSearchCake(){
         try{
-            return new BaseResponse<>(this.postHistoryService.recentSearchPost(userIdx));
+            return new BaseResponse<>(this.postHistoryService.recentSearchPost(this.authService.getUserIdx()));
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
         }
     }
 
-    /**
-     * token 변경후에 pathVariable 삭제 할 예정이에요!
-     */
     // 최근 검색어 삭제
     @ResponseBody
-    @PatchMapping("/{userIdx}")
-    public BaseResponse<String> deleteRecentHistories(@PathVariable("userIdx") Long userIdx){
+    @PatchMapping("")
+    public BaseResponse<String> deleteRecentHistories(){
         try{
-            this.searchHistoryService.deleteRecentHistories(userIdx);
+            this.searchHistoryService.deleteRecentHistories(this.authService.getUserIdx());
             return new BaseResponse<>(BaseResponseStatus.SUCCESS);
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
