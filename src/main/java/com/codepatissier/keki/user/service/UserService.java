@@ -1,13 +1,9 @@
 package com.codepatissier.keki.user.service;
 
 import com.codepatissier.keki.common.BaseException;
-import com.codepatissier.keki.common.BaseResponse;
 import com.codepatissier.keki.common.BaseResponseStatus;
 import com.codepatissier.keki.common.Role;
-import com.codepatissier.keki.user.dto.PostCustomerReq;
-import com.codepatissier.keki.user.dto.PostNicknameReq;
-import com.codepatissier.keki.user.dto.PostUserReq;
-import com.codepatissier.keki.user.dto.PostUserRes;
+import com.codepatissier.keki.user.dto.*;
 import com.codepatissier.keki.user.entity.Provider;
 import com.codepatissier.keki.user.entity.User;
 import com.codepatissier.keki.user.repository.UserRepository;
@@ -70,8 +66,15 @@ public class UserService {
         return userRepository.save(newUser);
     }
 
+    // 닉네임 중복 확인
     public void checkNickname(PostNicknameReq postNicknameReq) throws BaseException{
         boolean existence = userRepository.existsByNickname(postNicknameReq.getNickname());
         if(existence) throw new BaseException(BaseResponseStatus.EXIST_NICKNAME);
     }
+
+    // 마이페이지 조회
+    public GetProfileRes getProfile() throws BaseException {
+        Long userIdx = authService.getUserIdx();
+        User user = userRepository.findById(userIdx).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+        return new GetProfileRes(user.getNickname(), user.getProfileImg());}
 }
