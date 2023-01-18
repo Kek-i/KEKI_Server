@@ -63,7 +63,14 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+
 def querydslDir = "$buildDir/generated/querydsl"
+
+compileJava.doFirst {
+	delete file("${queryDslDir}/com")
+	ant.echo(message: "compileJava... we successully deleted files")
+}
 
 querydsl {
 	jpa = true
