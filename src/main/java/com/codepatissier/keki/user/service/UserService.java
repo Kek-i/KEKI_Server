@@ -1,7 +1,11 @@
 package com.codepatissier.keki.user.service;
 
+import com.codepatissier.keki.common.BaseException;
+import com.codepatissier.keki.common.BaseResponse;
+import com.codepatissier.keki.common.BaseResponseStatus;
 import com.codepatissier.keki.common.Role;
 import com.codepatissier.keki.user.dto.PostCustomerReq;
+import com.codepatissier.keki.user.dto.PostNicknameReq;
 import com.codepatissier.keki.user.dto.PostUserReq;
 import com.codepatissier.keki.user.dto.PostUserRes;
 import com.codepatissier.keki.user.entity.Provider;
@@ -9,6 +13,7 @@ import com.codepatissier.keki.user.entity.User;
 import com.codepatissier.keki.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 
 @Service
 @RequiredArgsConstructor
@@ -63,4 +68,8 @@ public class UserService {
         return userRepository.save(newUser);
     }
 
+    public void checkNickname(PostNicknameReq postNicknameReq) throws BaseException{
+        boolean existence = userRepository.existsByNickname(postNicknameReq.getNickname());
+        if(existence) throw new BaseException(BaseResponseStatus.EXIST_NICKNAME);
+    }
 }

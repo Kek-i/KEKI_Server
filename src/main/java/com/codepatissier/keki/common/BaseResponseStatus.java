@@ -14,7 +14,7 @@ public enum BaseResponseStatus {
      *  2000: Request 오류
      */
     // users(2000~2099)
-
+    EXIST_NICKNAME(false, 2000, "이미 사용 중인 닉네임입니다."),
 
     // stores(2100~2199)
 
