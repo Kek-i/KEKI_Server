@@ -6,6 +6,7 @@ import com.codepatissier.keki.store.dto.GetProfileRes;
 import com.codepatissier.keki.store.dto.GetStoreInfoRes;
 import com.codepatissier.keki.store.dto.PostStoreReq;
 import com.codepatissier.keki.store.service.StoreService;
+import com.codepatissier.keki.user.service.AuthService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,7 @@ import static com.codepatissier.keki.common.BaseResponseStatus.SUCCESS;
 @RequiredArgsConstructor
 public class StoreController {
     private final StoreService storeService;
+    private final AuthService authService;
 
     /**
      * 판매자 회원가입
@@ -42,12 +44,11 @@ public class StoreController {
      * [GET] /stores/store-info
      * @return businessName, brandName, businessAddress, businessNumber
      */
-    // Token 변경 후 Path Variable 삭제
     @ResponseBody
-    @GetMapping("/store-info/{storeIdx}")
-    public BaseResponse<GetStoreInfoRes> getStoreInfo(@PathVariable("storeIdx") Long storeIdx) {
+    @GetMapping("/store-info")
+    public BaseResponse<GetStoreInfoRes> getStoreInfo() {
         try {
-            GetStoreInfoRes getStoreInfoRes = storeService.getStoreInfo(storeIdx);
+            GetStoreInfoRes getStoreInfoRes = storeService.getStoreInfo(authService.getUserIdx());
             return new BaseResponse<>(getStoreInfoRes);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
