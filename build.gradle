@@ -68,7 +68,7 @@ tasks.named('test') {
 def querydslDir = "$buildDir/generated/querydsl"
 
 compileJava.doFirst {
-	delete file("${queryDslDir}/com")
+	delete file("${querydslDir}/com")
 	ant.echo(message: "compileJava... we successully deleted files")
 }
 
