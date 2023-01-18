@@ -43,7 +43,7 @@ public class PostService {
 
             Report report = Report.builder()
                     .user(user)
-                    .reportCategory(ReportCategory.getReportCategoryByNumber(postReportReq.getReportNumber()))
+                    .reportCategory(ReportCategory.getReportCategoryByName(postReportReq.getReportName()))
                     .post(post)
                     .build();
             this.reportRepository.save(report);

@@ -49,7 +49,7 @@ public class PostController {
     @PostMapping("/{postIdx}/report")
     public BaseResponse<String> doReport(@RequestBody PostReportReq postReportReq, @PathVariable Long postIdx){
         try{
-            if (ReportCategory.getReportCategoryByNumber(postReportReq.getReportNumber()) == null)
+            if (ReportCategory.getReportCategoryByName(postReportReq.getReportName()) == null)
                 return new BaseResponse<>(INVALID_REPORT_CATEGORY);
             this.postService.doReport(postReportReq, postIdx);
             return new BaseResponse<>(SUCCESS);
