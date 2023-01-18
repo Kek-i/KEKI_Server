@@ -22,21 +22,35 @@ public class UserController {
     @ResponseBody
     @GetMapping("/login/kakao")
     public BaseResponse<?> kakaoCallback(@RequestParam String code) {
-        return new BaseResponse<>(userService.kakaoLogin(code));
+        try{
+            return new BaseResponse<>(userService.kakaoLogin(code));
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
     }
 
     // 프론트로부터 이메일만 받아오는 경우 로그인
     @ResponseBody
     @PostMapping("/signin")
     public BaseResponse<?> login(@RequestBody PostUserReq postUserReq) {
-        return new BaseResponse<>(userService.signinEmail(postUserReq));
+        try{
+            return new BaseResponse<>(userService.signinEmail(postUserReq));
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+
     }
 
     // 프론트로부터 이메일만 받아오는 경우 구매자 회원가입
     @ResponseBody
     @PostMapping("/signup")
     public BaseResponse<?> signup(@RequestBody PostCustomerReq postCustomerReq) {
-        return new BaseResponse<>(userService.signupEmail(postCustomerReq));
+        try{
+            return new BaseResponse<>(userService.signupEmail(postCustomerReq));
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+
     }
 
     @ResponseBody

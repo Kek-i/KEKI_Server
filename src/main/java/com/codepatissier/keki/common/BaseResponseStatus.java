@@ -14,7 +14,7 @@ public enum BaseResponseStatus {
      *  2000: Request 오류
      */
     // users(2000~2099)
-    EXIST_NICKNAME(false, 2000, "이미 사용 중인 닉네임입니다."),
+    NULL_TOKEN(false, 2000, "토큰 값을 입력해주세요."),
 
     // stores(2100~2199)
 
@@ -38,6 +38,8 @@ public enum BaseResponseStatus {
      */
     // users(3000~3099)
     INVALID_USER_IDX(false, 3000, "사용자를 찾을 수 없습니다."),
+    EXIST_NICKNAME(false, 3001, "이미 사용 중인 닉네임입니다."),
+    INVALID_EMAIL(false, 3002, "존재하지 않는 이메일입니다."),
 
     // stores(3100~3199)
     INVALID_STORE_IDX(false, 3100, "존재하지 않는 스토어입니다."),
