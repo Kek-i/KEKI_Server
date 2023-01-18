@@ -1,5 +1,6 @@
 package com.codepatissier.keki.post.entity;
 
+import com.codepatissier.keki.common.BaseEntity;
 import com.codepatissier.keki.user.entity.User;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -10,7 +11,7 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor
 @DynamicInsert
-public class PostLike {
+public class PostLike extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long postLikeIdx;
