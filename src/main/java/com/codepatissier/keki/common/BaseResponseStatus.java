@@ -5,10 +5,12 @@ import lombok.Getter;
 @Getter
 public enum BaseResponseStatus {
     SUCCESS(true, 1000, "요청에 성공하였습니다."),
+
+    EXIST_NICKNAME(false, 2000, "이미 사용 중인 닉네임입니다."),
     /**
      * users: RESPONSE
      */
-    INVALID_USER_IDX(true, 2000, "사용자를 찾을 수 없습니다."),
+    INVALID_USER_IDX(false, 3000, "사용자를 찾을 수 없습니다."),
 
     /**
      * histories: REQUEST

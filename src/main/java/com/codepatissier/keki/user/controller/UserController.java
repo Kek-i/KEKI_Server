@@ -1,7 +1,10 @@
 package com.codepatissier.keki.user.controller;
 
+import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.BaseResponse;
+import com.codepatissier.keki.common.BaseResponseStatus;
 import com.codepatissier.keki.user.dto.PostCustomerReq;
+import com.codepatissier.keki.user.dto.PostNicknameReq;
 import com.codepatissier.keki.user.dto.PostUserReq;
 import com.codepatissier.keki.user.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -34,6 +37,17 @@ public class UserController {
     @PostMapping("/signup")
     public BaseResponse<?> signup(@RequestBody PostCustomerReq postCustomerReq) {
         return new BaseResponse<>(userService.signupEmail(postCustomerReq));
+    }
+
+    @ResponseBody
+    @PostMapping("/nickname")
+    public BaseResponse<?> checkNickname(@RequestBody PostNicknameReq postNicknameReq) {
+        try{
+            userService.checkNickname(postNicknameReq);
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS);
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
     }
 
 }
