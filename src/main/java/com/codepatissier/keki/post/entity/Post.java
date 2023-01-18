@@ -2,7 +2,7 @@ package com.codepatissier.keki.post.entity;
 
 import com.codepatissier.keki.common.BaseEntity;
 import com.codepatissier.keki.dessert.entity.Dessert;
-import com.codepatissier.keki.user.entity.User;
+import com.codepatissier.keki.store.entity.Store;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,8 +26,8 @@ public class Post extends BaseEntity {
     private Dessert dessert;
 
     @ManyToOne
-    @JoinColumn(nullable = false, name = "userIdx")
-    private User user;
+    @JoinColumn(nullable = false, name = "storeIdx")
+    private Store store;
 
     @Column(nullable = false, length = 300)
     private String postDescription;
@@ -36,9 +36,9 @@ public class Post extends BaseEntity {
     private List<PostImg> images = new ArrayList<>();
 
     @Builder
-    public Post(Dessert dessert, User user, String postDescription, List<PostImg> images) {
+    public Post(Dessert dessert, Store store, String postDescription, List<PostImg> images) {
         this.dessert = dessert;
-        this.user = user;
+        this.store = store;
         this.postDescription = postDescription;
         this.images = images;
     }

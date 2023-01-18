@@ -48,4 +48,12 @@ public class SearchHistoryService {
         }
 
     }
+
+    public List<SearchRes> getPopularSearches() throws BaseException{
+        try{
+            return this.searchHistoryRepository.getPopularSearches();
+        }catch (Exception e){
+            throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
+        }
+    }
 }
