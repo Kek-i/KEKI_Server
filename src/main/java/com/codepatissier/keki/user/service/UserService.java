@@ -14,6 +14,8 @@ import com.codepatissier.keki.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import static com.codepatissier.keki.common.BaseResponseStatus.*;
+
 
 @Service
 @RequiredArgsConstructor
@@ -22,7 +24,7 @@ public class UserService {
     private final AuthService authService;
     private final KakaoService kakaoService;
 
-    public PostUserRes kakaoLogin(String authorize_code) {
+    public PostUserRes kakaoLogin(String authorize_code) throws BaseException{
         String kakaoToken = kakaoService.getAccessToken(authorize_code);
         String userEmail = kakaoService.getUserInfo(kakaoToken);
 
@@ -33,13 +35,13 @@ public class UserService {
             return authService.createToken(user);
         }
         else {
-            User user = userRepository.findByEmail(userEmail).orElseThrow(); // TODO 예외처리
+            User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new BaseException(INVALID_EMAIL));
             return authService.createToken(user);
         }
     }
 
-    public PostUserRes signinEmail(PostUserReq postUserReq) {
-        User user = userRepository.findByEmail(postUserReq.getEmail()).orElseThrow();
+    public PostUserRes signinEmail(PostUserReq postUserReq) throws BaseException{
+        User user = userRepository.findByEmail(postUserReq.getEmail()).orElseThrow(() -> new BaseException(INVALID_EMAIL));
         Long userIdx = user.getUserIdx();
         String accessToken = authService.createAccessToken(userIdx);
         String refreshToken = authService.createRefreshToken(userIdx);
@@ -47,9 +49,9 @@ public class UserService {
         return new PostUserRes(accessToken, refreshToken, user.getRole());
     }
 
-    public PostUserRes signupEmail(PostCustomerReq postCustomerReq) {
+    public PostUserRes signupEmail(PostCustomerReq postCustomerReq) throws BaseException{
         Long userIdx = authService.getUserIdx();
-        User user = userRepository.findById(userIdx).orElseThrow();
+        User user = userRepository.findById(userIdx).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
         String accessToken = authService.createAccessToken(userIdx);
         String refreshToken = authService.createRefreshToken(userIdx);
 

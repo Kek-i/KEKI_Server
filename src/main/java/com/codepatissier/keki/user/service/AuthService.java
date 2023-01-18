@@ -3,6 +3,7 @@ package com.codepatissier.keki.user.service;
 import java.util.Date;
 
 
+import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.user.dto.PostUserRes;
 import io.jsonwebtoken.*;
 
@@ -19,6 +20,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 
+import static com.codepatissier.keki.common.BaseResponseStatus.NULL_TOKEN;
+
 
 @Service
 @RequiredArgsConstructor
@@ -30,15 +33,15 @@ public class AuthService {
     @Value("${auth.key}")
     private String key;
 
-    public Long getUserIdx() {
+    public Long getUserIdx() throws BaseException{
         Jws<Claims> claims = getClaims();
         return claims.getBody().get("userIdx", Long.class);
     }
 
-    public Jws<Claims> getClaims() {
+    public Jws<Claims> getClaims() throws BaseException{
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         String token = request.getHeader("Bearer");
-        // TODO 토큰이 없을 때 예외 처리
+        if(token == null) throw new BaseException(NULL_TOKEN);
 
         Jws<Claims> claims = null;
         try {
