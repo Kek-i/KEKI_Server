@@ -5,12 +5,11 @@ import com.codepatissier.keki.common.Role;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 
-@Getter @Setter
+@Getter
 @Entity
 @NoArgsConstructor
 @DynamicInsert
@@ -54,5 +53,10 @@ public class User extends BaseEntity {
 
     public String getRole() {
         return this.role.getName();
+    }
+
+    public void storeSignUp(String nickname, String profileImg) {
+        this.nickname = nickname;
+        this.profileImg = profileImg;
     }
 }
