@@ -41,7 +41,7 @@ public class StoreService {
                     .build();
             this.storeRepository.save(store);
         } catch (BaseException e) {
-            throw new BaseException(e.getStatus());
+            throw e;
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
