@@ -11,6 +11,9 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class PostStoreReq {
     @NotBlank
+    private String nickname;
+    private String storeImgUrl;
+    @NotBlank
     private String address;
     private String introduction;
     private String orderUrl;
