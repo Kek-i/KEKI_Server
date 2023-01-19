@@ -6,6 +6,7 @@ import com.codepatissier.keki.cs.entity.ReportCategory;
 import com.codepatissier.keki.post.dto.GetStorePostsRes;
 import com.codepatissier.keki.post.dto.PostReportReq;
 import com.codepatissier.keki.post.service.PostService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import static com.codepatissier.keki.common.BaseResponseStatus.*;
 import static com.codepatissier.keki.common.Constant.Posts.*;
 
+@SecurityRequirement(name = "Bearer")
 @Tag(name = "posts", description = "피드 API")
 @RestController
 @RequestMapping(value = "/posts")

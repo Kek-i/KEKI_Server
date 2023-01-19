@@ -7,10 +7,12 @@ import com.codepatissier.keki.user.dto.PostCustomerReq;
 import com.codepatissier.keki.user.dto.PostNicknameReq;
 import com.codepatissier.keki.user.dto.PostUserReq;
 import com.codepatissier.keki.user.service.UserService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+@SecurityRequirement(name = "Bearer")
 @Tag(name = "users", description = "구매자 API")
 @RestController
 @RequestMapping(value = "/users")
