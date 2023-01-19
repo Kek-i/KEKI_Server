@@ -40,7 +40,7 @@ public class CalendarController {
 
     // 캘린더 삭제
     @ResponseBody
-    @PatchMapping("/{calendarIdx}/users")
+    @PatchMapping("/{calendarIdx}")
     public BaseResponse<String> deleteCalendar(@PathVariable("calendarIdx") Long calendarIdx){
         try{
             this.calendarService.deleteCalendar(calendarIdx, this.authService.getUserIdx());
