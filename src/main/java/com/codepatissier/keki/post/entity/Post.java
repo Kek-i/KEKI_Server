@@ -35,11 +35,15 @@ public class Post extends BaseEntity {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "post", orphanRemoval = true)
     private List<PostImg> images = new ArrayList<>();
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", orphanRemoval = true)
+    private List<PostTag> tags = new ArrayList<>();
+
     @Builder
-    public Post(Dessert dessert, Store store, String postDescription, List<PostImg> images) {
+    public Post(Dessert dessert, Store store, String postDescription, List<PostImg> images ,List<PostTag> tags) {
         this.dessert = dessert;
         this.store = store;
         this.postDescription = postDescription;
         this.images = images;
+        this.tags = tags;
     }
 }

@@ -1,11 +1,13 @@
 package com.codepatissier.keki.common.Tag;
 
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 
+@Getter
 @Entity
 @NoArgsConstructor
 @DynamicInsert
