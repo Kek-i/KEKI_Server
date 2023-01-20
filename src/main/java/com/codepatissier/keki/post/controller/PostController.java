@@ -6,6 +6,7 @@ import com.codepatissier.keki.cs.entity.ReportCategory;
 import com.codepatissier.keki.post.dto.GetStorePostsRes;
 import com.codepatissier.keki.post.dto.PostReportReq;
 import com.codepatissier.keki.post.service.PostService;
+import com.codepatissier.keki.user.service.AuthService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +21,7 @@ import static com.codepatissier.keki.common.Constant.Posts.*;
 @RequiredArgsConstructor
 public class PostController {
     private final PostService postService;
+    private final AuthService authService;
 
     /**
      * 스토어별 피드 목록 조회(최초 호출)
@@ -51,7 +53,7 @@ public class PostController {
         try{
             if (ReportCategory.getReportCategoryByName(postReportReq.getReportName()) == null)
                 return new BaseResponse<>(INVALID_REPORT_CATEGORY);
-            this.postService.doReport(postReportReq, postIdx);
+            this.postService.doReport(authService.getUserIdx(), postReportReq, postIdx);
             return new BaseResponse<>(SUCCESS);
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
@@ -66,7 +68,7 @@ public class PostController {
     @PostMapping("/{postIdx}/like")
     public BaseResponse<String> doLike(@PathVariable Long postIdx){
         try{
-            this.postService.doLike(postIdx);
+            this.postService.doLike(authService.getUserIdx(), postIdx);
             return new BaseResponse<>(SUCCESS);
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
