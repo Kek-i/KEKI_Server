@@ -35,7 +35,7 @@ public class PostController {
      */
     @ResponseBody
     @PostMapping("")
-    public BaseResponse<GetPostsRes> getPosts(Long userIdx, @RequestParam(required = false) Long storeIdx, @RequestParam(required = false) String searchTag, @RequestParam(required = false) String searchWord, @RequestParam(required = false) Long cursorIdx, @RequestParam(required = false) Integer size){
+    public BaseResponse<GetPostsRes> getPosts(@RequestParam(required = false) Long storeIdx, @RequestParam(required = false) String searchTag, @RequestParam(required = false) String searchWord, @RequestParam(required = false) Long cursorIdx, @RequestParam(required = false) Integer size){
         try{
             if(size == null) size = DEFAULT_SIZE;
             if(size < 1) return new BaseResponse<>(INVALID_POSTS_SIZE);
@@ -44,9 +44,9 @@ public class PostController {
 
             Pageable pageable = PageRequest.of(0, size);
 
-            if (storeIdx != null) return new BaseResponse<>(this.postService.getPosts(userIdx, storeIdx, cursorIdx, pageable));
-            else if (searchWord != null) return new BaseResponse<>(this.postService.getSearchPosts(userIdx,searchWord, cursorIdx, pageable));
-            else if (searchTag != null) return new BaseResponse<>(this.postService.getPostsByTag(userIdx, searchTag, cursorIdx, pageable));
+            if (storeIdx != null) return new BaseResponse<>(this.postService.getPosts(authService.getUserIdx(), storeIdx, cursorIdx, pageable));
+            else if (searchWord != null) return new BaseResponse<>(this.postService.getSearchPosts(authService.getUserIdx(),searchWord, cursorIdx, pageable));
+            else if (searchTag != null) return new BaseResponse<>(this.postService.getPostsByTag(authService.getUserIdx(), searchTag, cursorIdx, pageable));
             else return new BaseResponse<>(NO_PARAMETER);
         } catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
