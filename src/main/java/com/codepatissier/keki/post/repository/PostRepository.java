@@ -1,5 +1,6 @@
 package com.codepatissier.keki.post.repository;
 
+import com.codepatissier.keki.dessert.entity.Dessert;
 import com.codepatissier.keki.post.entity.Post;
 import com.codepatissier.keki.store.entity.Store;
 import org.springframework.data.domain.Pageable;
@@ -16,4 +17,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findByDessertDessertNameContainingAndPostIdxLessThanOrderByPostIdxDesc(String word, Long postIdx, Pageable page);
     boolean existsByStoreAndPostIdxLessThan(Store store, Long postIdx);
     boolean existsByDessertDessertNameContainingAndPostIdxLessThan(String word, Long postIdx);
+    boolean existsByPostIdxLessThan(Long postIdx);
+    List<Post> findTop5ByDessertOrderByPostIdxDesc(Dessert dessert);
 }

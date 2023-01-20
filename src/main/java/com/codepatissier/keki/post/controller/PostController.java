@@ -3,6 +3,8 @@ package com.codepatissier.keki.post.controller;
 import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.BaseResponse;
 import com.codepatissier.keki.post.dto.GetPostsRes;
+import com.codepatissier.keki.cs.entity.ReportCategory;
+import com.codepatissier.keki.post.dto.PostReportReq;
 import com.codepatissier.keki.post.service.PostService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +45,38 @@ public class PostController {
             else if (searchTag != null) return new BaseResponse<>(this.postService.getPostsByTag(userIdx, searchTag, cursorIdx, pageable));
             else return new BaseResponse<>(NO_PARAMETER);
         } catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
+     * 게시물 신고
+     * [POST] /posts/:postIdx/report
+     */
+    @ResponseBody
+    @PostMapping("/{postIdx}/report")
+    public BaseResponse<String> doReport(@RequestBody PostReportReq postReportReq, @PathVariable Long postIdx){
+        try{
+            if (ReportCategory.getReportCategoryByName(postReportReq.getReportName()) == null)
+                return new BaseResponse<>(INVALID_REPORT_CATEGORY);
+            this.postService.doReport(postReportReq, postIdx);
+            return new BaseResponse<>(SUCCESS);
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
+     * 게시물 좋아요/취소
+     * [POST] /posts/:postIdx/like
+     */
+    @ResponseBody
+    @PostMapping("/{postIdx}/like")
+    public BaseResponse<String> doLike(@PathVariable Long postIdx){
+        try{
+            this.postService.doLike(postIdx);
+            return new BaseResponse<>(SUCCESS);
+        }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
         }
     }

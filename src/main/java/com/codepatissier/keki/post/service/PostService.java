@@ -6,9 +6,15 @@ import com.codepatissier.keki.common.Tag.TagRepository;
 import com.codepatissier.keki.history.entity.SearchHistory;
 import com.codepatissier.keki.history.repository.SearchHistoryRepository;
 import com.codepatissier.keki.post.dto.GetPostsRes;
+import com.codepatissier.keki.post.entity.PostTag;
+import com.codepatissier.keki.common.Constant;
+import com.codepatissier.keki.cs.entity.Report;
+import com.codepatissier.keki.cs.entity.ReportCategory;
+import com.codepatissier.keki.cs.repository.ReportRepository;
+import com.codepatissier.keki.post.dto.PostReportReq;
 import com.codepatissier.keki.post.entity.Post;
 import com.codepatissier.keki.post.entity.PostImg;
-import com.codepatissier.keki.post.entity.PostTag;
+import com.codepatissier.keki.post.entity.PostLike;
 import com.codepatissier.keki.post.repository.PostLikeRepository;
 import com.codepatissier.keki.post.repository.PostRepository;
 import com.codepatissier.keki.post.repository.PostTagRepository;
@@ -36,6 +42,61 @@ public class PostService {
     private final TagRepository tagRepository;
     private final PostTagRepository postTagRepository;
     private final SearchHistoryRepository searchHistoryRepository;
+    private final ReportRepository reportRepository;
+
+    /**
+     * 신고하기
+     */
+    public void doReport(PostReportReq postReportReq, Long postIdx) throws BaseException {
+        try {
+            User user = this.userRepository.findById(1L)
+                    .orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+
+            Post post = this.postRepository.findById(postIdx)
+                    .orElseThrow(() -> new BaseException(INVALID_POST_IDX));
+
+            Report report = Report.builder()
+                    .user(user)
+                    .reportCategory(ReportCategory.getReportCategoryByName(postReportReq.getReportName()))
+                    .post(post)
+                    .build();
+            this.reportRepository.save(report);
+        } catch (BaseException e) {
+            throw e;
+        } catch (Exception e){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     * 게시물 좋아요
+     */
+    public void doLike(Long postIdx) throws BaseException {
+        try {
+            User user = this.userRepository.findById(1L)
+                    .orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+            Post post = this.postRepository.findById(postIdx)
+                    .orElseThrow(() -> new BaseException(INVALID_POST_IDX));
+            PostLike postLike = this.postLikeRepository.findByPostAndUser(post, user);
+
+            if (postLike != null){
+                if(postLike.getStatus().equals(Constant.ACTIVE_STATUS))
+                    postLike.setStatus(Constant.INACTIVE_STATUS);
+                else if (postLike.getStatus().equals(Constant.INACTIVE_STATUS))
+                    postLike.setStatus(Constant.ACTIVE_STATUS);
+            } else {
+                postLike = PostLike.builder()
+                        .user(user)
+                        .post(post)
+                        .build();
+            }
+            this.postLikeRepository.save(postLike);
+        } catch (BaseException e) {
+            throw e;
+        } catch (Exception e){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 
     /**
      * 스토어별 조회

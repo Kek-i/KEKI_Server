@@ -6,12 +6,12 @@ import com.codepatissier.keki.store.dto.GetProfileRes;
 import com.codepatissier.keki.store.dto.GetStoreInfoRes;
 import com.codepatissier.keki.store.dto.PostStoreReq;
 import com.codepatissier.keki.store.service.StoreService;
+import com.codepatissier.keki.user.service.AuthService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 import static com.codepatissier.keki.common.BaseResponseStatus.SUCCESS;
 
@@ -22,6 +22,7 @@ import static com.codepatissier.keki.common.BaseResponseStatus.SUCCESS;
 @RequiredArgsConstructor
 public class StoreController {
     private final StoreService storeService;
+    private final AuthService authService;
 
     /**
      * 판매자 회원가입
@@ -43,12 +44,11 @@ public class StoreController {
      * [GET] /stores/store-info
      * @return businessName, brandName, businessAddress, businessNumber
      */
-    // Token 변경 후 Path Variable 삭제
     @ResponseBody
-    @GetMapping("/store-info/{storeIdx}")
-    public BaseResponse<List<GetStoreInfoRes>> getStoreInfo(@PathVariable("storeIdx") Long storeIdx) {
+    @GetMapping("/store-info")
+    public BaseResponse<GetStoreInfoRes> getStoreInfo() {
         try {
-            List<GetStoreInfoRes> getStoreInfoRes = storeService.getStoreInfo(storeIdx);
+            GetStoreInfoRes getStoreInfoRes = storeService.getStoreInfo(authService.getUserIdx());
             return new BaseResponse<>(getStoreInfoRes);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
@@ -59,12 +59,11 @@ public class StoreController {
      * 판매자 프로필 조회
      * [GET] /stores/profile
      */
-    // Token 변경 후 Path Variable 삭제
     @ResponseBody
-    @GetMapping("/profile/{storeIdx}")
-    public BaseResponse<GetProfileRes> getStoreProfile(@PathVariable("storeIdx") Long storeIdx) {
+    @GetMapping("/profile")
+    public BaseResponse<GetProfileRes> getStoreProfile() {
         try {
-            GetProfileRes getProfileRes = storeService.getStoreProfile(storeIdx);
+            GetProfileRes getProfileRes = storeService.getStoreProfile(authService.getUserIdx());
             return new BaseResponse<>(getProfileRes);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());

@@ -2,11 +2,11 @@ package com.codepatissier.keki.dessert.controller;
 
 import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.BaseResponse;
+import com.codepatissier.keki.dessert.dto.GetDessertRes;
 import com.codepatissier.keki.dessert.dto.GetStoreDessertsRes;
 import com.codepatissier.keki.dessert.service.DessertService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 
 import static com.codepatissier.keki.common.BaseResponseStatus.INVALID_POSTS_SIZE;
@@ -35,7 +35,7 @@ public class DessertController {
             if(size == null) size = DEFAULT_SIZE;
             if(size < 1) return new BaseResponse<>(INVALID_POSTS_SIZE);
 
-            return new BaseResponse<>(dessertService.getDessertList(storeIdx, cursorIdx, PageRequest.of(0, size)));
+            return new BaseResponse<>(dessertService.getDessertList(storeIdx, cursorIdx, size));
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
@@ -46,6 +46,15 @@ public class DessertController {
      * 상품 상세 조회
      * [GET] /desserts/:dessertIdx
      */
+    @ResponseBody
+    @GetMapping("/{dessertIdx}")
+    public BaseResponse<GetDessertRes> getDessert(@PathVariable("dessertIdx") Long dessertIdx) {
+        try {
+            return new BaseResponse<>(dessertService.getDessert(dessertIdx));
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
 
     /**
      * 상품 등록
