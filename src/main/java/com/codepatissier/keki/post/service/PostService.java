@@ -1,6 +1,7 @@
 package com.codepatissier.keki.post.service;
 
 import com.codepatissier.keki.common.BaseException;
+import com.codepatissier.keki.common.Role;
 import com.codepatissier.keki.common.Tag.Tag;
 import com.codepatissier.keki.common.Tag.TagRepository;
 import com.codepatissier.keki.history.entity.PostHistory;
@@ -33,6 +34,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.codepatissier.keki.common.BaseResponseStatus.*;
+import static com.codepatissier.keki.common.Constant.INACTIVE_STATUS;
 
 @Service
 @RequiredArgsConstructor
@@ -117,6 +119,31 @@ public class PostService {
                     .build();
 
             this.postHistoryRepository.save(postHistory);
+        } catch (BaseException e) {
+            throw e;
+        } catch (Exception e){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     * 게시물 삭제
+     */
+    public void deletePost(Long userIdx, Long postIdx) throws BaseException {
+        try {
+            User user = this.userRepository.findById(userIdx)
+                    .orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+            if (!Role.getRoleByName(user.getRole()).equals(Role.STORE))
+                throw new BaseException(NO_STORE_ROLE);
+
+            Post post = this.postRepository.findById(postIdx)
+                    .orElseThrow(() -> new BaseException(INVALID_POST_IDX));
+            if(!user.getUserIdx().equals(post.getStore().getUser().getUserIdx()))
+                throw new BaseException(NO_MATCH_POST_STORE);
+
+            post.setStatus(INACTIVE_STATUS);
+
+            this.postRepository.save(post);
         } catch (BaseException e) {
             throw e;
         } catch (Exception e){

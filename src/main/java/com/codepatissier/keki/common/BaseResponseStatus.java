@@ -43,6 +43,7 @@ public enum BaseResponseStatus {
     INVALID_USER_IDX(false, 3000, "사용자를 찾을 수 없습니다."),
     EXIST_NICKNAME(false, 3001, "이미 사용 중인 닉네임입니다."),
     INVALID_EMAIL(false, 3002, "존재하지 않는 이메일입니다."),
+    NO_STORE_ROLE(false, 3003, "판매자가 아닙니다."),
 
     // stores(3100~3199)
     INVALID_STORE_IDX(false, 3100, "존재하지 않는 스토어입니다."),
@@ -50,6 +51,7 @@ public enum BaseResponseStatus {
     // posts(3200~3299)
     INVALID_POST_IDX(false, 3200, "존재하지 않는 피드입니다."),
     INVALID_TAG_IDX(false, 3201, "존재하지 않는 태그입니다."),
+    NO_MATCH_POST_STORE(false, 3202, "해당 피드의 작성자가 아닙니다."),
 
     // desserts(3300~3399)
     INVALID_DESSERT_IDX(false, 3300, "존재하지 않는 디저트입니다."),
