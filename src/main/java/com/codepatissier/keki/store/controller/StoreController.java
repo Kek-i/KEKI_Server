@@ -6,6 +6,7 @@ import com.codepatissier.keki.store.dto.GetProfileRes;
 import com.codepatissier.keki.store.dto.GetStoreInfoRes;
 import com.codepatissier.keki.store.dto.PostStoreReq;
 import com.codepatissier.keki.store.service.StoreService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import com.codepatissier.keki.user.service.AuthService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,7 @@ import javax.validation.Valid;
 
 import static com.codepatissier.keki.common.BaseResponseStatus.SUCCESS;
 
-
+@SecurityRequirement(name = "Bearer")
 @Tag(name = "stores", description = "판매자 API")
 @RestController
 @RequestMapping(value = "/stores")

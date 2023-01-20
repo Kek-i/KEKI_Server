@@ -5,6 +5,7 @@ import com.codepatissier.keki.common.BaseResponse;
 import com.codepatissier.keki.dessert.dto.GetDessertRes;
 import com.codepatissier.keki.dessert.dto.GetStoreDessertsRes;
 import com.codepatissier.keki.dessert.service.DessertService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import static com.codepatissier.keki.common.BaseResponseStatus.INVALID_POSTS_SIZE;
 import static com.codepatissier.keki.common.Constant.Posts.DEFAULT_SIZE;
 
+@SecurityRequirement(name = "Bearer")
 @Tag(name = "desserts", description = "상품 API")
 @RestController
 @RequestMapping(value = "/desserts")
