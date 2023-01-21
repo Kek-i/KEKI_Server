@@ -16,6 +16,7 @@ import com.codepatissier.keki.user.entity.User;
 import com.codepatissier.keki.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -33,6 +34,7 @@ public class CalendarService {
     private final TagRepository tagRepository;
     private final UserRepository userRepository;
 
+    @Transactional
     public void createCalendar(Long userIdx, CalendarReq calendarReq) throws BaseException {
         try {
             User user = findUserByUserIdx(userIdx);
