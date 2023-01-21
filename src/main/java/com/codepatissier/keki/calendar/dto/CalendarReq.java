@@ -22,7 +22,7 @@ public class CalendarReq {
     private String title;
 
     @JsonDeserialize(using = LocalDateDeserializer.class)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd") //20220101
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd") //2022-01-01
     private LocalDate date;
 
     List<CalendarHashTag> hashTags;
