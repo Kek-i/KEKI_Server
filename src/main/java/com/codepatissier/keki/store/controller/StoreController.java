@@ -2,10 +2,7 @@ package com.codepatissier.keki.store.controller;
 
 import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.BaseResponse;
-import com.codepatissier.keki.store.dto.GetMyPageStoreProfileRes;
-import com.codepatissier.keki.store.dto.GetStoreInfoRes;
-import com.codepatissier.keki.store.dto.GetStoreProfileRes;
-import com.codepatissier.keki.store.dto.PostStoreReq;
+import com.codepatissier.keki.store.dto.*;
 import com.codepatissier.keki.store.service.StoreService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import com.codepatissier.keki.user.service.AuthService;
@@ -92,6 +89,16 @@ public class StoreController {
 
     /**
      * 판매자 프로필 정보 수정
-     * PATCH /stores/mypage
+     * PATCH /stores/profile
      */
+    @ResponseBody
+    @PatchMapping("/profile")
+    public BaseResponse<String> patchProfile(@RequestBody PatchProfileReq patchProfileReq) {
+        try {
+            storeService.modifyProfile(authService.getUserIdx(), patchProfileReq);
+            return new BaseResponse<>(SUCCESS);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
 }

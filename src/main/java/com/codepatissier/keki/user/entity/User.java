@@ -59,4 +59,12 @@ public class User extends BaseEntity {
         this.nickname = nickname;
         this.profileImg = profileImg;
     }
+
+    public void setProfileImg(String profileImg) {
+        this.profileImg = profileImg;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
 }
