@@ -56,6 +56,7 @@ public enum BaseResponseStatus {
     INVALID_TAG(false, 3401, "TAG를 찾을 수 없습니다."),
     INVALID_USER_AND_STATUS(false, 3402, "캘린더 접근이 불가능합니다."),
     INVALID_CALENDAR_IDX(false, 3403, "존재하지 않는 캘린더 입니다."),
+    NO_MATCH_CALENDAR_USER(false, 3404, "캘린더를 생성한 사용자가 아닙니다."),
 
     // histories(3500~3599)
 

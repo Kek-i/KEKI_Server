@@ -1,6 +1,7 @@
 package com.codepatissier.keki.calendar.contoller;
 
 import com.codepatissier.keki.calendar.dto.CalendarReq;
+import com.codepatissier.keki.calendar.dto.CalendarRes;
 import com.codepatissier.keki.calendar.service.CalendarService;
 import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.BaseResponse;
@@ -11,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+// TODO STATUS 처리를 해줘야 함.
 
 @Tag(name = "calendars", description = "기념일 API")
 @RestController
@@ -49,4 +51,16 @@ public class CalendarController {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
+    // 기념일 하나 조회
+    @ResponseBody
+    @GetMapping("/{calendarIdx}")
+    public BaseResponse<CalendarRes> getCalendar(@PathVariable("calendarIdx") Long calendarIdx){
+        try{
+            return new BaseResponse<>(this.calendarService.getCalendar(calendarIdx, this.authService.getUserIdx()));
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
 }

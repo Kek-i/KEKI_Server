@@ -1,6 +1,7 @@
 package com.codepatissier.keki.common.Tag;
 
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
@@ -14,6 +15,7 @@ public class Tag {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long tagIdx;
 
+    @Getter
     @Column(nullable = false, length = 50)
     private String tagName;
 
