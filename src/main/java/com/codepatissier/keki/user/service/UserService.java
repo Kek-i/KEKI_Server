@@ -9,6 +9,7 @@ import com.codepatissier.keki.user.entity.User;
 import com.codepatissier.keki.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import static com.codepatissier.keki.common.BaseResponseStatus.*;
 
@@ -77,4 +78,18 @@ public class UserService {
         Long userIdx = authService.getUserIdx();
         User user = userRepository.findById(userIdx).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
         return new GetProfileRes(user.getNickname(), user.getProfileImg());}
+
+    // 구매자 프로필 수정
+    @Transactional
+    public void modifyProfile(Long userIdx, PatchProfileReq patchProfileReq) throws BaseException{
+        try {
+            User user = userRepository.findById(userIdx).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+            if (patchProfileReq != null) {
+                user.modifyProfile(patchProfileReq.getNickname(), patchProfileReq.getProfileImg());
+            }
+        } catch (BaseException e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+
+    }
 }
