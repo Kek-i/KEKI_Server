@@ -6,6 +6,7 @@ import com.codepatissier.keki.common.BaseResponseStatus;
 import com.codepatissier.keki.user.dto.PostCustomerReq;
 import com.codepatissier.keki.user.dto.PostNicknameReq;
 import com.codepatissier.keki.user.dto.PostUserReq;
+import com.codepatissier.keki.user.service.AuthService;
 import com.codepatissier.keki.user.service.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final AuthService authService;
 
     // 서버에서 모든 로직을 처리하는 경우 회원가입/로그인
     @ResponseBody
@@ -48,7 +50,7 @@ public class UserController {
     @PostMapping("/signup")
     public BaseResponse<?> signup(@RequestBody PostCustomerReq postCustomerReq) {
         try{
-            return new BaseResponse<>(userService.signupEmail(postCustomerReq));
+            return new BaseResponse<>(userService.signupCustomer(authService.getUserIdx(), postCustomerReq));
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
         }
