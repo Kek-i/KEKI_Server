@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetProfileRes {
+public class GetStoreProfileRes {
     private String nickname;
     private String storeImgUrl;
     private String introduction;
