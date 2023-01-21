@@ -86,8 +86,11 @@ public class UserService {
             User user = userRepository.findById(userIdx).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
             if (patchProfileReq != null) {
                 user.modifyProfile(patchProfileReq.getNickname(), patchProfileReq.getProfileImg());
+                userRepository.save(user);
             }
         } catch (BaseException e) {
+            throw e;
+        } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
 
