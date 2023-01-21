@@ -99,4 +99,19 @@ public class PostController {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
+    /**
+     * 게시물 삭제
+     * [PATCH] /posts/:postIdx
+     */
+    @ResponseBody
+    @PatchMapping("/{postIdx}")
+    public BaseResponse<String> deletePost(@PathVariable Long postIdx){
+        try{
+            this.postService.deletePost(authService.getUserIdx(), postIdx);
+            return new BaseResponse<>(SUCCESS);
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
 }
