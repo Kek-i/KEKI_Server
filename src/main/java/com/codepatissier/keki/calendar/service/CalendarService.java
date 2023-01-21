@@ -84,6 +84,7 @@ public class CalendarService {
         try{
             return new CalendarRes(calendar.getCalendarCategory().getName(),
                     calendar.getCalendarTitle(),
+                    calendar.getCalendarDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                     calculateDate(calendar),
                     tag.stream().map(tags -> new CalendarHashTag(tags.getTag().getTagName())).collect(Collectors.toList()));
         } catch (Exception e){
@@ -97,8 +98,9 @@ public class CalendarService {
         if(calendar.getCalendarCategory().equals(CalendarCategory.D_DAY)){
             if(day == 0) returnCalendar = "D-DAY";
             else if(day > 0) returnCalendar = "D+" + day;
-            else returnCalendar = "D-" + day;
+            else returnCalendar = "D" + day;
         }else if(calendar.getCalendarCategory().equals(CalendarCategory.DATE_COUNT)){
+            // TODO 과거의 날짜라면? 어떻게 해야할지 정해야 함.
             returnCalendar = day +1+"";
         }else{
             // TODO 매년 반복은 스케줄러 사용 후 코드 변경을 해둘 것임.

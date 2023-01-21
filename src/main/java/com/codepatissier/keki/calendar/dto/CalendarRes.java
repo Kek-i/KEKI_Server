@@ -19,8 +19,8 @@ import java.util.List;
 public class CalendarRes {
     private String kindOfCalendar; // 캘린더 종류
     private String title;
-
     private String date;
+    private String calDate;
 
     List<CalendarHashTag> hashTags;
 }
