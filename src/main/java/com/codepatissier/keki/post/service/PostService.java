@@ -3,7 +3,9 @@ package com.codepatissier.keki.post.service;
 import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.Tag.Tag;
 import com.codepatissier.keki.common.Tag.TagRepository;
+import com.codepatissier.keki.history.entity.PostHistory;
 import com.codepatissier.keki.history.entity.SearchHistory;
+import com.codepatissier.keki.history.repository.PostHistoryRepository;
 import com.codepatissier.keki.history.repository.SearchHistoryRepository;
 import com.codepatissier.keki.post.dto.GetPostsRes;
 import com.codepatissier.keki.post.entity.PostTag;
@@ -43,6 +45,8 @@ public class PostService {
     private final PostTagRepository postTagRepository;
     private final SearchHistoryRepository searchHistoryRepository;
     private final ReportRepository reportRepository;
+    private final PostHistoryRepository postHistoryRepository;
+
 
     /**
      * 신고하기
@@ -91,6 +95,28 @@ public class PostService {
                         .build();
             }
             this.postLikeRepository.save(postLike);
+        } catch (BaseException e) {
+            throw e;
+        } catch (Exception e){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     * 게시물 조회 기록
+     */
+    public void makePostHistory(Long userIdx, Long postIdx) throws BaseException {
+        try {
+            User user = this.userRepository.findById(userIdx).orElse(null);
+            if (user == null) return;
+            Post post = this.postRepository.findById(postIdx)
+                    .orElseThrow(() -> new BaseException(INVALID_POST_IDX));
+            PostHistory postHistory = PostHistory.builder()
+                    .post(post)
+                    .user(user)
+                    .build();
+
+            this.postHistoryRepository.save(postHistory);
         } catch (BaseException e) {
             throw e;
         } catch (Exception e){

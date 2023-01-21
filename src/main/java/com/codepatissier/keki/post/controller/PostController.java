@@ -84,4 +84,19 @@ public class PostController {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
+    /**
+     * 게시물 조회 기록
+     * [POST] /posts/:postIdx/history
+     */
+    @ResponseBody
+    @PostMapping("/{postIdx}/history")
+    public BaseResponse<String> makePostHistory(@PathVariable Long postIdx){
+        try{
+            this.postService.makePostHistory(authService.getUserIdx(), postIdx);
+            return new BaseResponse<>(SUCCESS);
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
 }
