@@ -47,9 +47,9 @@ public class PostService {
     /**
      * 신고하기
      */
-    public void doReport(PostReportReq postReportReq, Long postIdx) throws BaseException {
+    public void doReport(Long userIdx, PostReportReq postReportReq, Long postIdx) throws BaseException {
         try {
-            User user = this.userRepository.findById(1L)
+            User user = this.userRepository.findById(userIdx)
                     .orElseThrow(() -> new BaseException(INVALID_USER_IDX));
 
             Post post = this.postRepository.findById(postIdx)
@@ -71,9 +71,9 @@ public class PostService {
     /**
      * 게시물 좋아요
      */
-    public void doLike(Long postIdx) throws BaseException {
+    public void doLike(Long userIdx, Long postIdx) throws BaseException {
         try {
-            User user = this.userRepository.findById(1L)
+            User user = this.userRepository.findById(userIdx)
                     .orElseThrow(() -> new BaseException(INVALID_USER_IDX));
             Post post = this.postRepository.findById(postIdx)
                     .orElseThrow(() -> new BaseException(INVALID_POST_IDX));

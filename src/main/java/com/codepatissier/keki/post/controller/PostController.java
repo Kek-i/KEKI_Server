@@ -6,6 +6,7 @@ import com.codepatissier.keki.post.dto.GetPostsRes;
 import com.codepatissier.keki.cs.entity.ReportCategory;
 import com.codepatissier.keki.post.dto.PostReportReq;
 import com.codepatissier.keki.post.service.PostService;
+import com.codepatissier.keki.user.service.AuthService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import static com.codepatissier.keki.common.Constant.Posts.*;
 @RequiredArgsConstructor
 public class PostController {
     private final PostService postService;
+    private final AuthService authService;
 
     /**
      * 피드 목록 조회(최초 호출)
@@ -33,7 +35,7 @@ public class PostController {
      */
     @ResponseBody
     @PostMapping("")
-    public BaseResponse<GetPostsRes> getPosts(Long userIdx, @RequestParam(required = false) Long storeIdx, @RequestParam(required = false) String searchTag, @RequestParam(required = false) String searchWord, @RequestParam(required = false) Long cursorIdx, @RequestParam(required = false) Integer size){
+    public BaseResponse<GetPostsRes> getPosts(@RequestParam(required = false) Long storeIdx, @RequestParam(required = false) String searchTag, @RequestParam(required = false) String searchWord, @RequestParam(required = false) Long cursorIdx, @RequestParam(required = false) Integer size){
         try{
             if(size == null) size = DEFAULT_SIZE;
             if(size < 1) return new BaseResponse<>(INVALID_POSTS_SIZE);
@@ -42,9 +44,9 @@ public class PostController {
 
             Pageable pageable = PageRequest.of(0, size);
 
-            if (storeIdx != null) return new BaseResponse<>(this.postService.getPosts(userIdx, storeIdx, cursorIdx, pageable));
-            else if (searchWord != null) return new BaseResponse<>(this.postService.getSearchPosts(userIdx,searchWord, cursorIdx, pageable));
-            else if (searchTag != null) return new BaseResponse<>(this.postService.getPostsByTag(userIdx, searchTag, cursorIdx, pageable));
+            if (storeIdx != null) return new BaseResponse<>(this.postService.getPosts(authService.getUserIdx(), storeIdx, cursorIdx, pageable));
+            else if (searchWord != null) return new BaseResponse<>(this.postService.getSearchPosts(authService.getUserIdx(),searchWord, cursorIdx, pageable));
+            else if (searchTag != null) return new BaseResponse<>(this.postService.getPostsByTag(authService.getUserIdx(), searchTag, cursorIdx, pageable));
             else return new BaseResponse<>(NO_PARAMETER);
         } catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
@@ -61,7 +63,7 @@ public class PostController {
         try{
             if (ReportCategory.getReportCategoryByName(postReportReq.getReportName()) == null)
                 return new BaseResponse<>(INVALID_REPORT_CATEGORY);
-            this.postService.doReport(postReportReq, postIdx);
+            this.postService.doReport(authService.getUserIdx(), postReportReq, postIdx);
             return new BaseResponse<>(SUCCESS);
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
@@ -76,7 +78,7 @@ public class PostController {
     @PostMapping("/{postIdx}/like")
     public BaseResponse<String> doLike(@PathVariable Long postIdx){
         try{
-            this.postService.doLike(postIdx);
+            this.postService.doLike(authService.getUserIdx(), postIdx);
             return new BaseResponse<>(SUCCESS);
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
