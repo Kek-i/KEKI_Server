@@ -74,13 +74,13 @@ public class CalendarService {
     }
 
     public CalendarRes getCalendar(Long calendarIdx, Long userIdx) throws BaseException {
-        try{
+
             User user = findUserByUserIdx(userIdx);
             Calendar calendar = findCalendarByCalendarIdx(calendarIdx);
             List<CalendarTag> tag = this.calendarTagRepository.findByCalendar(calendar);
 
             if(calendar.getUser() != user) throw new BaseException(BaseResponseStatus.NO_MATCH_CALENDAR_USER);
-
+        try{
             int day = (int) Duration.between(calendar.getCalendarDate().atStartOfDay(), LocalDate.now().atStartOfDay()).toDays();
 
             CalendarRes returnCalendar = new CalendarRes(calendar.getCalendarCategory().getName(),
