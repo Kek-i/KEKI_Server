@@ -37,6 +37,10 @@ public class CalendarService {
     @Transactional
     public void createCalendar(Long userIdx, CalendarReq calendarReq) throws BaseException {
         try {
+            int day = (int) Duration.between(calendarReq.getDate().atStartOfDay(), LocalDate.now().atStartOfDay()).toDays();
+            if(calendarReq.getKindOfCalendar().equals(CalendarCategory.DATE_COUNT.getName()) && day<0){
+                throw new BaseException(BaseResponseStatus.INVALID_CALENDAR_DATE_COUNT);
+            }
             User user = findUserByUserIdx(userIdx);
             Calendar calendar = Calendar.builder()
                     .calendarCategory(CalendarCategory.getCalendarCategoryByName(calendarReq.getKindOfCalendar()))
@@ -78,18 +82,18 @@ public class CalendarService {
 
     public CalendarRes getCalendar(Long calendarIdx, Long userIdx) throws BaseException {
 
-            User user = findUserByUserIdx(userIdx);
-            Calendar calendar = findCalendarByCalendarIdx(calendarIdx);
-            List<CalendarTag> tag = this.calendarTagRepository.findByCalendar(calendar);
+        User user = findUserByUserIdx(userIdx);
+        Calendar calendar = findCalendarByCalendarIdx(calendarIdx);
+        List<CalendarTag> tag = this.calendarTagRepository.findByCalendar(calendar);
 
-            if(calendar.getUser() != user) throw new BaseException(BaseResponseStatus.NO_MATCH_CALENDAR_USER);
-        try{
+        if (calendar.getUser() != user) throw new BaseException(BaseResponseStatus.NO_MATCH_CALENDAR_USER);
+        try {
             return new CalendarRes(calendar.getCalendarCategory().getName(),
                     calendar.getCalendarTitle(),
                     calendar.getCalendarDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                     calculateDate(calendar),
                     tag.stream().map(tags -> new CalendarHashTag(tags.getTag().getTagName())).collect(Collectors.toList()));
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
         }
     }
