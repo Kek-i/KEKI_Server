@@ -7,6 +7,7 @@ import com.codepatissier.keki.user.dto.PatchProfileReq;
 import com.codepatissier.keki.user.dto.PostCustomerReq;
 import com.codepatissier.keki.user.dto.PostNicknameReq;
 import com.codepatissier.keki.user.dto.PostUserReq;
+import com.codepatissier.keki.user.service.AuthService;
 import com.codepatissier.keki.user.service.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -51,7 +52,7 @@ public class UserController {
     @PostMapping("/signup")
     public BaseResponse<?> signup(@RequestBody PostCustomerReq postCustomerReq) {
         try{
-            return new BaseResponse<>(userService.signupEmail(postCustomerReq));
+            return new BaseResponse<>(userService.signupCustomer(authService.getUserIdx(), postCustomerReq));
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
         }
