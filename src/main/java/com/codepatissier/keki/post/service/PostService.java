@@ -32,7 +32,6 @@ import com.codepatissier.keki.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -41,8 +40,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.codepatissier.keki.common.BaseResponseStatus.*;
-import static com.codepatissier.keki.common.Constant.ACTIVE_STATUS;
-import static com.codepatissier.keki.common.Constant.INACTIVE_STATUS;
+import static com.codepatissier.keki.common.Constant.*;
 
 @Service
 @RequiredArgsConstructor
@@ -171,7 +169,7 @@ public class PostService {
             if (!Role.getRoleByName(user.getRole()).equals(Role.STORE))
                 throw new BaseException(NO_STORE_ROLE);
 
-            Store store = this.storeRepository.findStoreByUser(user)
+            Store store = this.storeRepository.findByUser(user)
                     .orElseThrow(()->new BaseException(INVALID_STORE_IDX));
             Dessert dessert = this.dessertRepository.findById(postPostReq.getDessertIdx())
                     .orElseThrow(() -> new BaseException(INVALID_DESSERT_IDX));
