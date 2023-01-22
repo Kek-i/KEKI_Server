@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @Entity
@@ -18,19 +19,24 @@ public class Dessert extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long dessertIdx;
 
+    @NotNull
     @ManyToOne
-    @JoinColumn(nullable = false, name = "storeIdx")
+    @JoinColumn(name = "storeIdx")
     private Store store;
 
-    @Column(nullable = false, length = 100)
+    @NotNull
+    @Column(length = 100)
     private String dessertName;
 
-    @Column(nullable = false)
+    @NotNull
+    @Column
     private int dessertPrice;
 
-    @Column(nullable = false, length = 300)
+    @NotNull
+    @Column(length = 300)
     private String dessertDescription;
 
+    @NotNull
     @Column(length = 300)
     private String dessertImg;
 

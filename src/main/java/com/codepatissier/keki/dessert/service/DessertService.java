@@ -3,12 +3,15 @@ package com.codepatissier.keki.dessert.service;
 import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.dessert.dto.GetDessertRes;
 import com.codepatissier.keki.dessert.dto.GetStoreDessertsRes;
+import com.codepatissier.keki.dessert.dto.PostDessertReq;
 import com.codepatissier.keki.dessert.entity.Dessert;
 import com.codepatissier.keki.dessert.repository.DessertRepository;
 import com.codepatissier.keki.post.entity.PostImg;
 import com.codepatissier.keki.post.repository.PostRepository;
 import com.codepatissier.keki.store.entity.Store;
 import com.codepatissier.keki.store.repository.StoreRepository;
+import com.codepatissier.keki.user.entity.User;
+import com.codepatissier.keki.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -24,6 +27,7 @@ public class DessertService {
     private final DessertRepository dessertRepository;
     private final StoreRepository storeRepository;
     private final PostRepository postRepository;
+    private final UserRepository userRepository;
 
     /**
      * 상품 전체 조회
@@ -96,5 +100,30 @@ public class DessertService {
 
     private String representPostImgUrl(List<PostImg> postImages){
         return postImages.isEmpty() ? null : postImages.get(0).getImgUrl();
+    }
+
+    /**
+     * 상품 등록
+     * 상품 이름, 가격, 소개, 이미지(1장)
+     */
+    public void addDessert(Long userIdx, PostDessertReq postDessertReq) throws BaseException {
+        try {
+            User user = userRepository.findById(userIdx).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+            Store store = storeRepository.findByUser(user);
+            if (store == null) throw new BaseException(INVALID_STORE_IDX);
+
+            Dessert dessert = Dessert.builder()
+                    .store(store)
+                    .dessertName(postDessertReq.getDessertName())
+                    .dessertPrice(postDessertReq.getDessertPrice())
+                    .dessertDescription(postDessertReq.getDessertDescription())
+                    .dessertImg(postDessertReq.getDessertImg())
+                    .build();
+            dessertRepository.save(dessert);
+        } catch (BaseException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
     }
 }

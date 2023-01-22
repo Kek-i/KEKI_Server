@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @Entity
@@ -22,7 +23,8 @@ public class Store extends BaseEntity {
     @JoinColumn(name = "userIdx")
     private User user;
 
-    @Column(nullable = false, length = 100)
+    @NotNull
+    @Column(length = 100)
     private String address;
 
     @Column(length = 200)
@@ -35,19 +37,23 @@ public class Store extends BaseEntity {
      * 사업자 정보
      */
     // 대표자명
-    @Column(nullable = false, length = 50)
+    @NotNull
+    @Column(length = 50)
     private String businessName;
 
     // 가게 이름
-    @Column(nullable = false, length = 50)
+    @NotNull
+    @Column(length = 50)
     private String brandName;
 
     // 사업자 주소
-    @Column(nullable = false, length = 100)
+    @NotNull
+    @Column(length = 100)
     private String businessAddress;
 
     // 사업자 등록번호
-    @Column(nullable = false, length = 100)
+    @NotNull
+    @Column(length = 100)
     private String businessNumber;
 
     @Builder
