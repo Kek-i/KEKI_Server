@@ -40,8 +40,9 @@ public class AuthService {
 
     public Jws<Claims> getClaims() throws BaseException{
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-        String token = request.getHeader("Bearer");
+        String token = request.getHeader("Authorization");
         if(token == null) throw new BaseException(NULL_TOKEN);
+        token = token.replaceAll("^Bearer( )*", "");
 
         Jws<Claims> claims = null;
         try {

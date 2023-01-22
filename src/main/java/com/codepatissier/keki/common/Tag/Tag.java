@@ -7,6 +7,7 @@ import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 
+@Getter
 @Entity
 @NoArgsConstructor
 @DynamicInsert
