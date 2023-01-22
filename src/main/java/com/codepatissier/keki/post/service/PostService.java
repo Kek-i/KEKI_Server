@@ -295,6 +295,7 @@ public class PostService {
         return post -> new GetPostsRes.Feed(
                 post.getPostIdx(),
                 post.getDessert().getDessertName(),
+                post.getDessert().getDessertPrice(),
                 post.getPostDescription(),
                 post.getImages().stream().map(PostImg::getImgUrl).collect(Collectors.toList()),
                 post.getTags().stream().map(postTag -> postTag.getTag().getTagName()).collect(Collectors.toList()),

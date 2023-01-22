@@ -28,10 +28,10 @@ public class PostController {
 
     /**
      * 피드 목록 조회(최초 호출)
-     * [POST] /posts? storeIdx= &searchTag= &searchWord= &size=
+     * [GET] /posts? storeIdx= &searchTag= &searchWord= &size=
      * or
      * 피드 목록 조회(다음 호출)
-     * [POST] /posts? storeIdx= &searchTag= &searchWord= &cursorIdx= &size=
+     * [GET] /posts? storeIdx= &searchTag= &searchWord= &cursorIdx= &size=
      */
     @ResponseBody
     @PostMapping("")
