@@ -84,10 +84,8 @@ public class UserService {
     public void modifyProfile(Long userIdx, PatchProfileReq patchProfileReq) throws BaseException{
         try {
             User user = userRepository.findById(userIdx).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
-            if (patchProfileReq != null) {
-                user.modifyProfile(patchProfileReq.getNickname(), patchProfileReq.getProfileImg());
-                userRepository.save(user);
-            }
+            if (patchProfileReq.getNickname() != null) user.modifyNickname(patchProfileReq.getNickname());
+            if (patchProfileReq.getProfileImg() != null) user.modifyProfileImg(patchProfileReq.getProfileImg());
         } catch (BaseException e) {
             throw e;
         } catch (Exception e) {

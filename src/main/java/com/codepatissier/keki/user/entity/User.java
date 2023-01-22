@@ -60,8 +60,11 @@ public class User extends BaseEntity {
         this.profileImg = profileImg;
     }
 
-    public void modifyProfile(String nickname, String profileImg) {
+    public void modifyNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public void modifyProfileImg(String profileImg) {
         this.profileImg = profileImg;
     }
 }
