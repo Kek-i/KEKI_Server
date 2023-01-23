@@ -27,7 +27,8 @@ import static com.codepatissier.keki.common.BaseResponseStatus.NULL_TOKEN;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final int accessTokenExpiryDate = 3600000;
+    // TODO 액세스토큰 만료시간 추후 줄이기 (테스트 위해 임시 설정)
+    private final int accessTokenExpiryDate = 604800000;
     private final int refreshTokenExpiryDate = 604800000;
 
     @Value("${auth.key}")
@@ -40,8 +41,9 @@ public class AuthService {
 
     public Jws<Claims> getClaims() throws BaseException{
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-        String token = request.getHeader("Bearer");
+        String token = request.getHeader("Authorization");
         if(token == null) throw new BaseException(NULL_TOKEN);
+        token = token.replaceAll("^Bearer( )*", "");
 
         Jws<Claims> claims = null;
         try {

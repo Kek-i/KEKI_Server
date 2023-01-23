@@ -8,6 +8,8 @@ import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.BaseResponse;
 import com.codepatissier.keki.common.BaseResponseStatus;
 import com.codepatissier.keki.user.service.AuthService;
+import com.nimbusds.jose.shaded.json.parser.ParseException;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,7 @@ import java.util.List;
 
 // TODO STATUS 처리를 해줘야 함.
 
+@SecurityRequirement(name = "Bearer")
 @Tag(name = "calendars", description = "기념일 API")
 @RestController
 @RequiredArgsConstructor
