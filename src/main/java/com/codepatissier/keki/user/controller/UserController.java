@@ -3,13 +3,16 @@ package com.codepatissier.keki.user.controller;
 import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.BaseResponse;
 import com.codepatissier.keki.common.BaseResponseStatus;
+import com.codepatissier.keki.user.dto.PatchProfileReq;
 import com.codepatissier.keki.user.dto.PostCustomerReq;
 import com.codepatissier.keki.user.dto.PostNicknameReq;
 import com.codepatissier.keki.user.dto.PostUserReq;
+import com.codepatissier.keki.user.service.AuthService;
 import com.codepatissier.keki.user.service.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import com.codepatissier.keki.user.service.AuthService;
 import org.springframework.web.bind.annotation.*;
 
 @SecurityRequirement(name = "Bearer")
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final AuthService authService;
 
     // 서버에서 모든 로직을 처리하는 경우 회원가입/로그인
     @ResponseBody
@@ -48,7 +52,7 @@ public class UserController {
     @PostMapping("/signup")
     public BaseResponse<?> signup(@RequestBody PostCustomerReq postCustomerReq) {
         try{
-            return new BaseResponse<>(userService.signupEmail(postCustomerReq));
+            return new BaseResponse<>(userService.signupCustomer(authService.getUserIdx(), postCustomerReq));
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
         }
@@ -73,6 +77,19 @@ public class UserController {
     public BaseResponse<?> getProfile() {
         try{
             return new BaseResponse<>(userService.getProfile());
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    // 구매자 프로필 정보 수정
+    @ResponseBody
+    @PatchMapping("/profile")
+    public BaseResponse<?> modifyProfile(@RequestBody PatchProfileReq patchProfileReq) {
+        try{
+            Long userIdx = authService.getUserIdx();
+            userService.modifyProfile(userIdx, patchProfileReq);
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS);
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
         }
