@@ -1,16 +1,17 @@
 package com.codepatissier.keki.store.service;
 
 import com.codepatissier.keki.common.BaseException;
-import com.codepatissier.keki.store.dto.GetMyPageStoreProfileRes;
-import com.codepatissier.keki.store.dto.GetStoreInfoRes;
-import com.codepatissier.keki.store.dto.GetStoreProfileRes;
-import com.codepatissier.keki.store.dto.PostStoreReq;
+import com.codepatissier.keki.store.dto.*;
 import com.codepatissier.keki.store.entity.Store;
 import com.codepatissier.keki.store.repository.StoreRepository;
 import com.codepatissier.keki.user.entity.User;
 import com.codepatissier.keki.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.codepatissier.keki.common.BaseResponseStatus.*;
 
@@ -21,6 +22,7 @@ public class StoreService {
     private final UserRepository userRepository;
 
     // 회원가입 (프로필 정보 post)
+    @Transactional(rollbackFor= Exception.class)
     public void createSeller(Long userIdx, PostStoreReq postStoreReq) throws BaseException {
         try {
             User user = userRepository.findById(userIdx).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
@@ -78,9 +80,50 @@ public class StoreService {
         try {
             User user = userRepository.findById(userIdx).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
             Store store = storeRepository.findByUser(user);
-            if (store == null) throw new BaseException(INVALID_STORE_IDX);
+            if (store == null) throw new BaseException(INVALID_STORE_IDX); // TODO: 예외처리 확인
 
             return new GetMyPageStoreProfileRes(store.getUser().getProfileImg(), store.getUser().getNickname(), store.getAddress(), store.getIntroduction(), store.getOrderUrl());
+        } catch (BaseException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // 가게 프로필 수정 (가게 사진, 이름, 주소, 소개, 주문 링크)
+    @Transactional(rollbackFor= Exception.class)
+    public void modifyProfile(Long userIdx, PatchProfileReq patchProfileReq) throws BaseException {
+        try {
+            User user = userRepository.findById(userIdx).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+            Store store = storeRepository.findByUser(user);
+            if (store == null) throw new BaseException(INVALID_STORE_IDX); // TODO: 예외처리 확인
+
+            List<PatchProfileReq> reqList = new ArrayList<>();
+            reqList.add(patchProfileReq);
+
+            for (PatchProfileReq req : reqList) {
+                if (req.getStoreImgUrl() != null) {
+                    user.setProfileImg(req.getStoreImgUrl());
+                    store.setUser(user);
+                }
+                if (req.getNickname() != null) {
+                    user.setNickname(req.getNickname());
+                    store.setUser(user);
+                }
+                if (req.getAddress() != null) store.setAddress(req.getAddress());
+                if (req.getIntroduction() != null) {
+                    if (store.getIntroduction() == null) {
+                        // TODO 원래 null일 경우 patch가 제대로 작동하지 않는 것 수정
+                    } else store.setIntroduction(req.getIntroduction());
+                }
+                if (req.getOrderUrl() != null) {
+                    if (store.getOrderUrl() == null) {
+                        // TODO 원래 null일 경우 patch가 제대로 작동하지 않는 것 수정
+                    } else store.setOrderUrl(req.getOrderUrl());
+                }
+            }
+            userRepository.save(user);
+            storeRepository.save(store);
         } catch (BaseException e) {
             throw e;
         } catch (Exception e) {
