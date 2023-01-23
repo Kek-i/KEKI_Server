@@ -4,6 +4,7 @@ import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.BaseResponse;
 import com.codepatissier.keki.post.dto.GetPostsRes;
 import com.codepatissier.keki.cs.entity.ReportCategory;
+import com.codepatissier.keki.post.dto.PostPostReq;
 import com.codepatissier.keki.post.dto.PostReportReq;
 import com.codepatissier.keki.post.service.PostService;
 import com.codepatissier.keki.user.service.AuthService;
@@ -34,7 +35,7 @@ public class PostController {
      * [GET] /posts? storeIdx= &searchTag= &searchWord= &cursorIdx= &size=
      */
     @ResponseBody
-    @PostMapping("")
+    @GetMapping("")
     public BaseResponse<GetPostsRes> getPosts(@RequestParam(required = false) Long storeIdx, @RequestParam(required = false) String searchTag, @RequestParam(required = false) String searchWord, @RequestParam(required = false) Long cursorIdx, @RequestParam(required = false) Integer size){
         try{
             if(size == null) size = DEFAULT_SIZE;
@@ -94,6 +95,21 @@ public class PostController {
     public BaseResponse<String> makePostHistory(@PathVariable Long postIdx){
         try{
             this.postService.makePostHistory(authService.getUserIdx(), postIdx);
+            return new BaseResponse<>(SUCCESS);
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
+     * 게시물 등록
+     * [POST] /posts
+     */
+    @ResponseBody
+    @PostMapping("")
+    public BaseResponse<String> makePost(@RequestBody PostPostReq postPostReq){
+        try{
+            this.postService.makePost(authService.getUserIdx(), postPostReq);
             return new BaseResponse<>(SUCCESS);
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());

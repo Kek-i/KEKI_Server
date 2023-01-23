@@ -2,9 +2,7 @@ package com.codepatissier.keki.store.controller;
 
 import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.BaseResponse;
-import com.codepatissier.keki.store.dto.GetProfileRes;
-import com.codepatissier.keki.store.dto.GetStoreInfoRes;
-import com.codepatissier.keki.store.dto.PostStoreReq;
+import com.codepatissier.keki.store.dto.*;
 import com.codepatissier.keki.store.service.StoreService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import com.codepatissier.keki.user.service.AuthService;
@@ -33,7 +31,7 @@ public class StoreController {
     @PostMapping("/signup")
     public BaseResponse<String> createSeller(@Valid @RequestBody PostStoreReq postStoreReq) {
         try {
-            storeService.createSeller(postStoreReq);
+            storeService.createSeller(authService.getUserIdx(), postStoreReq);
             return new BaseResponse<>(SUCCESS);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
@@ -42,14 +40,14 @@ public class StoreController {
 
     /**
      * 판매자 사업자 정보 조회
-     * [GET] /stores/store-info
+     * [GET] /stores/store-info/:storeIdx
      * @return businessName, brandName, businessAddress, businessNumber
      */
     @ResponseBody
-    @GetMapping("/store-info")
-    public BaseResponse<GetStoreInfoRes> getStoreInfo() {
+    @GetMapping("/store-info/{storeIdx}")
+    public BaseResponse<GetStoreInfoRes> getStoreInfo(@PathVariable("storeIdx") Long storeIdx) {
         try {
-            GetStoreInfoRes getStoreInfoRes = storeService.getStoreInfo(authService.getUserIdx());
+            GetStoreInfoRes getStoreInfoRes = storeService.getStoreInfo(storeIdx);
             return new BaseResponse<>(getStoreInfoRes);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
@@ -58,14 +56,32 @@ public class StoreController {
 
     /**
      * 판매자 프로필 조회
+     * [GET] /stores/profile/:storeIdx
+     * 가게 메인 화면
+     * @return 가게 사진, 이름, 소개
+     */
+    @ResponseBody
+    @GetMapping("/profile/{storeIdx}")
+    public BaseResponse<GetStoreProfileRes> getStoreProfile(@PathVariable("storeIdx") Long storeIdx) {
+        try {
+            return new BaseResponse<>(storeService.getStoreProfile(storeIdx));
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
+     * 판매자 프로필 조회
      * [GET] /stores/profile
+     * 마이페이지 판매자 프로필 편집
+     * @return 가게 사진, 이름, 주소, 소개, 주문 링크
      */
     @ResponseBody
     @GetMapping("/profile")
-    public BaseResponse<GetProfileRes> getStoreProfile() {
+    public BaseResponse<GetMyPageStoreProfileRes> getStoreProfileMyPage() {
         try {
-            GetProfileRes getProfileRes = storeService.getStoreProfile(authService.getUserIdx());
-            return new BaseResponse<>(getProfileRes);
+            GetMyPageStoreProfileRes getMyPageStoreProfileRes = storeService.getStoreProfileMyPage(authService.getUserIdx());
+            return new BaseResponse<>(getMyPageStoreProfileRes);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
@@ -73,6 +89,16 @@ public class StoreController {
 
     /**
      * 판매자 프로필 정보 수정
-     * PATCH /stores/mypage
+     * PATCH /stores/profile
      */
+    @ResponseBody
+    @PatchMapping("/profile")
+    public BaseResponse<String> patchProfile(@RequestBody PatchProfileReq patchProfileReq) {
+        try {
+            storeService.modifyProfile(authService.getUserIdx(), patchProfileReq);
+            return new BaseResponse<>(SUCCESS);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
 }

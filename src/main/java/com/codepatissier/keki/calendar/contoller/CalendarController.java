@@ -1,5 +1,6 @@
 package com.codepatissier.keki.calendar.contoller;
 
+import com.codepatissier.keki.calendar.dto.CalendarListRes;
 import com.codepatissier.keki.calendar.dto.CalendarReq;
 import com.codepatissier.keki.calendar.dto.CalendarRes;
 import com.codepatissier.keki.calendar.service.CalendarService;
@@ -12,6 +13,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 // TODO STATUS 처리를 해줘야 함.
 
@@ -65,4 +68,14 @@ public class CalendarController {
         }
     }
 
+    // 기념일 리스트 조회
+    @ResponseBody
+    @GetMapping("")
+    public BaseResponse<List<CalendarListRes>> getCalendarList(){
+        try{
+            return new BaseResponse<>(this.calendarService.getCalendarList(this.authService.getUserIdx()));
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
 }

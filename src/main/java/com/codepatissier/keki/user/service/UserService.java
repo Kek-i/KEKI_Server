@@ -21,22 +21,35 @@ public class UserService {
     private final AuthService authService;
     private final KakaoService kakaoService;
 
+    // 카카오 로그인
     public PostUserRes kakaoLogin(String authorize_code) throws BaseException{
-        String kakaoToken = kakaoService.getAccessToken(authorize_code);
-        String userEmail = kakaoService.getUserInfo(kakaoToken);
+        try {
+            String kakaoToken = kakaoService.getAccessToken(authorize_code);
+            String userEmail = kakaoService.getUserInfo(kakaoToken);
 
-        boolean is_user = userRepository.existsByEmail(userEmail);
-
-        if(!is_user) {
-            User user = signup(userEmail, Provider.KAKAO);
+            boolean is_user = userRepository.existsByEmail(userEmail);
+            User user;
+            if (!is_user) user = signup(userEmail, Provider.KAKAO);
+            else user = userRepository.findByEmail(userEmail).orElseThrow(() -> new BaseException(INVALID_EMAIL));
             return authService.createToken(user);
-        }
-        else {
-            User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new BaseException(INVALID_EMAIL));
-            return authService.createToken(user);
+        } catch (BaseException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
         }
     }
 
+    // ADMIN 유저 생성
+    private User signup(String email, Provider provider) {
+        User newUser = User.builder()
+                .email(email)
+                .provider(provider)
+                .role(Role.ADMIN)
+                .build();
+        return userRepository.save(newUser);
+    }
+
+    // 테스트 편리 위한 임시 로그인
     public PostUserRes signinEmail(PostUserReq postUserReq) throws BaseException{
         User user = userRepository.findByEmail(postUserReq.getEmail()).orElseThrow(() -> new BaseException(INVALID_EMAIL));
         Long userIdx = user.getUserIdx();
@@ -46,25 +59,23 @@ public class UserService {
         return new PostUserRes(accessToken, refreshToken, user.getRole());
     }
 
-    public PostUserRes signupEmail(PostCustomerReq postCustomerReq) throws BaseException{
-        Long userIdx = authService.getUserIdx();
-        User user = userRepository.findById(userIdx).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
-        String accessToken = authService.createAccessToken(userIdx);
-        String refreshToken = authService.createRefreshToken(userIdx);
+    // 구매자 회원가입
+    @Transactional
+    public PostUserRes signupCustomer(Long userIdx, PostCustomerReq postCustomerReq) throws BaseException{
+        try {
+            User user = userRepository.findById(userIdx).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+            String accessToken = authService.createAccessToken(userIdx);
+            String refreshToken = authService.createRefreshToken(userIdx);
 
-        user.signup(postCustomerReq.getNickname(), refreshToken, Role.CUSTOMER, postCustomerReq.getProfileImg());
-        userRepository.save(user);
+            user.signup(postCustomerReq.getNickname(), refreshToken, Role.CUSTOMER, postCustomerReq.getProfileImg());
+            userRepository.save(user);
 
-        return new PostUserRes(accessToken, refreshToken, user.getRole());
-    }
-
-    private User signup(String email, Provider provider) {
-        User newUser = User.builder()
-                .email(email)
-                .provider(provider)
-                .role(Role.ADMIN)
-                .build();
-        return userRepository.save(newUser);
+            return new PostUserRes(accessToken, refreshToken, user.getRole());
+        } catch (BaseException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
     }
 
     // 닉네임 중복 확인
