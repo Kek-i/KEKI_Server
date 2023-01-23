@@ -21,5 +21,6 @@ public class GetStoreDessertsRes {
     public static class Dessert {
         private Long dessertIdx;
         private String dessertImgUrl;
+        private String dessertName;
     }
 }

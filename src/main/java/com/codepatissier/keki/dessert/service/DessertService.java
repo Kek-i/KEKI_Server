@@ -53,7 +53,7 @@ public class DessertService {
     private List<GetStoreDessertsRes.Dessert> getDessertList(Store store, Integer size) {
             return dessertRepository.findByStoreOrderByDessertIdxDesc(store, PageRequest.of(0, size)).stream()
                     .map(dessert -> new GetStoreDessertsRes.Dessert(dessert.getDessertIdx(),
-                            dessert.getDessertImg())).collect(Collectors.toList());
+                            dessert.getDessertImg(), dessert.getDessertName())).collect(Collectors.toList());
     }
 
     private List<GetStoreDessertsRes.Dessert> getDessertListWithCursor(Store store, Long cursorIdx, Integer size) throws BaseException {
@@ -61,7 +61,7 @@ public class DessertService {
 
         return dessertRepository.findByStoreAndDessertIdxLessThanOrderByDessertIdxDesc(store, cursorIdx, PageRequest.of(0, size)).stream()
                 .map(dessert -> new GetStoreDessertsRes.Dessert(dessert.getDessertIdx(),
-                        dessert.getDessertImg())).collect(Collectors.toList());
+                        dessert.getDessertImg(), dessert.getDessertName())).collect(Collectors.toList());
     }
 
     private static Long getLastIdxOfList(List<GetStoreDessertsRes.Dessert> dessertList) {
