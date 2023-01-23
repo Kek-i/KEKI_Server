@@ -79,8 +79,7 @@ public class StoreService {
     public GetMyPageStoreProfileRes getStoreProfileMyPage(Long userIdx) throws BaseException {
         try {
             User user = userRepository.findById(userIdx).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
-            Store store = storeRepository.findByUser(user);
-            if (store == null) throw new BaseException(INVALID_STORE_IDX); // TODO: 예외처리 확인
+            Store store = storeRepository.findByUser(user).orElseThrow(() -> new BaseException(INVALID_STORE_IDX));
 
             return new GetMyPageStoreProfileRes(store.getUser().getProfileImg(), store.getUser().getNickname(), store.getAddress(), store.getIntroduction(), store.getOrderUrl());
         } catch (BaseException e) {
@@ -95,8 +94,7 @@ public class StoreService {
     public void modifyProfile(Long userIdx, PatchProfileReq patchProfileReq) throws BaseException {
         try {
             User user = userRepository.findById(userIdx).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
-            Store store = storeRepository.findByUser(user);
-            if (store == null) throw new BaseException(INVALID_STORE_IDX); // TODO: 예외처리 확인
+            Store store = storeRepository.findByUser(user).orElseThrow(() -> new BaseException(INVALID_STORE_IDX));
 
             List<PatchProfileReq> reqList = new ArrayList<>();
             reqList.add(patchProfileReq);

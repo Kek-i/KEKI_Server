@@ -83,4 +83,14 @@ public class DessertController {
      * 상품 삭제
      * [PATCH] /desserts/:dessertIdx
      */
+    @ResponseBody
+    @PatchMapping("/{dessertIdx}")
+    public BaseResponse<String> deleteDessert(@PathVariable("dessertIdx") Long dessertIdx) {
+        try {
+            dessertService.deleteDessert(authService.getUserIdx(), dessertIdx);
+            return new BaseResponse<>(SUCCESS);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
 }

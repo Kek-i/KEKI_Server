@@ -1,9 +1,8 @@
 package com.codepatissier.keki.dessert.service;
 
 import com.codepatissier.keki.common.BaseException;
-import com.codepatissier.keki.dessert.dto.GetDessertRes;
-import com.codepatissier.keki.dessert.dto.GetStoreDessertsRes;
-import com.codepatissier.keki.dessert.dto.PostDessertReq;
+import com.codepatissier.keki.common.Role;
+import com.codepatissier.keki.dessert.dto.*;
 import com.codepatissier.keki.dessert.entity.Dessert;
 import com.codepatissier.keki.dessert.repository.DessertRepository;
 import com.codepatissier.keki.post.entity.PostImg;
@@ -20,6 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.codepatissier.keki.common.BaseResponseStatus.*;
+import static com.codepatissier.keki.common.Constant.INACTIVE_STATUS;
 
 @Service
 @RequiredArgsConstructor
@@ -53,7 +53,7 @@ public class DessertService {
     private List<GetStoreDessertsRes.Dessert> getDessertList(Store store, Integer size) {
             return dessertRepository.findByStoreOrderByDessertIdxDesc(store, PageRequest.of(0, size)).stream()
                     .map(dessert -> new GetStoreDessertsRes.Dessert(dessert.getDessertIdx(),
-                            dessert.getDessertImg())).collect(Collectors.toList());
+                            dessert.getDessertImg(), dessert.getDessertName())).collect(Collectors.toList());
     }
 
     private List<GetStoreDessertsRes.Dessert> getDessertListWithCursor(Store store, Long cursorIdx, Integer size) throws BaseException {
@@ -61,7 +61,7 @@ public class DessertService {
 
         return dessertRepository.findByStoreAndDessertIdxLessThanOrderByDessertIdxDesc(store, cursorIdx, PageRequest.of(0, size)).stream()
                 .map(dessert -> new GetStoreDessertsRes.Dessert(dessert.getDessertIdx(),
-                        dessert.getDessertImg())).collect(Collectors.toList());
+                        dessert.getDessertImg(), dessert.getDessertName())).collect(Collectors.toList());
     }
 
     private static Long getLastIdxOfList(List<GetStoreDessertsRes.Dessert> dessertList) {
@@ -109,8 +109,9 @@ public class DessertService {
     public void addDessert(Long userIdx, PostDessertReq postDessertReq) throws BaseException {
         try {
             User user = userRepository.findById(userIdx).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
-            Store store = storeRepository.findByUser(user);
-            if (store == null) throw new BaseException(INVALID_STORE_IDX);
+            if (!Role.getRoleByName(user.getRole()).equals(Role.STORE)) throw new BaseException(NO_STORE_ROLE);
+
+            Store store = storeRepository.findByUser(user).orElseThrow(() -> new BaseException(INVALID_STORE_IDX));
 
             Dessert dessert = Dessert.builder()
                     .store(store)
@@ -119,6 +120,24 @@ public class DessertService {
                     .dessertDescription(postDessertReq.getDessertDescription())
                     .dessertImg(postDessertReq.getDessertImg())
                     .build();
+            dessertRepository.save(dessert);
+        } catch (BaseException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     * 상품 삭제
+     */
+    public void deleteDessert(Long userIdx, Long dessertIdx) throws BaseException {
+        try {
+            User user = userRepository.findById(userIdx).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+            if (!Role.getRoleByName(user.getRole()).equals(Role.STORE)) throw new BaseException(NO_STORE_ROLE);
+
+            Dessert dessert = dessertRepository.findById(dessertIdx).orElseThrow(() -> new BaseException(INVALID_DESSERT_IDX));
+            dessert.setStatus(INACTIVE_STATUS);
             dessertRepository.save(dessert);
         } catch (BaseException e) {
             throw e;
