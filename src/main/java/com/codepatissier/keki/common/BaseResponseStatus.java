@@ -67,6 +67,7 @@ public enum BaseResponseStatus {
 
     // cs(3600~3699)
     NO_NOTICE(false, 3600, "공지사항이 없습니다."),
+    INVALID_NOTICE_IDX(false, 3601, "존재하지 않는 공지사항 입니다."),
 
     /**
      * 4000: DB, Server 오류
