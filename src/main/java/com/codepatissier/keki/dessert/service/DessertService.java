@@ -1,9 +1,8 @@
 package com.codepatissier.keki.dessert.service;
 
 import com.codepatissier.keki.common.BaseException;
-import com.codepatissier.keki.dessert.dto.GetDessertRes;
-import com.codepatissier.keki.dessert.dto.GetStoreDessertsRes;
-import com.codepatissier.keki.dessert.dto.PostDessertReq;
+import com.codepatissier.keki.common.Role;
+import com.codepatissier.keki.dessert.dto.*;
 import com.codepatissier.keki.dessert.entity.Dessert;
 import com.codepatissier.keki.dessert.repository.DessertRepository;
 import com.codepatissier.keki.post.entity.PostImg;
@@ -20,6 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.codepatissier.keki.common.BaseResponseStatus.*;
+import static com.codepatissier.keki.common.Constant.INACTIVE_STATUS;
 
 @Service
 @RequiredArgsConstructor
@@ -72,7 +72,6 @@ public class DessertService {
         return lastIdx != null && this.dessertRepository.existsByDessertIdxLessThan(lastIdx);
     }
 
-
     /**
      * 상품 상세 조회
      */
@@ -109,6 +108,8 @@ public class DessertService {
     public void addDessert(Long userIdx, PostDessertReq postDessertReq) throws BaseException {
         try {
             User user = userRepository.findById(userIdx).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+            if (!Role.getRoleByName(user.getRole()).equals(Role.STORE)) throw new BaseException(NO_STORE_ROLE);
+
             Store store = storeRepository.findByUser(user).orElseThrow(() -> new BaseException(INVALID_STORE_IDX));
 
             Dessert dessert = Dessert.builder()
@@ -118,6 +119,24 @@ public class DessertService {
                     .dessertDescription(postDessertReq.getDessertDescription())
                     .dessertImg(postDessertReq.getDessertImg())
                     .build();
+            dessertRepository.save(dessert);
+        } catch (BaseException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     * 상품 삭제
+     */
+    public void deleteDessert(Long userIdx, Long dessertIdx) throws BaseException {
+        try {
+            User user = userRepository.findById(userIdx).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+            if (!Role.getRoleByName(user.getRole()).equals(Role.STORE)) throw new BaseException(NO_STORE_ROLE);
+
+            Dessert dessert = dessertRepository.findById(dessertIdx).orElseThrow(() -> new BaseException(INVALID_DESSERT_IDX));
+            dessert.setStatus(INACTIVE_STATUS);
             dessertRepository.save(dessert);
         } catch (BaseException e) {
             throw e;
