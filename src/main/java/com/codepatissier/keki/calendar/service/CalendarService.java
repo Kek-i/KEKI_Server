@@ -2,6 +2,7 @@ package com.codepatissier.keki.calendar.service;
 
 import com.codepatissier.keki.calendar.CalendarCategory;
 import com.codepatissier.keki.calendar.dto.CalendarHashTag;
+import com.codepatissier.keki.calendar.dto.CalendarListRes;
 import com.codepatissier.keki.calendar.dto.CalendarReq;
 import com.codepatissier.keki.calendar.dto.CalendarRes;
 import com.codepatissier.keki.calendar.entity.Calendar;
@@ -15,10 +16,11 @@ import com.codepatissier.keki.user.entity.User;
 import com.codepatissier.keki.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,8 +34,13 @@ public class CalendarService {
     private final TagRepository tagRepository;
     private final UserRepository userRepository;
 
+    @Transactional
     public void createCalendar(Long userIdx, CalendarReq calendarReq) throws BaseException {
         try {
+            int day = (int) Duration.between(calendarReq.getDate().atStartOfDay(), LocalDate.now().atStartOfDay()).toDays();
+            if(calendarReq.getKindOfCalendar().equals(CalendarCategory.DATE_COUNT.getName()) && day<0){
+                throw new BaseException(BaseResponseStatus.INVALID_CALENDAR_DATE_COUNT);
+            }
             User user = findUserByUserIdx(userIdx);
             Calendar calendar = Calendar.builder()
                     .calendarCategory(CalendarCategory.getCalendarCategoryByName(calendarReq.getKindOfCalendar()))
@@ -75,35 +82,51 @@ public class CalendarService {
 
     public CalendarRes getCalendar(Long calendarIdx, Long userIdx) throws BaseException {
 
-            User user = findUserByUserIdx(userIdx);
-            Calendar calendar = findCalendarByCalendarIdx(calendarIdx);
-            List<CalendarTag> tag = this.calendarTagRepository.findByCalendar(calendar);
+        User user = findUserByUserIdx(userIdx);
+        Calendar calendar = findCalendarByCalendarIdx(calendarIdx);
+        List<CalendarTag> tag = this.calendarTagRepository.findByCalendar(calendar);
 
-            if(calendar.getUser() != user) throw new BaseException(BaseResponseStatus.NO_MATCH_CALENDAR_USER);
-        try{
-            int day = (int) Duration.between(calendar.getCalendarDate().atStartOfDay(), LocalDate.now().atStartOfDay()).toDays();
-
-            CalendarRes returnCalendar = new CalendarRes(calendar.getCalendarCategory().getName(),
+        if (calendar.getUser() != user) throw new BaseException(BaseResponseStatus.NO_MATCH_CALENDAR_USER);
+        try {
+            return new CalendarRes(calendar.getCalendarCategory().getName(),
                     calendar.getCalendarTitle(),
-                    null,
+                    calendar.getCalendarDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                    calculateDate(calendar),
                     tag.stream().map(tags -> new CalendarHashTag(tags.getTag().getTagName())).collect(Collectors.toList()));
-
-            if(calendar.getCalendarCategory().equals(CalendarCategory.D_DAY)){
-                if(day == 0) returnCalendar.setDate("D-DAY");
-                else if(day > 0) returnCalendar.setDate("D+" + day);
-                else returnCalendar.setDate("D-" + day);
-            }else if(calendar.getCalendarCategory().equals(CalendarCategory.DATE_COUNT)){
-                returnCalendar.setDate(day+1+"");
-            }else{
-                // TODO 매년 반복은 스케줄러 사용 후 코드 변경을 해둘 것임.
-                returnCalendar.setDate(day+1+"");
-            }
-            return returnCalendar;
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
         }
     }
 
+    private String calculateDate(Calendar calendar) {
+        String returnCalendar;
+        int day = (int) Duration.between(calendar.getCalendarDate().atStartOfDay(), LocalDate.now().atStartOfDay()).toDays();
+        if(calendar.getCalendarCategory().equals(CalendarCategory.D_DAY)){
+            if(day == 0) returnCalendar = "D-DAY";
+            else if(day > 0) returnCalendar = "D+" + day;
+            else returnCalendar = "D" + day;
+        }else if(calendar.getCalendarCategory().equals(CalendarCategory.DATE_COUNT)){
+            // TODO 과거의 날짜라면? 어떻게 해야할지 정해야 함.
+            returnCalendar = day +1+"";
+        }else{
+            // TODO 매년 반복은 스케줄러 사용 후 코드 변경을 해둘 것임.
+            returnCalendar = day +1+"";
+        }
+        return returnCalendar;
+    }
+
+    public List<CalendarListRes> getCalendarList(Long userIdx) throws BaseException {
+        User user = this.findUserByUserIdx(userIdx);
+
+        List<Calendar> calList = this.calendarRepository.findByUser(user);
+        if(calList.isEmpty()) throw new BaseException(BaseResponseStatus.INVALID_CALENDAR_IDX);
+
+        return calList.stream().
+                map(calendar -> new CalendarListRes(calendar.getCalendarCategory().getName(),
+                        calendar.getCalendarTitle(),
+                        calendar.getCalendarDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                        calculateDate(calendar))).collect(Collectors.toList());
+    }
 
     private User findUserByUserIdx(Long userIdx) throws BaseException {
         return this.userRepository.findById(userIdx).
@@ -128,4 +151,5 @@ public class CalendarService {
         calendar.setStatus(status);
         this.calendarRepository.save(calendar);
     }
+
 }
