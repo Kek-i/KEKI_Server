@@ -2,7 +2,9 @@ package com.codepatissier.keki.history.service;
 
 import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.BaseResponseStatus;
+import com.codepatissier.keki.history.dto.HistorySearchRes;
 import com.codepatissier.keki.history.dto.PostSearchRes;
+import com.codepatissier.keki.history.dto.SearchRes;
 import com.codepatissier.keki.history.entity.PostHistory;
 import com.codepatissier.keki.history.repository.PostHistoryRepository;
 import com.codepatissier.keki.post.entity.PostImg;
@@ -39,4 +41,8 @@ public class PostHistoryService {
         else return postImgs.get(0).getImgUrl();
     }
 
+    public HistorySearchRes getSearches(HistorySearchRes searches, Long userIdx) throws BaseException{
+        searches.setRecentPostSearches(recentSearchPost(userIdx));
+        return searches;
+    }
 }
