@@ -109,8 +109,7 @@ public class DessertService {
     public void addDessert(Long userIdx, PostDessertReq postDessertReq) throws BaseException {
         try {
             User user = userRepository.findById(userIdx).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
-            Store store = storeRepository.findByUser(user);
-            if (store == null) throw new BaseException(INVALID_STORE_IDX);
+            Store store = storeRepository.findByUser(user).orElseThrow(() -> new BaseException(INVALID_STORE_IDX));
 
             Dessert dessert = Dessert.builder()
                     .store(store)
