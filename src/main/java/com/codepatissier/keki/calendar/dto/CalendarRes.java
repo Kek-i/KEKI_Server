@@ -22,5 +22,5 @@ public class CalendarRes {
     private String date;
     private String calDate;
 
-    List<CalendarHashTag> hashTags;
+    private List<CalendarHashTag> hashTags;
 }

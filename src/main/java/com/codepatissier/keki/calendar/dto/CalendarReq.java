@@ -25,5 +25,5 @@ public class CalendarReq {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd") //2022-01-01
     private LocalDate date;
 
-    List<CalendarHashTag> hashTags;
+    private List<CalendarHashTag> hashTags;
 }
