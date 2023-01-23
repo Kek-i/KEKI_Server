@@ -106,11 +106,10 @@ public class CalendarService {
             else if(day > 0) returnCalendar = "D+" + day;
             else returnCalendar = "D" + day;
         }else if(calendar.getCalendarCategory().equals(CalendarCategory.DATE_COUNT)){
-            // TODO 과거의 날짜라면? 어떻게 해야할지 정해야 함.
-            returnCalendar = day +1+"";
+            returnCalendar = "D+"+(day +1);
         }else{
             // TODO 매년 반복은 스케줄러 사용 후 코드 변경을 해둘 것임.
-            returnCalendar = day +1+"";
+            returnCalendar = "D+"+(day +1);
         }
         return returnCalendar;
     }
@@ -122,7 +121,8 @@ public class CalendarService {
         if(calList.isEmpty()) throw new BaseException(BaseResponseStatus.INVALID_CALENDAR_IDX);
 
         return calList.stream().
-                map(calendar -> new CalendarListRes(calendar.getCalendarCategory().getName(),
+                map(calendar -> new CalendarListRes(calendar.getCalendarIdx(),
+                        calendar.getCalendarCategory().getName(),
                         calendar.getCalendarTitle(),
                         calendar.getCalendarDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                         calculateDate(calendar))).collect(Collectors.toList());

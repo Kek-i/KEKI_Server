@@ -13,6 +13,7 @@ import java.util.List;
 @Setter
 
 public class CalendarListRes {
+    private Long calendarIdx;
     private String kindOfCalendar; // 캘린더 종류
     private String title;
     private String date;
