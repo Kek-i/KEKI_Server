@@ -1,14 +1,14 @@
 package com.codepatissier.keki.store.service;
 
 import com.codepatissier.keki.common.BaseException;
-import com.codepatissier.keki.store.dto.GetProfileRes;
+import com.codepatissier.keki.store.dto.GetMyPageStoreProfileRes;
 import com.codepatissier.keki.store.dto.GetStoreInfoRes;
+import com.codepatissier.keki.store.dto.GetStoreProfileRes;
 import com.codepatissier.keki.store.dto.PostStoreReq;
 import com.codepatissier.keki.store.entity.Store;
 import com.codepatissier.keki.store.repository.StoreRepository;
 import com.codepatissier.keki.user.entity.User;
 import com.codepatissier.keki.user.repository.UserRepository;
-import com.codepatissier.keki.user.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,17 +19,15 @@ import static com.codepatissier.keki.common.BaseResponseStatus.*;
 public class StoreService {
     private final StoreRepository storeRepository;
     private final UserRepository userRepository;
-    private final AuthService authService;
 
     // 회원가입 (프로필 정보 post)
-    public void createSeller(PostStoreReq postStoreReq) throws BaseException {
+    public void createSeller(Long userIdx, PostStoreReq postStoreReq) throws BaseException {
         try {
-            Long userIdx = authService.getUserIdx();
             User user = userRepository.findById(userIdx).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
             user.storeSignUp(postStoreReq.getNickname(), postStoreReq.getStoreImgUrl());
             userRepository.save(user);
 
-            Store store = Store.builder() // 전달 받은 postStoreReq의 정보를 Entity화
+            Store store = Store.builder()
                     .user(user)
                     .address(postStoreReq.getAddress())
                     .introduction(postStoreReq.getIntroduction())
@@ -39,7 +37,7 @@ public class StoreService {
                     .businessAddress(postStoreReq.getBusinessAddress())
                     .businessNumber(postStoreReq.getBusinessNumber())
                     .build();
-            this.storeRepository.save(store);
+            storeRepository.save(store);
         } catch (BaseException e) {
             throw e;
         } catch (Exception e) {
@@ -60,12 +58,29 @@ public class StoreService {
         }
     }
 
-    // 가게 프로필 조회 (가게 사진, 이름, 소개)
-    public GetProfileRes getStoreProfile(Long storeIdx) throws BaseException {
+    // 판매자 프로필 조회
+    // 가게 사진, 이름, 소개
+    public GetStoreProfileRes getStoreProfile(Long storeIdx) throws BaseException {
         try {
             Store store = storeRepository.findById(storeIdx).orElseThrow(() -> new BaseException(INVALID_STORE_IDX));
 
-            return new GetProfileRes(store.getUser().getNickname(), store.getUser().getProfileImg(), store.getIntroduction());
+            return new GetStoreProfileRes(store.getUser().getNickname(), store.getUser().getProfileImg(), store.getIntroduction());
+        } catch (BaseException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // 마이페이지 판매자 프로필 조회
+    // 가게 사진, 이름, 주소, 소개, 주문 링크
+    public GetMyPageStoreProfileRes getStoreProfileMyPage(Long userIdx) throws BaseException {
+        try {
+            User user = userRepository.findById(userIdx).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+            Store store = storeRepository.findByUser(user);
+            if (store == null) throw new BaseException(INVALID_STORE_IDX);
+
+            return new GetMyPageStoreProfileRes(store.getUser().getProfileImg(), store.getUser().getNickname(), store.getAddress(), store.getIntroduction(), store.getOrderUrl());
         } catch (BaseException e) {
             throw e;
         } catch (Exception e) {
