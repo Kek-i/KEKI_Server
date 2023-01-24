@@ -7,9 +7,12 @@ import com.codepatissier.keki.user.dto.*;
 import com.codepatissier.keki.user.entity.Provider;
 import com.codepatissier.keki.user.entity.User;
 import com.codepatissier.keki.user.repository.UserRepository;
+import com.github.scribejava.core.model.OAuth2AccessToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.servlet.http.HttpSession;
 
 import static com.codepatissier.keki.common.BaseResponseStatus.*;
 
@@ -20,23 +23,39 @@ public class UserService {
     private final UserRepository userRepository;
     private final AuthService authService;
     private final KakaoService kakaoService;
+    private final NaverService naverService;
 
     // 카카오 로그인
     public PostUserRes kakaoLogin(String authorize_code) throws BaseException{
         try {
             String kakaoToken = kakaoService.getAccessToken(authorize_code);
             String userEmail = kakaoService.getUserInfo(kakaoToken);
-
-            boolean is_user = userRepository.existsByEmail(userEmail);
-            User user;
-            if (!is_user) user = signup(userEmail, Provider.KAKAO);
-            else user = userRepository.findByEmail(userEmail).orElseThrow(() -> new BaseException(INVALID_EMAIL));
-            return authService.createToken(user);
+            return signInOrUp(userEmail, Provider.KAKAO);
         } catch (BaseException e) {
             throw e;
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
+    }
+
+    // 네이버 로그인
+    public PostUserRes naverLogin(String code, HttpSession session) throws BaseException{
+        try{
+            OAuth2AccessToken naverToken = naverService.getAccessToken(session, code);
+            String userEmail = naverService.getUserInfo(naverToken);
+            return signInOrUp(userEmail, Provider.NAVER);
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // 회원가입 또는 기존 로그인
+    private PostUserRes signInOrUp(String userEmail, Provider provider) throws BaseException {
+        boolean is_user = userRepository.existsByEmail(userEmail);
+        User user;
+        if (!is_user) user = signup(userEmail, provider);
+        else user = userRepository.findByEmail(userEmail).orElseThrow(() -> new BaseException(INVALID_EMAIL));
+        return authService.createToken(user);
     }
 
     // ADMIN 유저 생성

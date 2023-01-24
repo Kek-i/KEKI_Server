@@ -8,12 +8,16 @@ import com.codepatissier.keki.user.dto.PostCustomerReq;
 import com.codepatissier.keki.user.dto.PostNicknameReq;
 import com.codepatissier.keki.user.dto.PostUserReq;
 import com.codepatissier.keki.user.service.AuthService;
+import com.codepatissier.keki.user.service.NaverService;
 import com.codepatissier.keki.user.service.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.ui.Model;
 import com.codepatissier.keki.user.service.AuthService;
 import org.springframework.web.bind.annotation.*;
+import javax.servlet.http.HttpSession;
+import java.net.URISyntaxException;
 
 @SecurityRequirement(name = "Bearer")
 @Tag(name = "users", description = "구매자 API")
@@ -23,13 +27,31 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
     private final AuthService authService;
+    private final NaverService naverService;
 
-    // 서버에서 모든 로직을 처리하는 경우 회원가입/로그인
+    // 카카오 로그인 콜백
     @ResponseBody
     @GetMapping("/login/kakao")
     public BaseResponse<?> kakaoCallback(@RequestParam String code) {
         try{
             return new BaseResponse<>(userService.kakaoLogin(code));
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    // 네이버 로그인 url 요청
+    @GetMapping("/login/naver")
+    public BaseResponse<?> login(HttpSession session) {
+        String httpHeaders = naverService.getAuthorizationUrl(session);
+        return new BaseResponse<>(httpHeaders);
+    }
+
+    // 네이버 로그인 콜백
+    @GetMapping("/callback/naver")
+    public BaseResponse<?> naverCallback(@RequestParam String code, HttpSession session) {
+        try{
+            return new BaseResponse<>(userService.naverLogin(code, session));
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
         }

@@ -29,10 +29,10 @@ public class PostController {
 
     /**
      * 피드 목록 조회(최초 호출)
-     * [POST] /posts? storeIdx= &searchTag= &searchWord= &size=
+     * [GET] /posts? storeIdx= &searchTag= &searchWord= &size=
      * or
      * 피드 목록 조회(다음 호출)
-     * [POST] /posts? storeIdx= &searchTag= &searchWord= &cursorIdx= &size=
+     * [GET] /posts? storeIdx= &searchTag= &searchWord= &cursorIdx= &size=
      */
     @ResponseBody
     @GetMapping("")
@@ -45,9 +45,9 @@ public class PostController {
 
             Pageable pageable = PageRequest.of(0, size);
 
-            if (storeIdx != null) return new BaseResponse<>(this.postService.getPosts(authService.getUserIdx(), storeIdx, cursorIdx, pageable));
-            else if (searchWord != null) return new BaseResponse<>(this.postService.getSearchPosts(authService.getUserIdx(),searchWord, cursorIdx, pageable));
-            else if (searchTag != null) return new BaseResponse<>(this.postService.getPostsByTag(authService.getUserIdx(), searchTag, cursorIdx, pageable));
+            if (storeIdx != null) return new BaseResponse<>(this.postService.getPosts(authService.getUserIdxOptional(), storeIdx, cursorIdx, pageable));
+            else if (searchWord != null) return new BaseResponse<>(this.postService.getSearchPosts(authService.getUserIdxOptional(),searchWord, cursorIdx, pageable));
+            else if (searchTag != null) return new BaseResponse<>(this.postService.getPostsByTag(authService.getUserIdxOptional(), searchTag, cursorIdx, pageable));
             else return new BaseResponse<>(NO_PARAMETER);
         } catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
