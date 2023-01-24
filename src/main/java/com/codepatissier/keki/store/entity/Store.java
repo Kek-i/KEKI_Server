@@ -30,6 +30,7 @@ public class Store extends BaseEntity {
     @Column(length = 200)
     private String introduction;
 
+    @NotNull
     @Column
     private String orderUrl;
 

@@ -10,9 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static com.codepatissier.keki.common.BaseResponseStatus.*;
 
 @Service
@@ -22,7 +19,7 @@ public class StoreService {
     private final UserRepository userRepository;
 
     // 회원가입 (프로필 정보 post)
-    @Transactional(rollbackFor= Exception.class)
+    @Transactional(rollbackFor = Exception.class)
     public void createSeller(Long userIdx, PostStoreReq postStoreReq) throws BaseException {
         try {
             User user = userRepository.findById(userIdx).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
@@ -90,36 +87,24 @@ public class StoreService {
     }
 
     // 가게 프로필 수정 (가게 사진, 이름, 주소, 소개, 주문 링크)
-    @Transactional(rollbackFor= Exception.class)
+    @Transactional(rollbackFor = Exception.class)
     public void modifyProfile(Long userIdx, PatchProfileReq patchProfileReq) throws BaseException {
         try {
             User user = userRepository.findById(userIdx).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
             Store store = storeRepository.findByUser(user).orElseThrow(() -> new BaseException(INVALID_STORE_IDX));
 
-            List<PatchProfileReq> reqList = new ArrayList<>();
-            reqList.add(patchProfileReq);
-
-            for (PatchProfileReq req : reqList) {
-                if (req.getStoreImgUrl() != null) {
-                    user.setProfileImg(req.getStoreImgUrl());
-                    store.setUser(user);
-                }
-                if (req.getNickname() != null) {
-                    user.setNickname(req.getNickname());
-                    store.setUser(user);
-                }
-                if (req.getAddress() != null) store.setAddress(req.getAddress());
-                if (req.getIntroduction() != null) {
-                    if (store.getIntroduction() == null) {
-                        // TODO 원래 null일 경우 patch가 제대로 작동하지 않는 것 수정
-                    } else store.setIntroduction(req.getIntroduction());
-                }
-                if (req.getOrderUrl() != null) {
-                    if (store.getOrderUrl() == null) {
-                        // TODO 원래 null일 경우 patch가 제대로 작동하지 않는 것 수정
-                    } else store.setOrderUrl(req.getOrderUrl());
-                }
+            if (patchProfileReq.getStoreImgUrl() != null) {
+                user.setProfileImg(patchProfileReq.getStoreImgUrl());
+                store.setUser(user);
             }
+            if (patchProfileReq.getNickname() != null) {
+                user.setNickname(patchProfileReq.getNickname());
+                store.setUser(user);
+            }
+            if (patchProfileReq.getAddress() != null) store.setAddress(patchProfileReq.getAddress());
+            if (patchProfileReq.getIntroduction() != null) store.setIntroduction(patchProfileReq.getIntroduction());
+            if (patchProfileReq.getOrderUrl() != null) store.setOrderUrl(patchProfileReq.getOrderUrl());
+
             userRepository.save(user);
             storeRepository.save(store);
         } catch (BaseException e) {
