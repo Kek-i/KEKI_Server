@@ -7,11 +7,15 @@ import com.codepatissier.keki.user.dto.PostCustomerReq;
 import com.codepatissier.keki.user.dto.PostNicknameReq;
 import com.codepatissier.keki.user.dto.PostUserReq;
 import com.codepatissier.keki.user.service.AuthService;
+import com.codepatissier.keki.user.service.NaverService;
 import com.codepatissier.keki.user.service.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpSession;
 
 @SecurityRequirement(name = "Bearer")
 @Tag(name = "users", description = "구매자 API")
@@ -21,13 +25,34 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
     private final AuthService authService;
+    private final NaverService naverService;
 
-    // 서버에서 모든 로직을 처리하는 경우 회원가입/로그인
+    // 카카오 로그인 콜백
     @ResponseBody
     @GetMapping("/login/kakao")
     public BaseResponse<?> kakaoCallback(@RequestParam String code) {
         try{
             return new BaseResponse<>(userService.kakaoLogin(code));
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    // 네이버 로그인 url 요청
+    @GetMapping("/login/naverUrl")
+    public String login(Model model, HttpSession session) {
+
+        /* 네이버아이디로 인증 URL을 생성하기 위하여 naverLoginBO클래스의 getAuthorizationUrl메소드 호출 */
+        String naverAuthUrl = naverService.getAuthorizationUrl(session);
+        model.addAttribute("url", naverAuthUrl);
+        return naverAuthUrl;
+    }
+
+    //네이버 로그인 성공시 callback호출 메소드
+    @GetMapping("/login/naver")
+    public BaseResponse<?> naverCallback(Model model, @RequestParam String code, HttpSession session) {
+        try{
+            return new BaseResponse<>(userService.naverLogin(code, session));
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
         }
