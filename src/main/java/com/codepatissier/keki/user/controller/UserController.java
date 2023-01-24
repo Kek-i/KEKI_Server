@@ -41,14 +41,14 @@ public class UserController {
 
     // 네이버 로그인 url 요청
     @GetMapping("/login/naver")
-    public BaseResponse<?> login(Model model, HttpSession session) throws URISyntaxException {
+    public BaseResponse<?> login(HttpSession session) {
         String httpHeaders = naverService.getAuthorizationUrl(session);
         return new BaseResponse<>(httpHeaders);
     }
 
     // 네이버 로그인 콜백
     @GetMapping("/callback/naver")
-    public BaseResponse<?> naverCallback(Model model, @RequestParam String code, HttpSession session) {
+    public BaseResponse<?> naverCallback(@RequestParam String code, HttpSession session) {
         try{
             return new BaseResponse<>(userService.naverLogin(code, session));
         }catch (BaseException e){
