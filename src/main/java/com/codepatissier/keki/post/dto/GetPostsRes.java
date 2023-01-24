@@ -22,6 +22,7 @@ public class GetPostsRes {
     public static class Feed {
         private Long postIdx;
         private String dessertName;
+        private int dessertPrice;
         private String description;
         private List<String> postImgUrls;
         private List<String> tags;

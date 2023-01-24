@@ -13,7 +13,6 @@ import com.codepatissier.keki.history.repository.SearchHistoryRepository;
 import com.codepatissier.keki.post.dto.GetPostsRes;
 import com.codepatissier.keki.post.dto.PostPostReq;
 import com.codepatissier.keki.post.entity.PostTag;
-import com.codepatissier.keki.common.Constant;
 import com.codepatissier.keki.cs.entity.Report;
 import com.codepatissier.keki.cs.entity.ReportCategory;
 import com.codepatissier.keki.cs.repository.ReportRepository;
@@ -94,8 +93,8 @@ public class PostService {
 
             if (postLike != null){
                 if(postLike.getStatus().equals(ACTIVE_STATUS))
-                    postLike.setStatus(Constant.INACTIVE_STATUS);
-                else if (postLike.getStatus().equals(Constant.INACTIVE_STATUS))
+                    postLike.setStatus(INACTIVE_STATUS);
+                else if (postLike.getStatus().equals(INACTIVE_STATUS))
                     postLike.setStatus(ACTIVE_STATUS);
             } else {
                 postLike = PostLike.builder()
@@ -360,6 +359,7 @@ public class PostService {
         return post -> new GetPostsRes.Feed(
                 post.getPostIdx(),
                 post.getDessert().getDessertName(),
+                post.getDessert().getDessertPrice(),
                 post.getPostDescription(),
                 post.getImages().stream().map(PostImg::getImgUrl).collect(Collectors.toList()),
                 post.getTags().stream().map(postTag -> postTag.getTag().getTagName()).collect(Collectors.toList()),
