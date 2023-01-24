@@ -16,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.net.URISyntaxException;
 
 @SecurityRequirement(name = "Bearer")
 @Tag(name = "users", description = "구매자 API")
@@ -39,17 +40,14 @@ public class UserController {
     }
 
     // 네이버 로그인 url 요청
-    @GetMapping("/login/naverUrl")
-    public String login(Model model, HttpSession session) {
-
-        /* 네이버아이디로 인증 URL을 생성하기 위하여 naverLoginBO클래스의 getAuthorizationUrl메소드 호출 */
-        String naverAuthUrl = naverService.getAuthorizationUrl(session);
-        model.addAttribute("url", naverAuthUrl);
-        return naverAuthUrl;
+    @GetMapping("/login/naver")
+    public BaseResponse<?> login(Model model, HttpSession session) throws URISyntaxException {
+        String httpHeaders = naverService.getAuthorizationUrl(session);
+        return new BaseResponse<>(httpHeaders);
     }
 
-    //네이버 로그인 성공시 callback호출 메소드
-    @GetMapping("/login/naver")
+    // 네이버 로그인 콜백
+    @GetMapping("/callback/naver")
     public BaseResponse<?> naverCallback(Model model, @RequestParam String code, HttpSession session) {
         try{
             return new BaseResponse<>(userService.naverLogin(code, session));
