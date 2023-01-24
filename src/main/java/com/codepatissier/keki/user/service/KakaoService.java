@@ -1,5 +1,9 @@
 package com.codepatissier.keki.user.service;
 
+import com.codepatissier.keki.user.dto.KakaoLogin;
+import com.codepatissier.keki.user.dto.NaverLogin;
+import com.github.scribejava.core.builder.ServiceBuilder;
+import com.github.scribejava.core.oauth.OAuth20Service;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -7,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpSession;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -21,6 +26,14 @@ public class KakaoService {
 
     @Value("${kakao.redirect_uri}")
     private String redirect_uri;
+
+    public String getAuthorizationUrl(HttpSession session) {
+        OAuth20Service oauthService = new ServiceBuilder()
+                .apiKey(client_id)
+                .callback(redirect_uri)
+                .build(KakaoLogin.instance());
+        return oauthService.getAuthorizationUrl();
+    }
 
     public String getAccessToken (String authorize_code) {
         String access_Token = "";

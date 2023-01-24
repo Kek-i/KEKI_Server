@@ -7,9 +7,7 @@ import com.codepatissier.keki.user.dto.PatchProfileReq;
 import com.codepatissier.keki.user.dto.PostCustomerReq;
 import com.codepatissier.keki.user.dto.PostNicknameReq;
 import com.codepatissier.keki.user.dto.PostUserReq;
-import com.codepatissier.keki.user.service.AuthService;
-import com.codepatissier.keki.user.service.NaverService;
-import com.codepatissier.keki.user.service.UserService;
+import com.codepatissier.keki.user.service.*;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -28,10 +26,18 @@ public class UserController {
     private final UserService userService;
     private final AuthService authService;
     private final NaverService naverService;
+    private final KakaoService kakaoService;
+
+    // 카카오 로그인 url 요청
+    @GetMapping("/login/kakao")
+    public BaseResponse<?> kakaoLogin(HttpSession session) {
+        String httpHeaders = kakaoService.getAuthorizationUrl(session);
+        return new BaseResponse<>(httpHeaders);
+    }
 
     // 카카오 로그인 콜백
     @ResponseBody
-    @GetMapping("/login/kakao")
+    @GetMapping("/callback/kakao")
     public BaseResponse<?> kakaoCallback(@RequestParam String code) {
         try{
             return new BaseResponse<>(userService.kakaoLogin(code));
