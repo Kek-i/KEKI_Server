@@ -39,11 +39,9 @@ public class Post extends BaseEntity {
     private List<PostTag> tags = new ArrayList<>();
 
     @Builder
-    public Post(Dessert dessert, Store store, String postDescription, List<PostImg> images ,List<PostTag> tags) {
+    public Post(Dessert dessert, Store store, String postDescription) {
         this.dessert = dessert;
         this.store = store;
         this.postDescription = postDescription;
-        this.images = images;
-        this.tags = tags;
     }
 }

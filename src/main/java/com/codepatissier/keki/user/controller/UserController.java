@@ -3,6 +3,7 @@ package com.codepatissier.keki.user.controller;
 import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.BaseResponse;
 import com.codepatissier.keki.common.BaseResponseStatus;
+import com.codepatissier.keki.user.dto.PatchProfileReq;
 import com.codepatissier.keki.user.dto.PostCustomerReq;
 import com.codepatissier.keki.user.dto.PostNicknameReq;
 import com.codepatissier.keki.user.dto.PostUserReq;
@@ -13,8 +14,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ui.Model;
+import com.codepatissier.keki.user.service.AuthService;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpSession;
 
 @SecurityRequirement(name = "Bearer")
@@ -100,6 +101,19 @@ public class UserController {
     public BaseResponse<?> getProfile() {
         try{
             return new BaseResponse<>(userService.getProfile());
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    // 구매자 프로필 정보 수정
+    @ResponseBody
+    @PatchMapping("/profile")
+    public BaseResponse<?> modifyProfile(@RequestBody PatchProfileReq patchProfileReq) {
+        try{
+            Long userIdx = authService.getUserIdx();
+            userService.modifyProfile(userIdx, patchProfileReq);
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS);
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
         }

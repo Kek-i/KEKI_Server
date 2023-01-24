@@ -4,13 +4,18 @@ import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.BaseResponse;
 import com.codepatissier.keki.dessert.dto.GetDessertRes;
 import com.codepatissier.keki.dessert.dto.GetStoreDessertsRes;
+import com.codepatissier.keki.dessert.dto.PostDessertReq;
 import com.codepatissier.keki.dessert.service.DessertService;
+import com.codepatissier.keki.user.service.AuthService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 import static com.codepatissier.keki.common.BaseResponseStatus.INVALID_POSTS_SIZE;
+import static com.codepatissier.keki.common.BaseResponseStatus.SUCCESS;
 import static com.codepatissier.keki.common.Constant.Posts.DEFAULT_SIZE;
 
 @SecurityRequirement(name = "Bearer")
@@ -20,6 +25,7 @@ import static com.codepatissier.keki.common.Constant.Posts.DEFAULT_SIZE;
 @RequiredArgsConstructor
 public class DessertController {
     private final DessertService dessertService;
+    private final AuthService authService;
 
     /**
      * 스토어별 상품 전체 조회
@@ -62,9 +68,29 @@ public class DessertController {
      * 상품 등록
      * [POST] /desserts
      */
+    @ResponseBody
+    @PostMapping("")
+    public BaseResponse<String> addDessert(@Valid @RequestBody PostDessertReq postDessertReq) {
+        try {
+            dessertService.addDessert(authService.getUserIdx(), postDessertReq);
+            return new BaseResponse<>(SUCCESS);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
 
     /**
      * 상품 삭제
      * [PATCH] /desserts/:dessertIdx
      */
+    @ResponseBody
+    @PatchMapping("/{dessertIdx}")
+    public BaseResponse<String> deleteDessert(@PathVariable("dessertIdx") Long dessertIdx) {
+        try {
+            dessertService.deleteDessert(authService.getUserIdx(), dessertIdx);
+            return new BaseResponse<>(SUCCESS);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
 }

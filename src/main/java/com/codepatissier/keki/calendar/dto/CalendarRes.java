@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.validation.constraints.NotBlank;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -17,13 +16,11 @@ import java.util.List;
 @Getter
 @Setter
 
-public class CalendarReq {
+public class CalendarRes {
     private String kindOfCalendar; // 캘린더 종류
     private String title;
-
-    @JsonDeserialize(using = LocalDateDeserializer.class)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd") //2022-01-01
-    private LocalDate date;
+    private String date;
+    private String calDate;
 
     private List<CalendarHashTag> hashTags;
 }

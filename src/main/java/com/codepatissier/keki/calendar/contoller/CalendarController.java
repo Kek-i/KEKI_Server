@@ -1,6 +1,8 @@
 package com.codepatissier.keki.calendar.contoller;
 
+import com.codepatissier.keki.calendar.dto.CalendarListRes;
 import com.codepatissier.keki.calendar.dto.CalendarReq;
+import com.codepatissier.keki.calendar.dto.CalendarRes;
 import com.codepatissier.keki.calendar.service.CalendarService;
 import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.BaseResponse;
@@ -11,6 +13,10 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+// TODO STATUS 처리를 해줘야 함.
 
 @SecurityRequirement(name = "Bearer")
 @Tag(name = "calendars", description = "기념일 API")
@@ -46,6 +52,28 @@ public class CalendarController {
         try{
             this.calendarService.deleteCalendar(calendarIdx, this.authService.getUserIdx());
             return new BaseResponse<>(BaseResponseStatus.SUCCESS);
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    // 기념일 하나 조회
+    @ResponseBody
+    @GetMapping("/{calendarIdx}")
+    public BaseResponse<CalendarRes> getCalendar(@PathVariable("calendarIdx") Long calendarIdx){
+        try{
+            return new BaseResponse<>(this.calendarService.getCalendar(calendarIdx, this.authService.getUserIdx()));
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    // 기념일 리스트 조회
+    @ResponseBody
+    @GetMapping("")
+    public BaseResponse<List<CalendarListRes>> getCalendarList(){
+        try{
+            return new BaseResponse<>(this.calendarService.getCalendarList(this.authService.getUserIdx()));
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
         }

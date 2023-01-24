@@ -2,6 +2,7 @@ package com.codepatissier.keki.history.service;
 
 import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.BaseResponseStatus;
+import com.codepatissier.keki.history.dto.HistorySearchRes;
 import com.codepatissier.keki.history.dto.SearchRes;
 import com.codepatissier.keki.history.repository.SearchHistoryRepository;
 import com.codepatissier.keki.user.entity.User;
@@ -55,5 +56,11 @@ public class SearchHistoryService {
         }catch (Exception e){
             throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
         }
+    }
+
+    public HistorySearchRes getSearches(Long userIdx) throws BaseException{
+        return new HistorySearchRes(recentSearch(userIdx),
+                getPopularSearches(),
+                        null);
     }
 }
