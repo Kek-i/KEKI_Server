@@ -14,6 +14,6 @@ public class TestController {
     @ResponseBody
     @GetMapping("/logs")
     public BaseResponse<String> testAPI() {
-        return new BaseResponse<>("Success test2");
+        return new BaseResponse<>("Success test");
     }
 }
