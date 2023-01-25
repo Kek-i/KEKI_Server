@@ -1,10 +1,7 @@
 package com.codepatissier.keki.calendar.service;
 
 import com.codepatissier.keki.calendar.CalendarCategory;
-import com.codepatissier.keki.calendar.dto.CalendarHashTag;
-import com.codepatissier.keki.calendar.dto.CalendarListRes;
-import com.codepatissier.keki.calendar.dto.CalendarReq;
-import com.codepatissier.keki.calendar.dto.CalendarRes;
+import com.codepatissier.keki.calendar.dto.*;
 import com.codepatissier.keki.calendar.entity.Calendar;
 import com.codepatissier.keki.calendar.entity.CalendarTag;
 import com.codepatissier.keki.calendar.repository.CalendarRepository;
@@ -151,4 +148,9 @@ public class CalendarService {
         this.calendarRepository.save(calendar);
     }
 
+    public List<TagRes> getCategories() throws BaseException{
+        return this.tagRepository.findAll().stream()
+                .map(tag -> new TagRes(tag.getTagIdx(), tag.getTagName()))
+                .collect(Collectors.toList());
+    }
 }

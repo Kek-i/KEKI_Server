@@ -3,6 +3,7 @@ package com.codepatissier.keki.calendar.contoller;
 import com.codepatissier.keki.calendar.dto.CalendarListRes;
 import com.codepatissier.keki.calendar.dto.CalendarReq;
 import com.codepatissier.keki.calendar.dto.CalendarRes;
+import com.codepatissier.keki.calendar.dto.TagRes;
 import com.codepatissier.keki.calendar.service.CalendarService;
 import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.BaseResponse;
@@ -74,6 +75,17 @@ public class CalendarController {
     public BaseResponse<List<CalendarListRes>> getCalendarList(){
         try{
             return new BaseResponse<>(this.calendarService.getCalendarList(this.authService.getUserIdx()));
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+    
+    // 카테고리 조회
+    @ResponseBody
+    @GetMapping("/categories")
+    public BaseResponse<List<TagRes>> getCategories(){
+        try{
+            return new BaseResponse<>(this.calendarService.getCategories());
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
         }
