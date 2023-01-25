@@ -122,7 +122,6 @@ public class CalendarService {
 
         return calList.stream().
                 map(calendar -> new CalendarListRes(calendar.getCalendarIdx(),
-                        calendar.getCalendarCategory().getName(),
                         calendar.getCalendarTitle(),
                         calendar.getCalendarDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                         calculateDate(calendar))).collect(Collectors.toList());
