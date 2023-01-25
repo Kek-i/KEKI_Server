@@ -31,7 +31,7 @@ public class CalendarService {
     private final TagRepository tagRepository;
     private final UserRepository userRepository;
 
-    @Transactional
+    @Transactional(rollbackFor= Exception.class)
     public void createCalendar(Long userIdx, CalendarReq calendarReq) throws BaseException {
         try {
             int day = (int) Duration.between(calendarReq.getDate().atStartOfDay(), LocalDate.now().atStartOfDay()).toDays();
@@ -65,6 +65,7 @@ public class CalendarService {
                 .build());
     }
 
+    @Transactional(rollbackFor= Exception.class)
     public void deleteCalendar(Long calendarIdx, Long userIdx) throws BaseException{
         User user = findUserByUserIdx(userIdx);
 
