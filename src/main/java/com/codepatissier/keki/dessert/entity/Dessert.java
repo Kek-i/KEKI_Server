@@ -30,7 +30,7 @@ public class Dessert extends BaseEntity {
 
     @NotNull
     @Column
-    private int dessertPrice;
+    private Integer dessertPrice;
 
     @NotNull
     @Column(length = 300)
@@ -41,11 +41,25 @@ public class Dessert extends BaseEntity {
     private String dessertImg;
 
     @Builder
-    public Dessert(Store store, String dessertName, int dessertPrice, String dessertDescription, String dessertImg) {
+    public Dessert(Store store, String dessertName, Integer dessertPrice, String dessertDescription, String dessertImg) {
         this.store = store;
         this.dessertName = dessertName;
         this.dessertPrice = dessertPrice;
         this.dessertDescription = dessertDescription;
         this.dessertImg = dessertImg;
+    }
+
+    public void setDessertImg(String dessertImg) { this.dessertImg = dessertImg; }
+
+    public void setDessertName(String dessertName) {
+        this.dessertName = dessertName;
+    }
+
+    public void setDessertPrice(Integer dessertPrice) {
+        this.dessertPrice = dessertPrice;
+    }
+
+    public void setDessertDescription(String dessertDescription) {
+        this.dessertDescription = dessertDescription;
     }
 }

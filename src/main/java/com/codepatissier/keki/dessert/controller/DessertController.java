@@ -4,6 +4,7 @@ import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.BaseResponse;
 import com.codepatissier.keki.dessert.dto.GetDessertRes;
 import com.codepatissier.keki.dessert.dto.GetStoreDessertsRes;
+import com.codepatissier.keki.dessert.dto.PatchDessertReq;
 import com.codepatissier.keki.dessert.dto.PostDessertReq;
 import com.codepatissier.keki.dessert.service.DessertService;
 import com.codepatissier.keki.user.service.AuthService;
@@ -88,6 +89,21 @@ public class DessertController {
     public BaseResponse<String> deleteDessert(@PathVariable("dessertIdx") Long dessertIdx) {
         try {
             dessertService.deleteDessert(authService.getUserIdx(), dessertIdx);
+            return new BaseResponse<>(SUCCESS);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
+     * 상품 수정
+     * [PATCH] /desserts/:dessertIdx/editDessert
+     */
+    @ResponseBody
+    @PatchMapping("/{dessertIdx}/editDessert")
+    public BaseResponse<String> editDessert(@Valid @RequestBody PatchDessertReq patchDessertReq, @PathVariable("dessertIdx") Long dessertIdx) {
+        try {
+            dessertService.modifyDessert(patchDessertReq, dessertIdx, authService.getUserIdx());
             return new BaseResponse<>(SUCCESS);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
