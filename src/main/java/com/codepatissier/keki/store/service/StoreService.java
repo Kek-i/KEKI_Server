@@ -105,6 +105,10 @@ public class StoreService {
             if (patchProfileReq.getAddress() != null) store.setAddress(patchProfileReq.getAddress());
             if (patchProfileReq.getIntroduction() != null) store.setIntroduction(patchProfileReq.getIntroduction());
             if (patchProfileReq.getOrderUrl() != null) store.setOrderUrl(patchProfileReq.getOrderUrl());
+            if (patchProfileReq.getBusinessName() != null) store.setBusinessName(patchProfileReq.getBusinessName());
+            if (patchProfileReq.getBrandName() != null) store.setBrandName(patchProfileReq.getBrandName());
+            if (patchProfileReq.getBusinessAddress() != null) store.setBusinessAddress(patchProfileReq.getBusinessAddress());
+            if (patchProfileReq.getBusinessNumber() != null) store.setBusinessNumber(patchProfileReq.getBusinessNumber());
 
             userRepository.save(user);
             storeRepository.save(store);
