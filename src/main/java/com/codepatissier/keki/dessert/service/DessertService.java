@@ -144,4 +144,28 @@ public class DessertService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    /**
+     * 상품 수정
+     * 상품 이미지, 이름, 가격, 소개
+     */
+    public void modifyDessert(PatchDessertReq patchDessertReq, Long dessertIdx, Long userIdx) throws BaseException {
+        try {
+            User user = userRepository.findById(userIdx).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+            if (!Role.getRoleByName(user.getRole()).equals(Role.STORE)) throw new BaseException(NO_STORE_ROLE);
+
+            Dessert dessert = dessertRepository.findById(dessertIdx).orElseThrow(() -> new BaseException(INVALID_DESSERT_IDX));
+
+            if (patchDessertReq.getDessertImg() != null) dessert.setDessertImg(patchDessertReq.getDessertImg());
+            if (patchDessertReq.getDessertName() != null) dessert.setDessertName(patchDessertReq.getDessertName());
+            if (patchDessertReq.getDessertPrice() != null) dessert.setDessertPrice(patchDessertReq.getDessertPrice());
+            if (patchDessertReq.getDessertDescription() != null) dessert.setDessertDescription(patchDessertReq.getDessertDescription());
+
+            dessertRepository.save(dessert);
+        } catch (BaseException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }
