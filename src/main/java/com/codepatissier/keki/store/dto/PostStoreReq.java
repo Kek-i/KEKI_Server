@@ -16,6 +16,7 @@ public class PostStoreReq {
     @NotBlank
     private String address;
     private String introduction;
+    @NotBlank
     private String orderUrl;
     @NotBlank
     private String businessName;
