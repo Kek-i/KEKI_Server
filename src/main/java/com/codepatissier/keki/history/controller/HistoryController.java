@@ -80,10 +80,10 @@ public class HistoryController {
     // 최근 본 케이크, 검색어, 인기 검색어 통합
     @ResponseBody
     @GetMapping("")
-    public BaseResponse<?> getSearches(){
+    public BaseResponse<HistorySearchRes> getSearches(){
         try{
             if(this.authService.getUserIdxOptional().equals(Constant.Auth.ADMIN_USERIDX)){
-                return new BaseResponse<>(this.searchHistoryService.getPopularSearches());
+                return new BaseResponse<>(new HistorySearchRes(null, this.searchHistoryService.getPopularSearches(), null));
             }else{
                 HistorySearchRes searches = this.searchHistoryService.getSearches(authService.getUserIdx());
                 return new BaseResponse<>(this.postHistoryService.getSearches(searches, authService.getUserIdx()));
