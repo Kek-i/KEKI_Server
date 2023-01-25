@@ -24,6 +24,7 @@ public class UserService {
     private final AuthService authService;
     private final KakaoService kakaoService;
     private final NaverService naverService;
+    private final GoogleService googleService;
 
     // 카카오 로그인
     public PostUserRes kakaoLogin(String authorize_code) throws BaseException{
@@ -44,6 +45,19 @@ public class UserService {
             OAuth2AccessToken naverToken = naverService.getAccessToken(session, code);
             String userEmail = naverService.getUserInfo(naverToken);
             return signInOrUp(userEmail, Provider.NAVER);
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // 구글 로그인
+    public PostUserRes googleLogin(String code, HttpSession session) throws BaseException{
+        try {
+            String googleToken = googleService.getAccessToken(session, code);
+            String userEmail = googleService.getUserInfo(googleToken);
+            return signInOrUp(userEmail, Provider.GOOGLE);
+        } catch (BaseException e) {
+            throw e;
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }

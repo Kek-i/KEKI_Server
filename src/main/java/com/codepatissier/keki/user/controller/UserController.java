@@ -27,6 +27,7 @@ public class UserController {
     private final AuthService authService;
     private final NaverService naverService;
     private final KakaoService kakaoService;
+    private final GoogleService googleService;
 
     // 카카오 로그인 url 요청
     @GetMapping("/login/kakao")
@@ -58,6 +59,23 @@ public class UserController {
     public BaseResponse<?> naverCallback(@RequestParam String code, HttpSession session) {
         try{
             return new BaseResponse<>(userService.naverLogin(code, session));
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    // 구글 로그인 url 요청
+    @GetMapping("/login/google")
+    public BaseResponse<?> googleLogin(HttpSession session) {
+        String httpHeaders = googleService.getAuthorizationUrl(session);
+        return new BaseResponse<>(httpHeaders);
+    }
+
+    // 구글 로그인 콜백
+    @GetMapping("/callback/google")
+    public BaseResponse<?> googleCallback(@RequestParam String code, HttpSession session) {
+        try{
+            return new BaseResponse<>(userService.googleLogin(code, session));
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
         }
