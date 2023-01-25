@@ -13,4 +13,8 @@ public class PatchProfileReq {
     private String address;
     private String introduction;
     private String orderUrl;
+    private String businessName;
+    private String brandName;
+    private String businessAddress;
+    private String businessNumber;
 }

@@ -84,4 +84,8 @@ public class Store extends BaseEntity {
     public void setUser(User user) {
         this.user = user;
     }
+    public void setBusinessName(String businessName) { this.businessName = businessName; }
+    public void setBrandName(String brandName) { this.brandName = brandName; }
+    public void setBusinessAddress(String businessAddress) { this.businessAddress = businessAddress; }
+    public void setBusinessNumber(String businessNumber) { this.businessNumber = businessNumber; }
 }
