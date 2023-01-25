@@ -3,6 +3,7 @@ package com.codepatissier.keki.history.controller;
 import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.BaseResponse;
 import com.codepatissier.keki.common.BaseResponseStatus;
+import com.codepatissier.keki.common.Constant;
 import com.codepatissier.keki.history.dto.HistorySearchRes;
 import com.codepatissier.keki.history.dto.PostSearchRes;
 import com.codepatissier.keki.history.dto.SearchRes;
@@ -14,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Constraint;
 import java.util.List;
 
 @SecurityRequirement(name = "Bearer")
@@ -78,10 +80,14 @@ public class HistoryController {
     // 최근 본 케이크, 검색어, 인기 검색어 통합
     @ResponseBody
     @GetMapping("")
-    public BaseResponse<HistorySearchRes> getSearches(){
+    public BaseResponse<?> getSearches(){
         try{
-            HistorySearchRes searches = this.searchHistoryService.getSearches(authService.getUserIdx());
-            return new BaseResponse<>(this.postHistoryService.getSearches(searches, authService.getUserIdx()));
+            if(this.authService.getUserIdxOptional().equals(Constant.Auth.ADMIN_USERIDX)){
+                return new BaseResponse<>(this.searchHistoryService.getPopularSearches());
+            }else{
+                HistorySearchRes searches = this.searchHistoryService.getSearches(authService.getUserIdx());
+                return new BaseResponse<>(this.postHistoryService.getSearches(searches, authService.getUserIdx()));
+            }
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
         }
