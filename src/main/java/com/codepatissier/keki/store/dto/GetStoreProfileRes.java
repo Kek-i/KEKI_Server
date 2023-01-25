@@ -11,4 +11,5 @@ public class GetStoreProfileRes {
     private String nickname;
     private String storeImgUrl;
     private String introduction;
+    private String orderUrl;
 }

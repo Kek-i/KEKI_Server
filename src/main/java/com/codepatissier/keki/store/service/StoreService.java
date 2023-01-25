@@ -58,12 +58,12 @@ public class StoreService {
     }
 
     // 판매자 프로필 조회
-    // 가게 사진, 이름, 소개
+    // 가게 사진, 이름, 소개, 주문 링크
     public GetStoreProfileRes getStoreProfile(Long storeIdx) throws BaseException {
         try {
             Store store = storeRepository.findById(storeIdx).orElseThrow(() -> new BaseException(INVALID_STORE_IDX));
 
-            return new GetStoreProfileRes(store.getUser().getNickname(), store.getUser().getProfileImg(), store.getIntroduction());
+            return new GetStoreProfileRes(store.getUser().getNickname(), store.getUser().getProfileImg(), store.getIntroduction(), store.getOrderUrl());
         } catch (BaseException e) {
             throw e;
         } catch (Exception e) {
