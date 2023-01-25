@@ -2,16 +2,16 @@ package com.codepatissier.keki.dessert.dto;
 
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 
 @Data
 public class PatchDessertReq {
-    @NotNull
+    @NotBlank
     private String dessertImg;
-    @NotNull
+    @NotBlank
     private String dessertName;
-    @NotNull
+    @NotBlank
     private Integer dessertPrice;
-    @NotNull
+    @NotBlank
     private String dessertDescription;
 }
