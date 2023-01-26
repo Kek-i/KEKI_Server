@@ -155,4 +155,16 @@ public class UserController {
         }
     }
 
+    // 회원 로그아웃
+    @PatchMapping("/logout")
+    public BaseResponse<?> logout() {
+        try{
+            Long userIdx = authService.getUserIdx();
+            userService.logout(userIdx);
+            return new BaseResponse<>(SUCCESS);
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
 }

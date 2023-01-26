@@ -87,4 +87,10 @@ public class User extends BaseEntity {
         this.setStatus("inactive");
         // TODO status enum으로 변경
     }
+
+    // 회원 로그아웃
+    public void logout() {
+        this.refreshToken = null;
+        this.setStatus("logout");
+    }
 }

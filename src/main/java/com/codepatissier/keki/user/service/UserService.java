@@ -151,4 +151,18 @@ public class UserService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    // 회원 로그아웃
+    @Transactional
+    public void logout(Long userIdx) throws BaseException {
+        try{
+            User user = userRepository.findById(userIdx).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+            user.logout();
+            // TODO redis 사용해 토큰 관리
+        } catch (BaseException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }
