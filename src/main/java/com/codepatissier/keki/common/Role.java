@@ -8,7 +8,7 @@ import java.util.Arrays;
 public enum Role {
     CUSTOMER(1, "구매자"),
     STORE(2, "판매자"),
-    ADMIN(3, "비회원");
+    ANONYMOUS(3, "비회원");
 
     private int number;
     private String name;

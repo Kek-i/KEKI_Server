@@ -77,7 +77,7 @@ public class UserService {
         User newUser = User.builder()
                 .email(email)
                 .provider(provider)
-                .role(Role.ADMIN)
+                .role(Role.ANONYMOUS)
                 .build();
         return userRepository.save(newUser);
     }

@@ -83,7 +83,7 @@ public class User extends BaseEntity {
         this.provider = Provider.ANONYMOUS;
         this.profileImg = null;
         this.refreshToken = null;
-        this.role = Role.ADMIN;
+        this.role = Role.ANONYMOUS;
         this.setStatus("inactive");
         // TODO status enum으로 변경
     }
