@@ -3,16 +3,15 @@ package com.codepatissier.keki.dessert.dto;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 @Data
 public class PostDessertReq {
     @NotBlank
     private String dessertName;
     @NotBlank
-    private int dessertPrice;
+    private Integer dessertPrice;
     @NotBlank
     private String dessertDescription;
-    @NotNull
+    @NotBlank
     private String dessertImg;
 }
