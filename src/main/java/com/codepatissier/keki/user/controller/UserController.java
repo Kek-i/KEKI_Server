@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 import java.net.URISyntaxException;
 
+import static com.codepatissier.keki.common.BaseResponseStatus.SUCCESS;
+
 @SecurityRequirement(name = "Bearer")
 @Tag(name = "users", description = "구매자 API")
 @RestController
@@ -111,7 +113,7 @@ public class UserController {
     public BaseResponse<?> checkNickname(@RequestBody PostNicknameReq postNicknameReq) {
         try{
             userService.checkNickname(postNicknameReq);
-            return new BaseResponse<>(BaseResponseStatus.SUCCESS);
+            return new BaseResponse<>(SUCCESS);
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
         }
@@ -135,7 +137,19 @@ public class UserController {
         try{
             Long userIdx = authService.getUserIdx();
             userService.modifyProfile(userIdx, patchProfileReq);
-            return new BaseResponse<>(BaseResponseStatus.SUCCESS);
+            return new BaseResponse<>(SUCCESS);
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    // 회원 탈퇴
+    @PatchMapping("/signout")
+    public BaseResponse<?> signout() {
+        try{
+            Long userIdx = authService.getUserIdx();
+            userService.signout(userIdx);
+            return new BaseResponse<>(SUCCESS);
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
         }

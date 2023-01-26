@@ -137,4 +137,17 @@ public class UserService {
         }
 
     }
+
+    // 회원 탈퇴
+    public void signout(Long userIdx) throws BaseException {
+        try{
+            User user = userRepository.findById(userIdx).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+            user.signout();
+            // TODO redis 사용해 토큰 관리
+        } catch (BaseException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }
