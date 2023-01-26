@@ -102,7 +102,7 @@ public class DessertService {
     }
 
     /**
-     * 상품 등록
+     * [판매자] 상품 등록
      * 상품 이름, 가격, 소개, 이미지(1장)
      */
     public void addDessert(Long userIdx, PostDessertReq postDessertReq) throws BaseException {
@@ -128,7 +128,7 @@ public class DessertService {
     }
 
     /**
-     * 상품 삭제
+     * [판매자] 상품 삭제
      */
     public void deleteDessert(Long userIdx, Long dessertIdx) throws BaseException {
         try {
@@ -146,7 +146,7 @@ public class DessertService {
     }
 
     /**
-     * 상품 수정
+     * [판매자] 상품 수정
      * 상품 이미지, 이름, 가격, 소개
      */
     public void modifyDessert(PatchDessertReq patchDessertReq, Long dessertIdx, Long userIdx) throws BaseException {
@@ -162,6 +162,25 @@ public class DessertService {
             if (patchDessertReq.getDessertDescription() != null) dessert.setDessertDescription(patchDessertReq.getDessertDescription());
 
             dessertRepository.save(dessert);
+        } catch (BaseException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     * [판매자] 상품 상세 조회
+     * 상품 이미지, 이름, 가격, 소개
+     */
+    public GetStoreDessertRes getStoreDessert(Long userIdx, Long dessertIdx) throws BaseException {
+        try {
+            User user = userRepository.findById(userIdx).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+            if (!Role.getRoleByName(user.getRole()).equals(Role.STORE)) throw new BaseException(NO_STORE_ROLE);
+
+            Dessert dessert = dessertRepository.findById(dessertIdx).orElseThrow(() -> new BaseException(INVALID_DESSERT_IDX));
+
+            return new GetStoreDessertRes(dessert.getDessertImg(), dessert.getDessertName(), dessert.getDessertPrice(), dessert.getDessertDescription());
         } catch (BaseException e) {
             throw e;
         } catch (Exception e) {
