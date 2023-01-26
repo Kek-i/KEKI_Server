@@ -4,10 +4,11 @@ import com.codepatissier.keki.calendar.CalendarCategory;
 import com.codepatissier.keki.calendar.dto.*;
 import com.codepatissier.keki.calendar.entity.Calendar;
 import com.codepatissier.keki.calendar.entity.CalendarTag;
-import com.codepatissier.keki.calendar.repository.CalendarRepository;
-import com.codepatissier.keki.calendar.repository.CalendarTagRepository;
+import com.codepatissier.keki.calendar.repository.Calendar.CalendarRepository;
+import com.codepatissier.keki.calendar.repository.CalendarTag.CalendarTagRepository;
 import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.BaseResponseStatus;
+import com.codepatissier.keki.common.Constant;
 import com.codepatissier.keki.common.Tag.TagRepository;
 import com.codepatissier.keki.user.entity.User;
 import com.codepatissier.keki.user.repository.UserRepository;
@@ -79,7 +80,6 @@ public class CalendarService {
     }
 
     public CalendarRes getCalendar(Long calendarIdx, Long userIdx) throws BaseException {
-
         User user = findUserByUserIdx(userIdx);
         Calendar calendar = findCalendarByCalendarIdx(calendarIdx);
         List<CalendarTag> tag = this.calendarTagRepository.findByCalendar(calendar);
@@ -125,6 +125,58 @@ public class CalendarService {
                         calculateDate(calendar))).collect(Collectors.toList());
     }
 
+    public List<TagRes> getCategories() throws BaseException{
+        return this.tagRepository.findAll().stream()
+                .map(tag -> new TagRes(tag.getTagIdx(), tag.getTagName()))
+                .collect(Collectors.toList());
+    }
+
+    public HomeRes getHomeCalendar(Long userIdx) throws BaseException{
+        User user = this.findUserByUserIdx(userIdx);
+        try{
+            Calendar calendar = this.calendarRepository.getRecentDateCalendar(user);
+            int day = 0;
+            String title = null;
+            if(calendar != null){
+                title = calendar.getCalendarTitle();
+               day = (int) Duration.between(calendar.getCalendarDate().atStartOfDay(), LocalDate.now().atStartOfDay()).toDays();
+            }
+            return new HomeRes(user.getUserIdx(), user.getNickname(), title, Math.abs(day), null);
+
+        }catch (Exception e){
+            throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
+        }
+    }
+
+    // 로그 아웃 된 상태에서 홈 정보 불러오기
+    public HomeRes getHomeCalendarAndPostLogout() throws BaseException{
+        try{
+            return new HomeRes(null, null, null, 0,
+                    getPostByTag(this.calendarTagRepository.getPopularCalendarTag()));
+        }catch (Exception e){
+            throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
+        }
+    }
+
+    private List<HomeTagRes> getPostByTag(List<PopularTagRes> popularTagRes) {
+        return popularTagRes.stream()
+                .map(tag -> new HomeTagRes(tag.getTagIdx(), tag.getTagName(),
+                        this.calendarRepository.getPagByPostLimit5(tag.getTagIdx())))
+                .collect(Collectors.toList());
+    }
+
+    public HomeRes getHomeTagPost(HomeRes home) throws BaseException{
+        User user = this.findUserByUserIdx(home.getUserIdx());
+        List<PopularTagRes> tags = this.calendarTagRepository.getPopularCalendarTagByUser(user);
+        // 기념일의 태그가 3개 미만이면 다 랜덤으로 불러오고
+        if(tags.size()< Constant.Home.HOME_RETURN_TAG_COUNT){
+            home.setHomeTagResList(this.getPostByTag(this.calendarTagRepository.getPopularCalendarTag()));
+        }else{ // 태그가 3개 이상이면 태그별로 랜덤하게 불러오기
+            home.setHomeTagResList(this.getPostByTag(tags));
+        }
+        return home;
+    }
+
     private User findUserByUserIdx(Long userIdx) throws BaseException {
         return this.userRepository.findById(userIdx).
                 orElseThrow(() -> new BaseException(BaseResponseStatus.INVALID_USER_IDX));
@@ -134,7 +186,6 @@ public class CalendarService {
         return this.calendarRepository.findById(calendarIdx)
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.INVALID_CALENDAR_IDX));
     }
-
 
     private void changeCalendarTagStatus(Calendar calendar, String status){
         this.calendarTagRepository.findByCalendar(calendar).stream()
@@ -149,9 +200,4 @@ public class CalendarService {
         this.calendarRepository.save(calendar);
     }
 
-    public List<TagRes> getCategories() throws BaseException{
-        return this.tagRepository.findAll().stream()
-                .map(tag -> new TagRes(tag.getTagIdx(), tag.getTagName()))
-                .collect(Collectors.toList());
-    }
 }

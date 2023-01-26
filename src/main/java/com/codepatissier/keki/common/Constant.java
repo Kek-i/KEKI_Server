@@ -15,4 +15,10 @@ public class Constant {
         public static final String TOKEN_REGEX = "^Bearer( )*";
         public static final String TOKEN_REPLACEMENT = "";
     }
+
+    public static class Home{
+        public static final int HOME_RETURN_TAG_COUNT = 3;
+        public static final int HOME_RETURN_POST_COUNT = 5;
+
+    }
 }

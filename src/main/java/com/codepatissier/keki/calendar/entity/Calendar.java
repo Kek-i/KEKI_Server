@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.Date;
 
@@ -32,7 +33,8 @@ public class Calendar extends BaseEntity {
     @Column(nullable = false, length = 300)
     private String calendarTitle;
 
-    @Column(nullable = false, length = 300)
+    @NotNull
+    @Column(length = 300)
     private LocalDate calendarDate;
 
     @Builder
