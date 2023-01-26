@@ -139,6 +139,7 @@ public class UserService {
     }
 
     // 회원 탈퇴
+    @Transactional
     public void signout(Long userIdx) throws BaseException {
         try{
             User user = userRepository.findById(userIdx).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
