@@ -87,7 +87,8 @@ public class StoreService {
         }
     }
 
-    // 가게 프로필 수정 (가게 사진, 이름, 주소, 소개, 주문 링크)
+    // 가게 프로필 수정
+    // 가게 사진, 이름, 주소, 소개, 주문 링크, 사업자 정보
     @Transactional(rollbackFor = Exception.class)
     public void modifyProfile(Long userIdx, PatchProfileReq patchProfileReq) throws BaseException {
         try {
@@ -98,18 +99,51 @@ public class StoreService {
                 user.setProfileImg(patchProfileReq.getStoreImgUrl());
                 store.setUser(user);
             }
-            if (patchProfileReq.getNickname() != null) {
-                user.setNickname(patchProfileReq.getNickname());
-                store.setUser(user);
-            }
-            if (patchProfileReq.getAddress() != null) store.setAddress(patchProfileReq.getAddress());
-            if (patchProfileReq.getIntroduction() != null) store.setIntroduction(patchProfileReq.getIntroduction());
-            if (patchProfileReq.getOrderUrl() != null) store.setOrderUrl(patchProfileReq.getOrderUrl());
-            if (patchProfileReq.getBusinessName() != null) store.setBusinessName(patchProfileReq.getBusinessName());
-            if (patchProfileReq.getBrandName() != null) store.setBrandName(patchProfileReq.getBrandName());
-            if (patchProfileReq.getBusinessAddress() != null) store.setBusinessAddress(patchProfileReq.getBusinessAddress());
-            if (patchProfileReq.getBusinessNumber() != null) store.setBusinessNumber(patchProfileReq.getBusinessNumber());
 
+            if (patchProfileReq.getNickname() != null) { // TODO User entity nickname @NOTBLANK 처리
+                if (!patchProfileReq.getNickname().equals("") && !patchProfileReq.getNickname().equals(" ")) {
+                    user.setNickname(patchProfileReq.getNickname());
+                    store.setUser(user);
+                } else throw new BaseException(NULL_NICKNAME);
+            }
+
+            if (patchProfileReq.getAddress() != null) {
+                if (!patchProfileReq.getAddress().equals("") && !patchProfileReq.getAddress().equals(" "))
+                    store.setAddress(patchProfileReq.getAddress());
+                else throw new BaseException(NULL_ADDRESS);
+            }
+
+            if (patchProfileReq.getIntroduction() != null) store.setIntroduction(patchProfileReq.getIntroduction());
+
+            if (patchProfileReq.getOrderUrl() != null) {
+                if (!patchProfileReq.getOrderUrl().equals("") && !patchProfileReq.getOrderUrl().equals(" "))
+                    store.setOrderUrl(patchProfileReq.getOrderUrl());
+                else throw new BaseException(NULL_ORDER_URL);
+            }
+
+            if (patchProfileReq.getBusinessName() != null) {
+                if (!patchProfileReq.getBusinessName().equals("") && !patchProfileReq.getBusinessName().equals(" "))
+                    store.setBusinessName(patchProfileReq.getBusinessName());
+                else throw new BaseException(NULL_BUSINESS_NAME);
+            }
+
+            if (patchProfileReq.getBrandName() != null) {
+                if (!patchProfileReq.getBrandName().equals("") && !patchProfileReq.getBrandName().equals(" "))
+                    store.setBrandName(patchProfileReq.getBrandName());
+                else throw new BaseException(NULL_BRAND_NAME);
+            }
+
+            if (patchProfileReq.getBusinessAddress() != null) {
+                if (!patchProfileReq.getBusinessAddress().equals("") && !patchProfileReq.getBusinessAddress().equals(" "))
+                    store.setBusinessAddress(patchProfileReq.getBusinessAddress());
+                else throw new BaseException(NULL_BUSINESS_ADDRESS);
+            }
+
+            if (patchProfileReq.getBusinessNumber() != null) {
+                if (!patchProfileReq.getBusinessNumber().equals("") && !patchProfileReq.getBusinessNumber().equals(" "))
+                    store.setBusinessNumber(patchProfileReq.getBusinessNumber());
+                else throw new BaseException(NULL_BUSINESS_NUMBER);
+            }
             userRepository.save(user);
             storeRepository.save(store);
         } catch (BaseException e) {

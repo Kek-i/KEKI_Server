@@ -50,6 +50,13 @@ public enum BaseResponseStatus {
 
     // stores(3100~3199)
     INVALID_STORE_IDX(false, 3100, "존재하지 않는 스토어입니다."),
+    NULL_ADDRESS(false, 3101, "주소를 입력해주세요."),
+    NULL_ORDER_URL(false, 3102, "주문 링크를 입력해주세요."),
+    NULL_BUSINESS_NAME(false, 3103, "대표자명을 입력해주세요."),
+    NULL_BRAND_NAME(false, 3104, "상호명을 입력해주세요."),
+    NULL_BUSINESS_ADDRESS(false, 3105, "사업자 주소를 입력해주세요."),
+    NULL_BUSINESS_NUMBER(false, 3106, "사업자 번호를 입력해주세요."),
+    NULL_NICKNAME(false, 3107, "가게 이름을 입력해주세요."),
 
     // posts(3200~3299)
     INVALID_POST_IDX(false, 3200, "존재하지 않는 피드입니다."),
