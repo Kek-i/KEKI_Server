@@ -1,5 +1,6 @@
 package com.codepatissier.keki.common.Tag;
 
+import com.codepatissier.keki.common.BaseEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +12,7 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor
 @DynamicInsert
-public class Tag {
+public class Tag extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long tagIdx;
