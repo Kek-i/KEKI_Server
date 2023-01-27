@@ -117,11 +117,11 @@ public class UserService {
         if(existence) throw new BaseException(BaseResponseStatus.EXIST_NICKNAME);
     }
 
-    // 마이페이지 조회
+    // 구매자 마이페이지 조회
     public GetProfileRes getProfile() throws BaseException {
         Long userIdx = authService.getUserIdx();
         User user = userRepository.findById(userIdx).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
-        return new GetProfileRes(user.getNickname(), user.getProfileImg());}
+        return new GetProfileRes(user.getEmail(), user.getNickname(), user.getProfileImg());}
 
     // 구매자 프로필 수정
     @Transactional
