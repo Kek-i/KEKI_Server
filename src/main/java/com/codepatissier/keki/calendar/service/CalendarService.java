@@ -126,7 +126,7 @@ public class CalendarService {
     }
 
     public List<TagRes> getCategories() throws BaseException{
-        return this.tagRepository.findAll().stream()
+        return this.tagRepository.findByStatus(Constant.ACTIVE_STATUS).stream()
                 .map(tag -> new TagRes(tag.getTagIdx(), tag.getTagName()))
                 .collect(Collectors.toList());
     }
