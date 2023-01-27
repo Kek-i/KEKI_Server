@@ -74,7 +74,7 @@ public class StoreController {
      * 판매자 프로필 조회
      * [GET] /stores/profile
      * 마이페이지 판매자 프로필 편집
-     * @return 가게 사진, 이름, 주소, 소개, 주문 링크, 사업자 정보
+     * @return 가게 사진, 이름, 주소, 소개, 주문 링크, 사업자 정보, 이메일
      */
     @ResponseBody
     @GetMapping("/profile")
