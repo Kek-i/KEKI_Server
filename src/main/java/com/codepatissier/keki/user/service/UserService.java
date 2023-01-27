@@ -24,6 +24,7 @@ public class UserService {
     private final AuthService authService;
     private final KakaoService kakaoService;
     private final NaverService naverService;
+    private final GoogleService googleService;
 
     // 카카오 로그인
     public PostUserRes kakaoLogin(String authorize_code) throws BaseException{
@@ -49,6 +50,19 @@ public class UserService {
         }
     }
 
+    // 구글 로그인
+    public PostUserRes googleLogin(String code, HttpSession session) throws BaseException{
+        try {
+            String googleToken = googleService.getAccessToken(session, code);
+            String userEmail = googleService.getUserInfo(googleToken);
+            return signInOrUp(userEmail, Provider.GOOGLE);
+        } catch (BaseException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
     // 회원가입 또는 기존 로그인
     private PostUserRes signInOrUp(String userEmail, Provider provider) throws BaseException {
         boolean is_user = userRepository.existsByEmail(userEmail);
@@ -63,7 +77,7 @@ public class UserService {
         User newUser = User.builder()
                 .email(email)
                 .provider(provider)
-                .role(Role.ADMIN)
+                .role(Role.ANONYMOUS)
                 .build();
         return userRepository.save(newUser);
     }
@@ -122,5 +136,33 @@ public class UserService {
             throw new BaseException(DATABASE_ERROR);
         }
 
+    }
+
+    // 회원 탈퇴
+    @Transactional
+    public void signout(Long userIdx) throws BaseException {
+        try{
+            User user = userRepository.findById(userIdx).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+            user.signout();
+            // TODO redis 사용해 토큰 관리
+        } catch (BaseException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // 회원 로그아웃
+    @Transactional
+    public void logout(Long userIdx) throws BaseException {
+        try{
+            User user = userRepository.findById(userIdx).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+            user.logout();
+            // TODO redis 사용해 토큰 관리
+        } catch (BaseException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
     }
 }

@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 import java.net.URISyntaxException;
 
+import static com.codepatissier.keki.common.BaseResponseStatus.SUCCESS;
+
 @SecurityRequirement(name = "Bearer")
 @Tag(name = "users", description = "구매자 API")
 @RestController
@@ -27,6 +29,7 @@ public class UserController {
     private final AuthService authService;
     private final NaverService naverService;
     private final KakaoService kakaoService;
+    private final GoogleService googleService;
 
     // 카카오 로그인 url 요청
     @GetMapping("/login/kakao")
@@ -63,6 +66,23 @@ public class UserController {
         }
     }
 
+    // 구글 로그인 url 요청
+    @GetMapping("/login/google")
+    public BaseResponse<?> googleLogin(HttpSession session) {
+        String httpHeaders = googleService.getAuthorizationUrl(session);
+        return new BaseResponse<>(httpHeaders);
+    }
+
+    // 구글 로그인 콜백
+    @GetMapping("/callback/google")
+    public BaseResponse<?> googleCallback(@RequestParam String code, HttpSession session) {
+        try{
+            return new BaseResponse<>(userService.googleLogin(code, session));
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
     // 프론트로부터 이메일만 받아오는 경우 로그인
     @ResponseBody
     @PostMapping("/signin")
@@ -93,7 +113,7 @@ public class UserController {
     public BaseResponse<?> checkNickname(@RequestBody PostNicknameReq postNicknameReq) {
         try{
             userService.checkNickname(postNicknameReq);
-            return new BaseResponse<>(BaseResponseStatus.SUCCESS);
+            return new BaseResponse<>(SUCCESS);
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
         }
@@ -117,7 +137,31 @@ public class UserController {
         try{
             Long userIdx = authService.getUserIdx();
             userService.modifyProfile(userIdx, patchProfileReq);
-            return new BaseResponse<>(BaseResponseStatus.SUCCESS);
+            return new BaseResponse<>(SUCCESS);
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    // 회원 탈퇴
+    @PatchMapping("/signout")
+    public BaseResponse<?> signout() {
+        try{
+            Long userIdx = authService.getUserIdx();
+            userService.signout(userIdx);
+            return new BaseResponse<>(SUCCESS);
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    // 회원 로그아웃
+    @PatchMapping("/logout")
+    public BaseResponse<?> logout() {
+        try{
+            Long userIdx = authService.getUserIdx();
+            userService.logout(userIdx);
+            return new BaseResponse<>(SUCCESS);
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
         }
