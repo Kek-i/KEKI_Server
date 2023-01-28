@@ -30,9 +30,7 @@ public class CalendarController {
     @PostMapping("")
     public BaseResponse<String> createCalendar(@RequestBody CalendarReq calendarReq){
         try{
-            if(calendarReq.getHashTags().size() < 1 || calendarReq.getHashTags() == null) return new BaseResponse<>(BaseResponseStatus.INVALID_POSTS_SIZE);
             if(calendarReq.getTitle().equals("") || calendarReq.getTitle() == null) return new BaseResponse<>(BaseResponseStatus.NULL_TITLE);
-            // 캘린더 LocalDataFormat 에러가 나면 해결하는 api 생성 필요
             if(calendarReq.getDate() == null || calendarReq.getDate().toString().equals("")) return new BaseResponse<>(BaseResponseStatus.NULL_DATE);
             if(calendarReq.getKindOfCalendar() == null) return new BaseResponse<>(BaseResponseStatus.NULL_KIND_OF_CALENDARS);
 

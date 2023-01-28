@@ -44,4 +44,8 @@ public class Calendar extends BaseEntity {
         this.calendarTitle = calendarTitle;
         this.calendarDate = calendarDate;
     }
+
+    public void setCalendarDate(LocalDate date){
+        this.calendarDate = date;
+    }
 }
