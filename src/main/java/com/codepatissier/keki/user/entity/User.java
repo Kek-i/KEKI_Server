@@ -75,4 +75,22 @@ public class User extends BaseEntity {
     public void setNickname(String nickname) {
         this.nickname = nickname;
     }
+
+    // 회원 탈퇴
+    public void signout() {
+        this.nickname = "알 수 없음";
+        this.email = "anonymous@keki.store";
+        this.provider = Provider.ANONYMOUS;
+        this.profileImg = null;
+        this.refreshToken = null;
+        this.role = Role.ANONYMOUS;
+        this.setStatus("inactive");
+        // TODO status enum으로 변경
+    }
+
+    // 회원 로그아웃
+    public void logout() {
+        this.refreshToken = null;
+        this.setStatus("logout");
+    }
 }
