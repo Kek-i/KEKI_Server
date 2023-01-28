@@ -15,6 +15,9 @@ public enum BaseResponseStatus {
      */
     // users(2000~2099)
      NULL_TOKEN(false, 2000, "토큰 값을 입력해주세요."),
+    NULL_EMAIL(false, 2001, "이메일을 입력해주세요."),
+    NULL_PROVIDER(false, 2002, "소셜 이름을 입력해주세요."),
+    INVALID_PROVIDER(false, 2003, "잘못된 소셜 이름입니다."),
 
     // stores(2100~2199)
 
