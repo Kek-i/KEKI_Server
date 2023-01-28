@@ -2,22 +2,16 @@ package com.codepatissier.keki.user.controller;
 
 import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.BaseResponse;
-import com.codepatissier.keki.common.BaseResponseStatus;
-import com.codepatissier.keki.user.dto.PatchProfileReq;
-import com.codepatissier.keki.user.dto.PostCustomerReq;
-import com.codepatissier.keki.user.dto.PostNicknameReq;
-import com.codepatissier.keki.user.dto.PostUserReq;
+import com.codepatissier.keki.user.dto.*;
 import com.codepatissier.keki.user.service.*;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.ui.Model;
 import com.codepatissier.keki.user.service.AuthService;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
-import java.net.URISyntaxException;
 
-import static com.codepatissier.keki.common.BaseResponseStatus.SUCCESS;
+import static com.codepatissier.keki.common.BaseResponseStatus.*;
 
 @SecurityRequirement(name = "Bearer")
 @Tag(name = "users", description = "구매자 API")
@@ -38,32 +32,11 @@ public class UserController {
         return new BaseResponse<>(httpHeaders);
     }
 
-    // 카카오 로그인 콜백
-    @ResponseBody
-    @GetMapping("/callback/kakao")
-    public BaseResponse<?> kakaoCallback(@RequestParam String code) {
-        try{
-            return new BaseResponse<>(userService.kakaoLogin(code));
-        }catch (BaseException e){
-            return new BaseResponse<>(e.getStatus());
-        }
-    }
-
     // 네이버 로그인 url 요청
     @GetMapping("/login/naver")
     public BaseResponse<?> login(HttpSession session) {
         String httpHeaders = naverService.getAuthorizationUrl(session);
         return new BaseResponse<>(httpHeaders);
-    }
-
-    // 네이버 로그인 콜백
-    @GetMapping("/callback/naver")
-    public BaseResponse<?> naverCallback(@RequestParam String code, HttpSession session) {
-        try{
-            return new BaseResponse<>(userService.naverLogin(code, session));
-        }catch (BaseException e){
-            return new BaseResponse<>(e.getStatus());
-        }
     }
 
     // 구글 로그인 url 요청
@@ -73,29 +46,20 @@ public class UserController {
         return new BaseResponse<>(httpHeaders);
     }
 
-    // 구글 로그인 콜백
-    @GetMapping("/callback/google")
-    public BaseResponse<?> googleCallback(@RequestParam String code, HttpSession session) {
-        try{
-            return new BaseResponse<>(userService.googleLogin(code, session));
-        }catch (BaseException e){
-            return new BaseResponse<>(e.getStatus());
-        }
-    }
-
-    // 프론트로부터 이메일만 받아오는 경우 로그인
+    // 소셜 로그인/회원가입
     @ResponseBody
-    @PostMapping("/signin")
+    @PostMapping("/login")
     public BaseResponse<?> login(@RequestBody PostUserReq postUserReq) {
         try{
-            return new BaseResponse<>(userService.signinEmail(postUserReq));
+            if(postUserReq.getEmail() == null) throw new BaseException(NULL_EMAIL);
+            if(postUserReq.getProvider() == null) throw new BaseException(NULL_PROVIDER);
+            return new BaseResponse<>(userService.login(postUserReq.getEmail(), postUserReq.getProvider()));
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
         }
-
     }
 
-    // 프론트로부터 이메일만 받아오는 경우 구매자 회원가입
+    // 구매자 회원가입
     @ResponseBody
     @PostMapping("/signup")
     public BaseResponse<?> signup(@RequestBody PostCustomerReq postCustomerReq) {
@@ -104,7 +68,6 @@ public class UserController {
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
         }
-
     }
 
     // 닉네임 중복 확인
