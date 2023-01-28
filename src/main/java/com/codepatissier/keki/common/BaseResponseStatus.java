@@ -57,6 +57,10 @@ public enum BaseResponseStatus {
 
     // desserts(3300~3399)
     INVALID_DESSERT_IDX(false, 3300, "존재하지 않는 디저트입니다."),
+    NULL_DESSERT_IMG(false, 3301, "디저트 이미지를 추가해주세요."),
+    NULL_DESSERT_NAME(false, 3302, "디저트 이름을 입력해주세요."),
+    INVALID_DESERT_PRICE(false, 3303, "디저트 가격은 0원 이상이어야 합니다."),
+    NULL_DESSERT_DESCRIPTION(false, 3304, "디저트 설명을 입력해주세요."),
 
     // calendars(3400~3499)
     INVALID_CALENDAR_TAG(false, 3400, "캘린더 TAG를 찾을 수 없습니다."),

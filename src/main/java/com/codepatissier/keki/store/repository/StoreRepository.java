@@ -9,5 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface StoreRepository extends JpaRepository<Store, Long> {
-    Optional<Store> findByUser(User user);
+    Optional<Store> findByUser(User user); // TODO PostService에서 findByUserAndStatus로 변경 후 삭제
+    Optional<Store> findByUserAndStatus(User user, String activeStatus);
+    Optional<Store> findByStoreIdxAndStatus(Long storeIdx, String activeStatus);
 }
