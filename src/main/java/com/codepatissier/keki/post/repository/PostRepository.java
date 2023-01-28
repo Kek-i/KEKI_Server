@@ -18,5 +18,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     boolean existsByStoreAndPostIdxLessThan(Store store, Long postIdx);
     boolean existsByDessertDessertNameContainingAndPostIdxLessThan(String word, Long postIdx);
     boolean existsByPostIdxLessThan(Long postIdx);
-    List<Post> findTop5ByDessertOrderByPostIdxDesc(Dessert dessert);
+    List<Post> findTop5ByDessertAndStatusOrderByPostIdxDesc(Dessert dessert, String activeStatus);
 }
