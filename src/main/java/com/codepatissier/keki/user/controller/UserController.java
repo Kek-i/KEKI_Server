@@ -34,7 +34,7 @@ public class UserController {
 
     // 네이버 로그인 url 요청
     @GetMapping("/login/naver")
-    public BaseResponse<?> login(HttpSession session) {
+    public BaseResponse<?> naverLogin(HttpSession session) {
         String httpHeaders = naverService.getAuthorizationUrl(session);
         return new BaseResponse<>(httpHeaders);
     }
