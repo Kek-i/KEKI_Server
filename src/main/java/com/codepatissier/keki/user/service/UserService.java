@@ -7,12 +7,11 @@ import com.codepatissier.keki.user.dto.*;
 import com.codepatissier.keki.user.entity.Provider;
 import com.codepatissier.keki.user.entity.User;
 import com.codepatissier.keki.user.repository.UserRepository;
-import com.github.scribejava.core.model.OAuth2AccessToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpSession;
+
 
 import static com.codepatissier.keki.common.BaseResponseStatus.*;
 
@@ -22,40 +21,12 @@ import static com.codepatissier.keki.common.BaseResponseStatus.*;
 public class UserService {
     private final UserRepository userRepository;
     private final AuthService authService;
-    private final KakaoService kakaoService;
-    private final NaverService naverService;
-    private final GoogleService googleService;
 
-    // 카카오 로그인
-    public PostUserRes kakaoLogin(String authorize_code) throws BaseException{
+    // 로그인
+    public PostUserRes login(String email, String provider) throws BaseException{
         try {
-            String kakaoToken = kakaoService.getAccessToken(authorize_code);
-            String userEmail = kakaoService.getUserInfo(kakaoToken);
-            return signInOrUp(userEmail, Provider.KAKAO);
-        } catch (BaseException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new BaseException(DATABASE_ERROR);
-        }
-    }
-
-    // 네이버 로그인
-    public PostUserRes naverLogin(String code, HttpSession session) throws BaseException{
-        try{
-            OAuth2AccessToken naverToken = naverService.getAccessToken(session, code);
-            String userEmail = naverService.getUserInfo(naverToken);
-            return signInOrUp(userEmail, Provider.NAVER);
-        } catch (Exception e) {
-            throw new BaseException(DATABASE_ERROR);
-        }
-    }
-
-    // 구글 로그인
-    public PostUserRes googleLogin(String code, HttpSession session) throws BaseException{
-        try {
-            String googleToken = googleService.getAccessToken(session, code);
-            String userEmail = googleService.getUserInfo(googleToken);
-            return signInOrUp(userEmail, Provider.GOOGLE);
+            if(Provider.getProviderByName(provider) == null) throw new BaseException(INVALID_PROVIDER);
+            return signInOrUp(email, Provider.getProviderByName(provider));
         } catch (BaseException e) {
             throw e;
         } catch (Exception e) {
@@ -64,11 +35,11 @@ public class UserService {
     }
 
     // 회원가입 또는 기존 로그인
-    private PostUserRes signInOrUp(String userEmail, Provider provider) throws BaseException {
-        boolean is_user = userRepository.existsByEmail(userEmail);
+    private PostUserRes signInOrUp(String email, Provider provider) throws BaseException {
+        boolean is_user = userRepository.existsByEmailAndProvider(email, provider);
         User user;
-        if (!is_user) user = signup(userEmail, provider);
-        else user = userRepository.findByEmail(userEmail).orElseThrow(() -> new BaseException(INVALID_EMAIL));
+        if (!is_user) user = signup(email, provider);
+        else user = userRepository.findByEmailAndProvider(email, provider);
         return authService.createToken(user);
     }
 
@@ -80,16 +51,6 @@ public class UserService {
                 .role(Role.ANONYMOUS)
                 .build();
         return userRepository.save(newUser);
-    }
-
-    // 테스트 편리 위한 임시 로그인
-    public PostUserRes signinEmail(PostUserReq postUserReq) throws BaseException{
-        User user = userRepository.findByEmail(postUserReq.getEmail()).orElseThrow(() -> new BaseException(INVALID_EMAIL));
-        Long userIdx = user.getUserIdx();
-        String accessToken = authService.createAccessToken(userIdx);
-        String refreshToken = authService.createRefreshToken(userIdx);
-
-        return new PostUserRes(accessToken, refreshToken, user.getRole());
     }
 
     // 구매자 회원가입
@@ -165,4 +126,5 @@ public class UserService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
 }
