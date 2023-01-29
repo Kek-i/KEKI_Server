@@ -1,6 +1,7 @@
 package com.codepatissier.keki.cs.service;
 
 import com.codepatissier.keki.common.BaseException;
+import com.codepatissier.keki.common.Constant;
 import com.codepatissier.keki.cs.dto.GetNoticeListRes;
 import com.codepatissier.keki.cs.dto.GetNoticeRes;
 import com.codepatissier.keki.cs.entity.Notice;
@@ -22,7 +23,7 @@ public class CsService {
 
     // 공지사항 전체 조회
     public List<GetNoticeListRes> getNoticeList() throws BaseException {
-        List<Notice> noticeList = noticeRepository.findAll(Sort.by(Sort.Direction.DESC, "createdDate"));
+        List<Notice> noticeList = noticeRepository.findAllByStatusEquals(Constant.ACTIVE_STATUS, Sort.by(Sort.Direction.DESC, "createdDate"));
         if(noticeList.isEmpty()) throw new BaseException(NO_NOTICE);
         return noticeList.stream()
                 .map(notice -> new GetNoticeListRes(notice.getNoticeIdx(), notice.getNoticeTitle()))
@@ -31,7 +32,7 @@ public class CsService {
 
     // 공지사항 상세 조회
     public GetNoticeRes getNotice(Long noticeIdx) throws BaseException {
-        Notice notice = noticeRepository.findById(noticeIdx).orElseThrow(() -> new BaseException(INVALID_NOTICE_IDX));
+        Notice notice = noticeRepository.findByNoticeIdxAndStatusEquals(noticeIdx, Constant.ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_NOTICE_IDX));
         return new GetNoticeRes(notice.getNoticeTitle(), notice.getNoticeContent());
     }
 }
