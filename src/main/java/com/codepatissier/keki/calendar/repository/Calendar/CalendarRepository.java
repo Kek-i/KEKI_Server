@@ -8,6 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CalendarRepository extends JpaRepository<Calendar, Long> , CalendarCustom{
-    List<Calendar> findByUser(User user);
+    List<Calendar> findByUserAndStatus(User user, String status);
     Optional<Calendar> findByCalendarIdxAndStatus(Long calendarIdx, String status);
 }
