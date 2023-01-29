@@ -2,6 +2,7 @@ package com.codepatissier.keki.user.service;
 
 import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.BaseResponseStatus;
+import com.codepatissier.keki.common.Constant;
 import com.codepatissier.keki.common.Role;
 import com.codepatissier.keki.user.dto.*;
 import com.codepatissier.keki.user.entity.Provider;
@@ -36,10 +37,8 @@ public class UserService {
 
     // 회원가입 또는 기존 로그인
     private PostUserRes signInOrUp(String email, Provider provider) throws BaseException {
-        boolean is_user = userRepository.existsByEmailAndProvider(email, provider);
-        User user;
-        if (!is_user) user = signup(email, provider);
-        else user = userRepository.findByEmailAndProvider(email, provider);
+        User user = userRepository.findByEmailAndProviderAndStatusEquals(email, provider, Constant.ACTIVE_STATUS);
+        if (user==null) user = signup(email, provider);
         return authService.createToken(user);
     }
 
