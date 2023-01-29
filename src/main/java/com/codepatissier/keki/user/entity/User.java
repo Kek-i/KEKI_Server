@@ -1,6 +1,7 @@
 package com.codepatissier.keki.user.entity;
 
 import com.codepatissier.keki.common.BaseEntity;
+import com.codepatissier.keki.common.Constant;
 import com.codepatissier.keki.common.Role;
 import lombok.Builder;
 import lombok.Getter;
@@ -84,13 +85,17 @@ public class User extends BaseEntity {
         this.profileImg = null;
         this.refreshToken = null;
         this.role = Role.ANONYMOUS;
-        this.setStatus("inactive");
+        this.setStatus(Constant.INACTIVE_STATUS);
         // TODO status enum으로 변경
     }
 
     // 회원 로그아웃
     public void logout() {
         this.refreshToken = null;
-        this.setStatus("logout");
+        this.setStatus(Constant.LOGOUT_STATUS);
+    }
+
+    public void login() {
+        this.setStatus(Constant.ACTIVE_STATUS);
     }
 }

@@ -37,8 +37,10 @@ public class UserService {
 
     // 회원가입 또는 기존 로그인
     private PostUserRes signInOrUp(String email, Provider provider) throws BaseException {
-        User user = userRepository.findByEmailAndProviderAndStatusEquals(email, provider, Constant.ACTIVE_STATUS);
+        User user = userRepository.findByEmailAndProviderAndStatusNot(email, provider, Constant.INACTIVE_STATUS);
         if (user==null) user = signup(email, provider);
+        user.login();
+        userRepository.save(user);
         return authService.createToken(user);
     }
 
@@ -56,7 +58,7 @@ public class UserService {
     @Transactional
     public PostUserRes signupCustomer(Long userIdx, PostCustomerReq postCustomerReq) throws BaseException{
         try {
-            User user = userRepository.findById(userIdx).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+            User user = userRepository.findByUserIdxAndStatusEquals(userIdx, Constant.ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
             String accessToken = authService.createAccessToken(userIdx);
             String refreshToken = authService.createRefreshToken(userIdx);
 
@@ -80,14 +82,14 @@ public class UserService {
     // 구매자 마이페이지 조회
     public GetProfileRes getProfile() throws BaseException {
         Long userIdx = authService.getUserIdx();
-        User user = userRepository.findById(userIdx).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+        User user = userRepository.findByUserIdxAndStatusEquals(userIdx, Constant.ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
         return new GetProfileRes(user.getEmail(), user.getNickname(), user.getProfileImg());}
 
     // 구매자 프로필 수정
     @Transactional
     public void modifyProfile(Long userIdx, PatchProfileReq patchProfileReq) throws BaseException{
         try {
-            User user = userRepository.findById(userIdx).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+            User user = userRepository.findByUserIdxAndStatusEquals(userIdx, Constant.ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
             if (patchProfileReq.getNickname() != null) user.modifyNickname(patchProfileReq.getNickname());
             if (patchProfileReq.getProfileImg() != null) user.modifyProfileImg(patchProfileReq.getProfileImg());
         } catch (BaseException e) {
@@ -102,7 +104,7 @@ public class UserService {
     @Transactional
     public void signout(Long userIdx) throws BaseException {
         try{
-            User user = userRepository.findById(userIdx).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+            User user = userRepository.findByUserIdxAndStatusEquals(userIdx, Constant.ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
             user.signout();
             // TODO redis 사용해 토큰 관리
         } catch (BaseException e) {
@@ -116,7 +118,7 @@ public class UserService {
     @Transactional
     public void logout(Long userIdx) throws BaseException {
         try{
-            User user = userRepository.findById(userIdx).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+            User user = userRepository.findByUserIdxAndStatusEquals(userIdx, Constant.ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
             user.logout();
             // TODO redis 사용해 토큰 관리
         } catch (BaseException e) {
