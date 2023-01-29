@@ -185,12 +185,12 @@ public class CalendarService {
     }
 
     private User findUserByUserIdx(Long userIdx) throws BaseException {
-        return this.userRepository.findById(userIdx).
+        return this.userRepository.findByUserIdxAndStatusEquals(userIdx, Constant.ACTIVE_STATUS).
                 orElseThrow(() -> new BaseException(BaseResponseStatus.INVALID_USER_IDX));
     }
 
     private Calendar findCalendarByCalendarIdx(Long calendarIdx) throws BaseException {
-        return this.calendarRepository.findById(calendarIdx)
+        return this.calendarRepository.findByCalendarIdxAndStatus(calendarIdx, Constant.ACTIVE_STATUS)
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.INVALID_CALENDAR_IDX));
     }
 

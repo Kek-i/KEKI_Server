@@ -28,6 +28,7 @@ public class CalendarRepositoryImpl implements CalendarCustom {
         return jpaQueryFactory.selectFrom(calendar)
                 .where(calendar.calendarDate.after(beginTimePath))
                 .where(calendar.user.userIdx.eq(userEntity.getUserIdx()))
+                .where(calendar.status.eq(Constant.ACTIVE_STATUS))
                 .orderBy(calendar.calendarDate.asc())
                 .limit(1)
                 .fetchFirst();
@@ -40,6 +41,7 @@ public class CalendarRepositoryImpl implements CalendarCustom {
                 .leftJoin(post).on(post.eq(postTag.post))
                 .leftJoin(postImg).on(post.eq(postImg.post))
                 .where(postTag.tag.tagIdx.eq(tagIdx))
+                .where(post.status.eq(Constant.ACTIVE_STATUS))
                 .groupBy(postTag.tag, post)
                 .orderBy(Expressions.numberTemplate(Double.class, "function('rand')").asc()) // 랜덤한 값을 불러오기
                 .limit(Constant.Home.HOME_RETURN_POST_COUNT)
