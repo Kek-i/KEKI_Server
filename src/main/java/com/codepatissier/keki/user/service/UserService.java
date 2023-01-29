@@ -27,7 +27,7 @@ public class UserService {
     public PostUserRes login(String email, String provider) throws BaseException{
         try {
             if(Provider.getProviderByName(provider) == null) throw new BaseException(INVALID_PROVIDER);
-            return signInOrUp(email, Provider.getProviderByName(provider));
+            return signUpOrLogin(email, Provider.getProviderByName(provider));
         } catch (BaseException e) {
             throw e;
         } catch (Exception e) {
@@ -36,7 +36,7 @@ public class UserService {
     }
 
     // 회원가입 또는 기존 로그인
-    private PostUserRes signInOrUp(String email, Provider provider) throws BaseException {
+    private PostUserRes signUpOrLogin(String email, Provider provider) throws BaseException {
         User user = userRepository.findByEmailAndProviderAndStatusNot(email, provider, Constant.INACTIVE_STATUS);
         if (user==null) user = signup(email, provider);
         user.login();
@@ -44,7 +44,7 @@ public class UserService {
         return authService.createToken(user);
     }
 
-    // ADMIN 유저 생성
+    // ANONYMOUS 유저 생성
     private User signup(String email, Provider provider) {
         User newUser = User.builder()
                 .email(email)
