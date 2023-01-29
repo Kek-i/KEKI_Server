@@ -48,7 +48,6 @@ public class CalendarService {
                     .build();
             this.calendarRepository.save(calendar);
 
-            // for문으로 추가하기
             for(CalendarHashTag hashTag: calendarReq.getHashTags()){
                 saveHashTags(calendar, hashTag);
             }
@@ -85,11 +84,14 @@ public class CalendarService {
         List<CalendarTag> tag = this.calendarTagRepository.findByCalendar(calendar);
 
         if (calendar.getUser() != user) throw new BaseException(BaseResponseStatus.NO_MATCH_CALENDAR_USER);
+
         try {
+            String day = calculateDate(calendar);
+            calendar = findCalendarByCalendarIdx(calendarIdx); // 변경된 날짜로
             return new CalendarRes(calendar.getCalendarCategory().getName(),
                     calendar.getCalendarTitle(),
                     calendar.getCalendarDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-                    calculateDate(calendar),
+                    day,
                     tag.stream().map(tags -> new CalendarHashTag(tags.getTag().getTagName())).collect(Collectors.toList()));
         } catch (Exception e) {
             throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
@@ -99,15 +101,20 @@ public class CalendarService {
     private String calculateDate(Calendar calendar) {
         String returnCalendar;
         int day = (int) Duration.between(calendar.getCalendarDate().atStartOfDay(), LocalDate.now().atStartOfDay()).toDays();
-        if(calendar.getCalendarCategory().equals(CalendarCategory.D_DAY)){
+        if(calendar.getCalendarCategory().equals(CalendarCategory.DATE_COUNT)){ // 날짜수
+            returnCalendar = "D+"+(day +1);
+        }else{
+            if(calendar.getCalendarCategory().equals(CalendarCategory.EVERY_YEAR)){
+                if(day>0){
+                    // TODO : 매년 반복 시, 작성한 날짜에서 1년을 더하는 것이 아니라 이번 년도에서 1을 더하는 것으로 코드르 변경하는 것이 필요
+                    calendar.setCalendarDate(calendar.getCalendarDate().plusYears(1));
+                    calendarRepository.save(calendar);
+                    day = (int) Duration.between(calendar.getCalendarDate().atStartOfDay(), LocalDate.now().atStartOfDay()).toDays();
+                }
+            }
             if(day == 0) returnCalendar = "D-DAY";
             else if(day > 0) returnCalendar = "D+" + day;
             else returnCalendar = "D" + day;
-        }else if(calendar.getCalendarCategory().equals(CalendarCategory.DATE_COUNT)){
-            returnCalendar = "D+"+(day +1);
-        }else{
-            // TODO 매년 반복은 스케줄러 사용 후 코드 변경을 해둘 것임.
-            returnCalendar = "D+"+(day +1);
         }
         return returnCalendar;
     }
