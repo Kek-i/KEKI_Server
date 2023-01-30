@@ -13,7 +13,6 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-@Convert(converter = EmptyStringToNullConverter.class)
 public class CalendarListRes {
     private Long calendarIdx;
     private String title;
