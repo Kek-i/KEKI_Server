@@ -121,11 +121,7 @@ public class CalendarService {
 
     public List<CalendarListRes> getCalendarList(Long userIdx) throws BaseException {
         User user = this.findUserByUserIdx(userIdx);
-
-        List<Calendar> calList = this.calendarRepository.findByUserAndStatus(user, Constant.ACTIVE_STATUS);
-        if(calList.isEmpty()) throw new BaseException(BaseResponseStatus.INVALID_CALENDAR_IDX);
-
-        return calList.stream().
+        return calendarRepository.findByUserAndStatus(user, Constant.ACTIVE_STATUS).stream().
                 map(calendar -> new CalendarListRes(calendar.getCalendarIdx(),
                         calendar.getCalendarTitle(),
                         calendar.getCalendarDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
