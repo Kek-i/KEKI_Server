@@ -69,14 +69,16 @@ public class CalendarService {
     @Transactional(rollbackFor= Exception.class)
     public void deleteCalendar(Long calendarIdx, Long userIdx) throws BaseException{
         User user = findUserByUserIdx(userIdx);
-
         Calendar calendar = findCalendarByCalendarIdx(calendarIdx);
-
-        if(!calendar.getUser().equals(user) || user.getStatus().equals(INACTIVE_STATUS)){
-            throw new BaseException(BaseResponseStatus.INVALID_USER_AND_STATUS);
+        try{
+            if(!calendar.getUser().equals(user) || user.getStatus().equals(INACTIVE_STATUS)){
+                throw new BaseException(BaseResponseStatus.INVALID_USER_AND_STATUS);
+            }
+            changeCalendarStatus(calendar, INACTIVE_STATUS);
+            changeCalendarTagStatus(calendar, INACTIVE_STATUS);
+        }catch (Exception e){
+            throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
         }
-        changeCalendarStatus(calendar, INACTIVE_STATUS);
-        changeCalendarTagStatus(calendar, INACTIVE_STATUS);
     }
 
     public CalendarRes getCalendar(Long calendarIdx, Long userIdx) throws BaseException {
@@ -132,17 +134,25 @@ public class CalendarService {
 
     public List<CalendarListRes> getCalendarList(Long userIdx) throws BaseException {
         User user = this.findUserByUserIdx(userIdx);
-        return calendarRepository.findByUserAndStatus(user, Constant.ACTIVE_STATUS).stream().
-                map(calendar -> new CalendarListRes(calendar.getCalendarIdx(),
-                        calendar.getCalendarTitle(),
-                        calendar.getCalendarDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-                        calculateDateReturnString(calculateDate(calendar)))).collect(Collectors.toList());
+        try{
+            return calendarRepository.findByUserAndStatus(user, Constant.ACTIVE_STATUS).stream().
+                    map(calendar -> new CalendarListRes(calendar.getCalendarIdx(),
+                            calendar.getCalendarTitle(),
+                            calendar.getCalendarDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                            calculateDateReturnString(calculateDate(calendar)))).collect(Collectors.toList());
+        }catch (Exception e){
+            throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
+        }
     }
 
     public List<TagRes> getCategories() throws BaseException{
-        return this.tagRepository.findByStatus(Constant.ACTIVE_STATUS).stream()
-                .map(tag -> new TagRes(tag.getTagIdx(), tag.getTagName()))
-                .collect(Collectors.toList());
+        try{
+            return this.tagRepository.findByStatus(Constant.ACTIVE_STATUS).stream()
+                    .map(tag -> new TagRes(tag.getTagIdx(), tag.getTagName()))
+                    .collect(Collectors.toList());
+        }catch (Exception e){
+            throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
+        }
     }
 
     public HomeRes getHomeCalendar(Long userIdx) throws BaseException{
@@ -189,14 +199,18 @@ public class CalendarService {
 
     public HomeRes getHomeTagPost(HomeRes home) throws BaseException{
         User user = this.findUserByUserIdx(home.getUserIdx());
-        List<PopularTagRes> tags = this.calendarTagRepository.getPopularCalendarTagByUser(user);
-        // 기념일의 태그가 3개 미만이면 다 랜덤으로 불러오고
-        if(tags.size()< Constant.Home.HOME_RETURN_TAG_COUNT){
-            home.setHomeTagResList(this.getPostByTag(this.calendarTagRepository.getPopularCalendarTag()));
-        }else{ // 태그가 3개 이상이면 태그별로 랜덤하게 불러오기
-            home.setHomeTagResList(this.getPostByTag(tags));
+        try{
+            List<PopularTagRes> tags = this.calendarTagRepository.getPopularCalendarTagByUser(user);
+            // 기념일의 태그가 3개 미만이면 다 랜덤으로 불러오고
+            if(tags.size()< Constant.Home.HOME_RETURN_TAG_COUNT){
+                home.setHomeTagResList(this.getPostByTag(this.calendarTagRepository.getPopularCalendarTag()));
+            }else{ // 태그가 3개 이상이면 태그별로 랜덤하게 불러오기
+                home.setHomeTagResList(this.getPostByTag(tags));
+            }
+            return home;
+        }catch (Exception e){
+            throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
         }
-        return home;
     }
 
     private User findUserByUserIdx(Long userIdx) throws BaseException {
