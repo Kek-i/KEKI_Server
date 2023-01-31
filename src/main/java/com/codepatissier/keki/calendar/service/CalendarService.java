@@ -22,6 +22,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.codepatissier.keki.common.Constant.ACTIVE_STATUS;
 import static com.codepatissier.keki.common.Constant.INACTIVE_STATUS;
 
 @Service
@@ -147,12 +148,20 @@ public class CalendarService {
     public HomeRes getHomeCalendar(Long userIdx) throws BaseException{
         User user = this.findUserByUserIdx(userIdx);
         try{
-            Calendar calendar = this.calendarRepository.getRecentDateCalendar(user);
+            Calendar calendar = this.calendarRepository.getRecentDateCalendar(user); // 현재 가장 가까운 캘린더 불러오기
             int day = 0;
             String title = null;
             if(calendar != null){
                 title = calendar.getCalendarTitle();
-               day = (int) Duration.between(calendar.getCalendarDate().atStartOfDay(), LocalDate.now().atStartOfDay()).toDays();
+                day = (int) Duration.between(calendar.getCalendarDate().atStartOfDay(), LocalDate.now().atStartOfDay()).toDays();
+            }
+            // 사용자의 매년 반복 캘린더 불러와서 하나씩 비교해보고, 값이 더 가까우면? 매년 반복으로 홈 화면 기념일 불러오기
+            List<Calendar> listCalendars = this.calendarRepository.findByUserAndCalendarCategoryAndStatus(user, CalendarCategory.EVERY_YEAR, ACTIVE_STATUS);
+            for(Calendar cal: listCalendars){
+                if(this.calculateDate(cal) > day){
+                    title = cal.getCalendarTitle();
+                    day = this.calculateDate(cal);
+                }
             }
             return new HomeRes(user.getUserIdx(), user.getNickname(), title, Math.abs(day), null);
 
@@ -174,7 +183,7 @@ public class CalendarService {
     private List<HomeTagRes> getPostByTag(List<PopularTagRes> popularTagRes) {
         return popularTagRes.stream()
                 .map(tag -> new HomeTagRes(tag.getTagIdx(), tag.getTagName(),
-                        this.calendarRepository.getPagByPostLimit5(tag.getTagIdx())))
+                        this.calendarRepository.getTagByPostLimit5(tag.getTagIdx())))
                 .collect(Collectors.toList());
     }
 
