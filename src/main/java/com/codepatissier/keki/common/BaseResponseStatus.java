@@ -27,6 +27,8 @@ public enum BaseResponseStatus {
     NO_PARAMETER(false, 2201, "쿼리 파라미터 조건을 설정해주세요."),
     MANY_PARAMETER(false, 2202, "쿼리 파라미터 조건을 한개만 설정해주세요."),
     INVALID_REPORT_CATEGORY(false, 2203, "신고 카테고리를 찾을 수 없습니다."),
+    INVALID_SORT_TYPE(false, 2204, "잘못된 정렬 카테고리입니다."),
+    DO_NOT_STORE_SORT_TYPE(false, 2204, "스토어별 피드는 정렬 불가합니다."),
 
     // desserts(2300~2399)
 
