@@ -89,34 +89,42 @@ public class CalendarService {
             return new CalendarRes(calendar.getCalendarCategory().getName(),
                     calendar.getCalendarTitle(),
                     calendar.getCalendarDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-                    calculateDate(calendar),
+                    calculateDateReturnString(calculateDate(calendar)),
                     tag.stream().map(tags -> new CalendarHashTag(tags.getTag().getTagName())).collect(Collectors.toList()));
         } catch (Exception e) {
             throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
         }
     }
 
-    // 기념일 계산
-    private String calculateDate(Calendar calendar) {
+    // 기념일 계산 return String
+    private String calculateDateReturnString(int day){
         String returnCalendar;
+        if(day == 0) returnCalendar = "D-DAY";
+        else if(day > 0) returnCalendar = "D+" + day;
+        else returnCalendar = "D" + day;
+        return returnCalendar;
+    }
+
+    // 기념일 계산
+    private int calculateDate(Calendar calendar) {
+        int returnCalendar;
         int day = (int) Duration.between(calendar.getCalendarDate().atStartOfDay(), LocalDate.now().atStartOfDay()).toDays();
         if(calendar.getCalendarCategory().equals(CalendarCategory.DATE_COUNT)){ // 날짜수
-            returnCalendar = "D+"+(day +1);
+            returnCalendar = day +1;
         }else{ // 디데이, 매년 반복
             if(calendar.getCalendarCategory().equals(CalendarCategory.EVERY_YEAR)){
                 if(day>0){
                     LocalDate date = calendar.getCalendarDate().withYear(LocalDate.now().getYear()); // 현재 년도로 변경
                     day = (int) Duration.between(date.atStartOfDay(), LocalDate.now().atStartOfDay()).toDays();
-                    System.out.println(day);
                     if(day>0){
                         date = date.plusYears(1);
                         day = (int) Duration.between(date.atStartOfDay(), LocalDate.now().atStartOfDay()).toDays();
                     }
                 }
             }
-            if(day == 0) returnCalendar = "D-DAY";
-            else if(day > 0) returnCalendar = "D+" + day;
-            else returnCalendar = "D" + day;
+            if(day == 0) returnCalendar = 0;
+            else if(day > 0) returnCalendar = day;
+            else returnCalendar = day;
         }
         return returnCalendar;
     }
@@ -127,7 +135,7 @@ public class CalendarService {
                 map(calendar -> new CalendarListRes(calendar.getCalendarIdx(),
                         calendar.getCalendarTitle(),
                         calendar.getCalendarDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-                        calculateDate(calendar))).collect(Collectors.toList());
+                        calculateDateReturnString(calculateDate(calendar)))).collect(Collectors.toList());
     }
 
     public List<TagRes> getCategories() throws BaseException{
