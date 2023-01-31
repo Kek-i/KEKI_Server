@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface CalendarCustom {
    Calendar getRecentDateCalendar(User user);
-   List<HomePostRes> getPagByPostLimit5(Long tagIdx);
+   List<HomePostRes> getTagByPostLimit5(Long tagIdx);
 }

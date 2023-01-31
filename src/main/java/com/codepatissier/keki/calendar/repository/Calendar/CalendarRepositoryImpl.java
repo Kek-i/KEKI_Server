@@ -16,7 +16,6 @@ import static com.codepatissier.keki.calendar.entity.QCalendar.calendar;
 import static com.codepatissier.keki.post.entity.QPost.post;
 import static com.codepatissier.keki.post.entity.QPostImg.postImg;
 import static com.codepatissier.keki.post.entity.QPostTag.postTag;
-import static com.codepatissier.keki.user.entity.QUser.user;
 
 @RequiredArgsConstructor
 public class CalendarRepositoryImpl implements CalendarCustom {
@@ -35,7 +34,7 @@ public class CalendarRepositoryImpl implements CalendarCustom {
     }
 
     @Override
-    public List<HomePostRes> getPagByPostLimit5(Long tagIdx) {
+    public List<HomePostRes> getTagByPostLimit5(Long tagIdx) {
         return jpaQueryFactory.select(new QHomePostRes(post.postIdx, postImg.imgUrl))
                 .from(postTag)
                 .leftJoin(post).on(post.eq(postTag.post))
