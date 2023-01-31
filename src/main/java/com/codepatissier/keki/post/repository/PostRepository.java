@@ -10,13 +10,18 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface PostRepository extends JpaRepository<Post, Long> {
-    List<Post> findByStoreOrderByPostIdxDesc(Store store, Pageable page);
-    List<Post> findByStoreAndPostIdxLessThanOrderByPostIdxDesc(Store store, Long postIdx, Pageable page);
-    List<Post> findByDessertDessertNameContainingOrderByPostIdxDesc(String word, Pageable page);
-    List<Post> findByDessertDessertNameContainingAndPostIdxLessThanOrderByPostIdxDesc(String word, Long postIdx, Pageable page);
-    boolean existsByStoreAndPostIdxLessThan(Store store, Long postIdx);
-    boolean existsByDessertDessertNameContainingAndPostIdxLessThan(String word, Long postIdx);
+public interface PostRepository extends JpaRepository<Post, Long>, PostCustom {
+    // 스토어별 피드
+    List<Post> findByStoreAndStatusOrderByPostIdxDesc(Store store, String status, Pageable page);
+    List<Post> findByStoreAndStatusAndPostIdxLessThanOrderByPostIdxDesc(Store store, String status, Long postIdx, Pageable page);
+    // 검색어별 피드
+    List<Post> findByDessertDessertNameContainingAndStatusOrderByPostIdxDesc(String word, String status, Pageable page);
+    List<Post> findByDessertDessertNameContainingAndStatusAndPostIdxLessThanOrderByPostIdxDesc(String word, String status, Long postIdx, Pageable page);
+    List<Post> findByDessertDessertNameContainingAndStatusOrderByDessertDessertPriceAscPostIdxDesc(String word, String status, Pageable page);
+    List<Post> findByDessertDessertNameContainingAndStatusAndPostIdxLessThanOrderByDessertDessertPriceAscPostIdxDesc(String word, String status, Long postIdx, Pageable page);
+
+    boolean existsByStoreAndStatusAndPostIdxLessThan(Store store, String status, Long postIdx);
+    boolean existsByDessertDessertNameContainingAndStatusAndPostIdxLessThan(String word, String status, Long postIdx);
     boolean existsByPostIdxLessThan(Long postIdx);
     List<Post> findTop5ByDessertAndStatusOrderByPostIdxDesc(Dessert dessert, String activeStatus);
 }

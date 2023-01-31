@@ -7,6 +7,9 @@ public class Constant {
 
     public static class Posts{
         public static final Integer DEFAULT_SIZE = 12;
+        public static final String NEW_SORT_TYPE= "최신순";
+        public static final String POPULAR_SORT_TYPE= "인기순";
+        public static final String LOW_PRICE_SORT_TYPE= "가격낮은순";
     }
 
     public static class Auth{
