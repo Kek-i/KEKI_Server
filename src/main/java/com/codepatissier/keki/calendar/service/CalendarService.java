@@ -86,30 +86,32 @@ public class CalendarService {
         if (calendar.getUser() != user) throw new BaseException(BaseResponseStatus.NO_MATCH_CALENDAR_USER);
 
         try {
-            String day = calculateDate(calendar);
-            calendar = findCalendarByCalendarIdx(calendarIdx); // 변경된 날짜로
             return new CalendarRes(calendar.getCalendarCategory().getName(),
                     calendar.getCalendarTitle(),
                     calendar.getCalendarDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-                    day,
+                    calculateDate(calendar),
                     tag.stream().map(tags -> new CalendarHashTag(tags.getTag().getTagName())).collect(Collectors.toList()));
         } catch (Exception e) {
             throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
         }
     }
 
+    // 기념일 계산
     private String calculateDate(Calendar calendar) {
         String returnCalendar;
         int day = (int) Duration.between(calendar.getCalendarDate().atStartOfDay(), LocalDate.now().atStartOfDay()).toDays();
         if(calendar.getCalendarCategory().equals(CalendarCategory.DATE_COUNT)){ // 날짜수
             returnCalendar = "D+"+(day +1);
-        }else{
+        }else{ // 디데이, 매년 반복
             if(calendar.getCalendarCategory().equals(CalendarCategory.EVERY_YEAR)){
                 if(day>0){
-                    // TODO : 매년 반복 시, 작성한 날짜에서 1년을 더하는 것이 아니라 이번 년도에서 1을 더하는 것으로 코드르 변경하는 것이 필요
-                    calendar.setCalendarDate(calendar.getCalendarDate().plusYears(1));
-                    calendarRepository.save(calendar);
-                    day = (int) Duration.between(calendar.getCalendarDate().atStartOfDay(), LocalDate.now().atStartOfDay()).toDays();
+                    LocalDate date = calendar.getCalendarDate().withYear(LocalDate.now().getYear()); // 현재 년도로 변경
+                    day = (int) Duration.between(date.atStartOfDay(), LocalDate.now().atStartOfDay()).toDays();
+                    System.out.println(day);
+                    if(day>0){
+                        date = date.plusYears(1);
+                        day = (int) Duration.between(date.atStartOfDay(), LocalDate.now().atStartOfDay()).toDays();
+                    }
                 }
             }
             if(day == 0) returnCalendar = "D-DAY";
