@@ -10,10 +10,12 @@ import lombok.Setter;
 @Getter@Setter
 public class HomePostRes {
     private Long postIdx;
+    private String storeTitle;
     private String postImgUrl;
     @QueryProjection
-    public HomePostRes(Long postIdx, String postImgUrl){
+    public HomePostRes(Long postIdx, String storeTitle, String postImgUrl){
         this.postIdx = postIdx;
+        this.storeTitle = storeTitle;
         this.postImgUrl = postImgUrl;
     }
 }

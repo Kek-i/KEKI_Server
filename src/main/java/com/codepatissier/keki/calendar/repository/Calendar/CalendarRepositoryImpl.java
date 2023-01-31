@@ -35,7 +35,7 @@ public class CalendarRepositoryImpl implements CalendarCustom {
 
     @Override
     public List<HomePostRes> getTagByPostLimit5(Long tagIdx) {
-        return jpaQueryFactory.select(new QHomePostRes(post.postIdx, postImg.imgUrl))
+        return jpaQueryFactory.select(new QHomePostRes(post.postIdx, post.store.user.nickname, postImg.imgUrl))
                 .from(postTag)
                 .leftJoin(post).on(post.eq(postTag.post))
                 .leftJoin(postImg).on(post.eq(postImg.post))
