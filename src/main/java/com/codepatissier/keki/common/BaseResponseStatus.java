@@ -18,6 +18,7 @@ public enum BaseResponseStatus {
     NULL_EMAIL(false, 2001, "이메일을 입력해주세요."),
     NULL_PROVIDER(false, 2002, "소셜 이름을 입력해주세요."),
     INVALID_PROVIDER(false, 2003, "잘못된 소셜 이름입니다."),
+    ALREADY_WITHDRAW_USER(false, 2003, "이미 삭제된 회원입니다."),
 
     // stores(2100~2199)
 
