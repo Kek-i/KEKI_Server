@@ -2,9 +2,7 @@ package com.codepatissier.keki.dessert.controller;
 
 import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.BaseResponse;
-import com.codepatissier.keki.dessert.dto.GetDessertRes;
-import com.codepatissier.keki.dessert.dto.GetStoreDessertsRes;
-import com.codepatissier.keki.dessert.dto.PostDessertReq;
+import com.codepatissier.keki.dessert.dto.*;
 import com.codepatissier.keki.dessert.service.DessertService;
 import com.codepatissier.keki.user.service.AuthService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -65,7 +63,7 @@ public class DessertController {
     }
 
     /**
-     * 상품 등록
+     * [판매자] 상품 등록
      * [POST] /desserts
      */
     @ResponseBody
@@ -80,7 +78,7 @@ public class DessertController {
     }
 
     /**
-     * 상품 삭제
+     * [판매자] 상품 삭제
      * [PATCH] /desserts/:dessertIdx
      */
     @ResponseBody
@@ -89,6 +87,35 @@ public class DessertController {
         try {
             dessertService.deleteDessert(authService.getUserIdx(), dessertIdx);
             return new BaseResponse<>(SUCCESS);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
+     * [판매자] 상품 수정
+     * [PATCH] /desserts/:dessertIdx/editDessert
+     */
+    @ResponseBody
+    @PatchMapping("/{dessertIdx}/editDessert")
+    public BaseResponse<String> editDessert(@Valid @RequestBody PatchDessertReq patchDessertReq, @PathVariable("dessertIdx") Long dessertIdx) {
+        try {
+            dessertService.modifyDessert(patchDessertReq, dessertIdx, authService.getUserIdx());
+            return new BaseResponse<>(SUCCESS);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
+     * [판매자] 상품 상세 조회
+     * [GET] /desserts/:dessertIdx/editDessert
+     */
+    @ResponseBody
+    @GetMapping("/{dessertIdx}/editDessert")
+    public BaseResponse<GetStoreDessertRes> getStoreDessert(@PathVariable("dessertIdx") Long dessertIdx) {
+        try {
+          return new BaseResponse<>(dessertService.getStoreDessert(authService.getUserIdx(), dessertIdx));
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }

@@ -13,7 +13,7 @@ import java.util.List;
 public class GetDessertRes {
     private String nickname;
     private String dessertName;
-    private int dessertPrice;
+    private Integer dessertPrice;
     private String dessertDescription;
     private List<Image> images;
 

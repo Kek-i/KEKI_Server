@@ -9,8 +9,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface PostTagRepository extends JpaRepository<PostTag, Long> {
-    List<PostTag> findByTagOrderByPostPostIdxDesc(Tag tag, Pageable page);
-    List<PostTag> findByTagAndPostPostIdxLessThanOrderByPostPostIdxDesc(Tag tag, Long postIdx, Pageable page);
+public interface PostTagRepository extends JpaRepository<PostTag, Long>, PostTagCustom {
+    List<PostTag> findByTagAndPostStatusOrderByPostPostIdxDesc(Tag tag, String status, Pageable page);
+    List<PostTag> findByTagAndPostStatusAndPostPostIdxLessThanOrderByPostPostIdxDesc(Tag tag, String status, Long postIdx, Pageable page);
     boolean existsByTagAndPostPostIdxLessThan(Tag tag, Long postIdx);
 }

@@ -27,6 +27,8 @@ public enum BaseResponseStatus {
     NO_PARAMETER(false, 2201, "쿼리 파라미터 조건을 설정해주세요."),
     MANY_PARAMETER(false, 2202, "쿼리 파라미터 조건을 한개만 설정해주세요."),
     INVALID_REPORT_CATEGORY(false, 2203, "신고 카테고리를 찾을 수 없습니다."),
+    INVALID_SORT_TYPE(false, 2204, "잘못된 정렬 카테고리입니다."),
+    DO_NOT_STORE_SORT_TYPE(false, 2204, "스토어별 피드는 정렬 불가합니다."),
 
     // desserts(2300~2399)
 
@@ -53,6 +55,13 @@ public enum BaseResponseStatus {
 
     // stores(3100~3199)
     INVALID_STORE_IDX(false, 3100, "존재하지 않는 스토어입니다."),
+    NULL_ADDRESS(false, 3101, "주소를 입력해주세요."),
+    NULL_ORDER_URL(false, 3102, "주문 링크를 입력해주세요."),
+    NULL_BUSINESS_NAME(false, 3103, "대표자명을 입력해주세요."),
+    NULL_BRAND_NAME(false, 3104, "상호명을 입력해주세요."),
+    NULL_BUSINESS_ADDRESS(false, 3105, "사업자 주소를 입력해주세요."),
+    NULL_BUSINESS_NUMBER(false, 3106, "사업자 번호를 입력해주세요."),
+    NULL_NICKNAME(false, 3107, "가게 이름을 입력해주세요."),
 
     // posts(3200~3299)
     INVALID_POST_IDX(false, 3200, "존재하지 않는 피드입니다."),
@@ -60,6 +69,10 @@ public enum BaseResponseStatus {
 
     // desserts(3300~3399)
     INVALID_DESSERT_IDX(false, 3300, "존재하지 않는 디저트입니다."),
+    NULL_DESSERT_IMG(false, 3301, "디저트 이미지를 추가해주세요."),
+    NULL_DESSERT_NAME(false, 3302, "디저트 이름을 입력해주세요."),
+    INVALID_DESERT_PRICE(false, 3303, "디저트 가격은 0원 이상이어야 합니다."),
+    NULL_DESSERT_DESCRIPTION(false, 3304, "디저트 설명을 입력해주세요."),
 
     // calendars(3400~3499)
     INVALID_CALENDAR_TAG(false, 3400, "캘린더 TAG를 찾을 수 없습니다."),

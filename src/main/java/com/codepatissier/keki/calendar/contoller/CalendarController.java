@@ -1,14 +1,12 @@
 package com.codepatissier.keki.calendar.contoller;
 
-import com.codepatissier.keki.calendar.dto.CalendarListRes;
-import com.codepatissier.keki.calendar.dto.CalendarReq;
-import com.codepatissier.keki.calendar.dto.CalendarRes;
+import com.codepatissier.keki.calendar.dto.*;
 import com.codepatissier.keki.calendar.service.CalendarService;
 import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.BaseResponse;
 import com.codepatissier.keki.common.BaseResponseStatus;
+import com.codepatissier.keki.common.Constant;
 import com.codepatissier.keki.user.service.AuthService;
-import com.nimbusds.jose.shaded.json.parser.ParseException;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -32,9 +30,7 @@ public class CalendarController {
     @PostMapping("")
     public BaseResponse<String> createCalendar(@RequestBody CalendarReq calendarReq){
         try{
-            if(calendarReq.getHashTags().size() < 1 || calendarReq.getHashTags() == null) return new BaseResponse<>(BaseResponseStatus.INVALID_POSTS_SIZE);
             if(calendarReq.getTitle().equals("") || calendarReq.getTitle() == null) return new BaseResponse<>(BaseResponseStatus.NULL_TITLE);
-            // 캘린더 LocalDataFormat 에러가 나면 해결하는 api 생성 필요
             if(calendarReq.getDate() == null || calendarReq.getDate().toString().equals("")) return new BaseResponse<>(BaseResponseStatus.NULL_DATE);
             if(calendarReq.getKindOfCalendar() == null) return new BaseResponse<>(BaseResponseStatus.NULL_KIND_OF_CALENDARS);
 
@@ -75,6 +71,35 @@ public class CalendarController {
         try{
             return new BaseResponse<>(this.calendarService.getCalendarList(this.authService.getUserIdx()));
         }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+    
+    // 카테고리 조회
+    @ResponseBody
+    @GetMapping("/categories")
+    public BaseResponse<List<TagRes>> getCategories(){
+        try{
+            return new BaseResponse<>(this.calendarService.getCategories());
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    // 홈 api
+    @ResponseBody
+    @GetMapping("/home")
+    public BaseResponse<HomeRes> getHome(){
+        try {
+            if(this.authService.getUserIdxOptional().equals(Constant.Auth.ADMIN_USERIDX)){
+                return new BaseResponse<>(this.calendarService.getHomeCalendarAndPostLogout());
+            }
+            // 아닌 경우에는 가장 가까운 기념일을 불러오고
+            HomeRes home = this.calendarService.getHomeCalendar(this.authService.getUserIdx());
+            // 기념일의 태그가 3개 미만이면 다 랜덤으로 불러오고
+            // 태그가 3개 이상이면 태그별로 랜덤하게 불러오기
+            return new BaseResponse<>(this.calendarService.getHomeTagPost(home));
+        } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
     }

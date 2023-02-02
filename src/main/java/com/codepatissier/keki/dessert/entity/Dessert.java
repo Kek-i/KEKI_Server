@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 
 @Getter
 @Entity
@@ -19,33 +19,47 @@ public class Dessert extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long dessertIdx;
 
-    @NotNull
+    @NotBlank
     @ManyToOne
     @JoinColumn(name = "storeIdx")
     private Store store;
 
-    @NotNull
+    @NotBlank
     @Column(length = 100)
     private String dessertName;
 
-    @NotNull
+    @NotBlank
     @Column
-    private int dessertPrice;
+    private Integer dessertPrice;
 
-    @NotNull
+    @NotBlank
     @Column(length = 300)
     private String dessertDescription;
 
-    @NotNull
+    @NotBlank
     @Column(length = 300)
     private String dessertImg;
 
     @Builder
-    public Dessert(Store store, String dessertName, int dessertPrice, String dessertDescription, String dessertImg) {
+    public Dessert(Store store, String dessertName, Integer dessertPrice, String dessertDescription, String dessertImg) {
         this.store = store;
         this.dessertName = dessertName;
         this.dessertPrice = dessertPrice;
         this.dessertDescription = dessertDescription;
         this.dessertImg = dessertImg;
+    }
+
+    public void setDessertImg(String dessertImg) { this.dessertImg = dessertImg; }
+
+    public void setDessertName(String dessertName) {
+        this.dessertName = dessertName;
+    }
+
+    public void setDessertPrice(Integer dessertPrice) {
+        this.dessertPrice = dessertPrice;
+    }
+
+    public void setDessertDescription(String dessertDescription) {
+        this.dessertDescription = dessertDescription;
     }
 }

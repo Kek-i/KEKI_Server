@@ -24,7 +24,7 @@ public class StoreController {
     private final AuthService authService;
 
     /**
-     * 판매자 회원가입
+     * [판매자] 회원가입
      * [POST] /stores/signup
      */
     @ResponseBody
@@ -58,7 +58,7 @@ public class StoreController {
      * 판매자 프로필 조회
      * [GET] /stores/profile/:storeIdx
      * 가게 메인 화면
-     * @return 가게 사진, 이름, 소개
+     * @return 가게 사진, 이름, 소개, 주문 링크
      */
     @ResponseBody
     @GetMapping("/profile/{storeIdx}")
@@ -71,10 +71,10 @@ public class StoreController {
     }
 
     /**
-     * 판매자 프로필 조회
+     * [판매자] 프로필 조회
      * [GET] /stores/profile
      * 마이페이지 판매자 프로필 편집
-     * @return 가게 사진, 이름, 주소, 소개, 주문 링크
+     * @return 가게 사진, 이름, 주소, 소개, 주문 링크, 사업자 정보, 이메일
      */
     @ResponseBody
     @GetMapping("/profile")
@@ -88,7 +88,7 @@ public class StoreController {
     }
 
     /**
-     * 판매자 프로필 정보 수정
+     * [판매자] 프로필 정보 수정
      * PATCH /stores/profile
      */
     @ResponseBody
