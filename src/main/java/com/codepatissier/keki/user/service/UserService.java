@@ -37,8 +37,9 @@ public class UserService {
 
     // 회원가입 또는 기존 로그인
     private PostUserRes signUpOrLogin(String email, Provider provider) throws BaseException {
-        User user = userRepository.findByEmailAndProviderAndStatusNot(email, provider, Constant.INACTIVE_STATUS);
+        User user = userRepository.findByEmailAndProvider(email, provider);
         if (user==null) user = signup(email, provider);
+        if (user.getStatus() == Constant.INACTIVE_STATUS) throw new BaseException(ALREADY_WITHDRAW_USER);
         user.login();
         userRepository.save(user);
         return authService.createToken(user);
