@@ -42,7 +42,7 @@ public class Store extends BaseEntity {
     @Column(length = 50)
     private String businessName;
 
-    // 가게 이름
+    // 상호명
     @NotBlank
     @Column(length = 50)
     private String brandName;
