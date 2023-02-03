@@ -420,7 +420,7 @@ public class PostService {
                 post.getTags().stream().map(postTag -> postTag.getTag().getTagName()).collect(Collectors.toList()),
                 post.getStore().getUser().getNickname(),
                 post.getStore().getUser().getProfileImg(),
-                this.postLikeRepository.existsByPostAndUser(post, user));
+                this.postLikeRepository.existsByPostAndUserAndStatus(post, user, ACTIVE_STATUS));
     }
 
     /**
