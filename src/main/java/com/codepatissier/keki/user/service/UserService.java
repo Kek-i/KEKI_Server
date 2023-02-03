@@ -56,7 +56,7 @@ public class UserService {
     }
 
     // 구매자 회원가입
-    @Transactional
+    @Transactional // TODO @Transactional(rollbackFor = Exception.class) 수정
     public PostUserRes signupCustomer(Long userIdx, PostCustomerReq postCustomerReq) throws BaseException{
         try {
             User user = userRepository.findByUserIdxAndStatusEquals(userIdx, Constant.ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
@@ -98,7 +98,6 @@ public class UserService {
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
-
     }
 
     // 회원 탈퇴

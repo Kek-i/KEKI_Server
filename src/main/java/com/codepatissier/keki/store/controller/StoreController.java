@@ -29,10 +29,9 @@ public class StoreController {
      */
     @ResponseBody
     @PostMapping("/signup")
-    public BaseResponse<String> createSeller(@Valid @RequestBody PostStoreReq postStoreReq) {
+    public BaseResponse<PostStoreRes> signup(@Valid @RequestBody PostStoreReq postStoreReq) {
         try {
-            storeService.createSeller(authService.getUserIdx(), postStoreReq);
-            return new BaseResponse<>(SUCCESS);
+            return new BaseResponse<>(storeService.signUpStore(authService.getUserIdx(), postStoreReq));
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
