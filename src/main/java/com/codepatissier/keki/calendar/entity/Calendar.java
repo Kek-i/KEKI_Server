@@ -6,6 +6,7 @@ import com.codepatissier.keki.user.entity.User;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
@@ -37,6 +38,17 @@ public class Calendar extends BaseEntity {
     @Column(length = 300)
     private LocalDate calendarDate;
 
+    public void setCalendarCategory(CalendarCategory calendarCategory) {
+        this.calendarCategory = calendarCategory;
+    }
+
+    public void setCalendarTitle(String calendarTitle) {
+        this.calendarTitle = calendarTitle;
+    }
+
+    public void setCalendarDate(LocalDate calendarDate) {
+        this.calendarDate = calendarDate;
+    }
     @Builder
     public Calendar(User user, CalendarCategory calendarCategory, String calendarTitle, LocalDate calendarDate) {
         this.user = user;
@@ -45,7 +57,4 @@ public class Calendar extends BaseEntity {
         this.calendarDate = calendarDate;
     }
 
-    public void setCalendarDate(LocalDate date){
-        this.calendarDate = date;
-    }
 }

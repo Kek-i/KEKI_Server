@@ -36,13 +36,10 @@ public class CalendarService {
     @Transactional(rollbackFor= Exception.class)
     public void createCalendar(Long userIdx, CalendarReq calendarReq) throws BaseException {
         try {
-            int day = (int) Duration.between(calendarReq.getDate().atStartOfDay(), LocalDate.now().atStartOfDay()).toDays();
-            if(calendarReq.getKindOfCalendar().equals(CalendarCategory.DATE_COUNT.getName()) && day<0){
-                throw new BaseException(BaseResponseStatus.INVALID_CALENDAR_DATE_COUNT);
-            }
+            CalendarCategory category = categoryMandatoryException(calendarReq);
             User user = findUserByUserIdx(userIdx);
             Calendar calendar = Calendar.builder()
-                    .calendarCategory(CalendarCategory.getCalendarCategoryByName(calendarReq.getKindOfCalendar()))
+                    .calendarCategory(category)
                     .calendarTitle(calendarReq.getTitle())
                     .calendarDate(calendarReq.getDate())
                     .user(user)
@@ -57,6 +54,18 @@ public class CalendarService {
         } catch (Exception e) {
             throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
         }
+    }
+
+    private CalendarCategory categoryMandatoryException(CalendarReq calendarReq) throws BaseException {
+        int day = (int) Duration.between(calendarReq.getDate().atStartOfDay(), LocalDate.now().atStartOfDay()).toDays();
+        if(calendarReq.getKindOfCalendar().equals(CalendarCategory.DATE_COUNT.getName()) && day<0){
+            throw new BaseException(BaseResponseStatus.INVALID_CALENDAR_DATE_COUNT);
+        }
+        CalendarCategory category = CalendarCategory.getCalendarCategoryByName(calendarReq.getKindOfCalendar());
+        if(category== null){
+            throw new BaseException(BaseResponseStatus.INVALID_CALENDAR_TAG);
+        }
+        return category;
     }
 
     private void saveHashTags(Calendar calendar, CalendarHashTag hashtag) throws BaseException {
@@ -84,7 +93,7 @@ public class CalendarService {
     public CalendarRes getCalendar(Long calendarIdx, Long userIdx) throws BaseException {
         User user = findUserByUserIdx(userIdx);
         Calendar calendar = findCalendarByCalendarIdx(calendarIdx);
-        List<CalendarTag> tag = this.calendarTagRepository.findByCalendar(calendar);
+        List<CalendarTag> tag = this.calendarTagRepository.findByCalendarAndStatus(calendar, ACTIVE_STATUS);
 
         if (calendar.getUser() != user) throw new BaseException(BaseResponseStatus.NO_MATCH_CALENDAR_USER);
 
@@ -224,7 +233,11 @@ public class CalendarService {
     }
 
     private void changeCalendarTagStatus(Calendar calendar, String status){
-        this.calendarTagRepository.findByCalendar(calendar).stream()
+        String getStatus = null;
+        if(status.equals(ACTIVE_STATUS)) getStatus = INACTIVE_STATUS;
+        else getStatus = ACTIVE_STATUS;
+
+        this.calendarTagRepository.findByCalendarAndStatus(calendar, getStatus).stream()
                 .forEach(tag -> {
                     tag.setStatus(status);
                     this.calendarTagRepository.save(tag);
@@ -236,4 +249,40 @@ public class CalendarService {
         this.calendarRepository.save(calendar);
     }
 
+    @Transactional(rollbackFor= Exception.class)
+    public void modifyCalendar(Long userIdx, CalendarReq calendarReq, Long calendarIdx) throws BaseException{
+        try{
+            User user = this.findUserByUserIdx(userIdx);
+            Calendar calendar = this.findCalendarByCalendarIdx(calendarIdx);
+            if (calendar.getUser() != user) throw new BaseException(BaseResponseStatus.NO_MATCH_CALENDAR_USER);
+            CalendarCategory category = categoryMandatoryException(calendarReq);
+
+            // TODO: 현재 수정 시 TAG의 경우에는 INACTIVE 후 새로 받은 것을 ACTIVE로 함 => DELETE로 변경?
+            if (calendarReq.getTitle() != null){
+                if(calendarReq.getTitle().equals("") || calendarReq.getTitle().equals(" "))
+                    throw new BaseException(BaseResponseStatus.NULL_CALENDAR_TITLE);
+                calendar.setCalendarTitle(calendarReq.getTitle());
+            }
+            if (calendarReq.getDate() != null) {
+                calendar.setCalendarDate(calendarReq.getDate());
+            }
+            if (calendarReq.getKindOfCalendar() != null){
+                if(calendarReq.getKindOfCalendar().equals("") || calendarReq.getKindOfCalendar().equals(" "))
+                    throw new BaseException(BaseResponseStatus.NULL_CALENDAR_CATEGORY);
+                calendar.setCalendarCategory(CalendarCategory.getCalendarCategoryByName(calendarReq.getKindOfCalendar()));
+            }
+
+            if (calendarReq.getHashTags().size() != 0) {
+                this.changeCalendarTagStatus(calendar, INACTIVE_STATUS);
+                for (CalendarHashTag hashTag : calendarReq.getHashTags()) {
+                    saveHashTags(calendar, hashTag);
+                }
+            }
+        }catch (BaseException e) {
+            throw e;
+        }catch (Exception e){
+            throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
+        }
+
+    }
 }

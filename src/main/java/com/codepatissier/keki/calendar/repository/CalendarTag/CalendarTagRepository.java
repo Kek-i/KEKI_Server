@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface CalendarTagRepository extends JpaRepository<CalendarTag, Long>, CalendarTagCustom{
-    List<CalendarTag> findByCalendar(Calendar calendar);
+    List<CalendarTag> findByCalendarAndStatus(Calendar calendar, String activeStatus);
 }
