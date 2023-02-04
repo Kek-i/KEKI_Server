@@ -20,29 +20,35 @@ import java.util.Date;
 @DynamicInsert
 public class Calendar extends BaseEntity {
     @Id
-    @Setter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long calendarIdx;
 
     @ManyToOne
-    @Setter
     @JoinColumn(nullable = false, name = "userIdx")
     private User user;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    @Setter
     private CalendarCategory calendarCategory;
 
     @Column(nullable = false, length = 300)
-    @Setter
     private String calendarTitle;
 
     @NotNull
-    @Setter
     @Column(length = 300)
     private LocalDate calendarDate;
 
+    public void setCalendarCategory(CalendarCategory calendarCategory) {
+        this.calendarCategory = calendarCategory;
+    }
+
+    public void setCalendarTitle(String calendarTitle) {
+        this.calendarTitle = calendarTitle;
+    }
+
+    public void setCalendarDate(LocalDate calendarDate) {
+        this.calendarDate = calendarDate;
+    }
     @Builder
     public Calendar(User user, CalendarCategory calendarCategory, String calendarTitle, LocalDate calendarDate) {
         this.user = user;
