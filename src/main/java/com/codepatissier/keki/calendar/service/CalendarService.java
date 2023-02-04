@@ -84,7 +84,7 @@ public class CalendarService {
     public CalendarRes getCalendar(Long calendarIdx, Long userIdx) throws BaseException {
         User user = findUserByUserIdx(userIdx);
         Calendar calendar = findCalendarByCalendarIdx(calendarIdx);
-        List<CalendarTag> tag = this.calendarTagRepository.findByCalendar(calendar);
+        List<CalendarTag> tag = this.calendarTagRepository.findByCalendarAndStatus(calendar, ACTIVE_STATUS);
 
         if (calendar.getUser() != user) throw new BaseException(BaseResponseStatus.NO_MATCH_CALENDAR_USER);
 
@@ -224,7 +224,11 @@ public class CalendarService {
     }
 
     private void changeCalendarTagStatus(Calendar calendar, String status){
-        this.calendarTagRepository.findByCalendar(calendar).stream()
+        String getStatus = null;
+        if(status.equals(ACTIVE_STATUS)) getStatus = INACTIVE_STATUS;
+        else getStatus = ACTIVE_STATUS;
+
+        this.calendarTagRepository.findByCalendarAndStatus(calendar, getStatus).stream()
                 .forEach(tag -> {
                     tag.setStatus(status);
                     this.calendarTagRepository.save(tag);
@@ -236,4 +240,26 @@ public class CalendarService {
         this.calendarRepository.save(calendar);
     }
 
+    @Transactional(rollbackFor= Exception.class)
+    public void modifyCalendar(Long userIdx, CalendarReq calendarReq, Long calendarIdx) throws BaseException{
+        User user = this.findUserByUserIdx(userIdx);
+        Calendar calendar = this.findCalendarByCalendarIdx(calendarIdx);
+        if (calendar.getUser() != user) throw new BaseException(BaseResponseStatus.NO_MATCH_CALENDAR_USER);
+
+        try{
+            // TODO: 현재 수정 시 TAG의 경우에는 INACTIVE 후 새로 받은 것을 ACTIVE로함 => DELETE로 변경?
+            if(calendarReq.getTitle() != null) calendar.setCalendarTitle(calendarReq.getTitle());
+            if(calendarReq.getDate() != null) calendar.setCalendarDate(calendarReq.getDate());
+            if(calendarReq.getKindOfCalendar() != null) calendar.setCalendarCategory(CalendarCategory.getCalendarCategoryByName(calendarReq.getKindOfCalendar()));
+            if(calendarReq.getHashTags().size() != 0) {
+                this.changeCalendarTagStatus(calendar, INACTIVE_STATUS);
+                for(CalendarHashTag hashTag: calendarReq.getHashTags()){
+                    saveHashTags(calendar, hashTag);
+                }
+            }
+        }catch (Exception e){
+            throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
+        }
+
+    }
 }

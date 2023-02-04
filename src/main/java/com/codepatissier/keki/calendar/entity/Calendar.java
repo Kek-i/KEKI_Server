@@ -6,6 +6,7 @@ import com.codepatissier.keki.user.entity.User;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
@@ -19,21 +20,26 @@ import java.util.Date;
 @DynamicInsert
 public class Calendar extends BaseEntity {
     @Id
+    @Setter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long calendarIdx;
 
     @ManyToOne
+    @Setter
     @JoinColumn(nullable = false, name = "userIdx")
     private User user;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @Setter
     private CalendarCategory calendarCategory;
 
     @Column(nullable = false, length = 300)
+    @Setter
     private String calendarTitle;
 
     @NotNull
+    @Setter
     @Column(length = 300)
     private LocalDate calendarDate;
 
@@ -45,7 +51,4 @@ public class Calendar extends BaseEntity {
         this.calendarDate = calendarDate;
     }
 
-    public void setCalendarDate(LocalDate date){
-        this.calendarDate = date;
-    }
 }
