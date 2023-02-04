@@ -2,11 +2,8 @@ package com.codepatissier.keki.post.controller;
 
 import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.BaseResponse;
-import com.codepatissier.keki.post.dto.GetPostRes;
-import com.codepatissier.keki.post.dto.GetPostsRes;
+import com.codepatissier.keki.post.dto.*;
 import com.codepatissier.keki.cs.entity.ReportCategory;
-import com.codepatissier.keki.post.dto.PostPostReq;
-import com.codepatissier.keki.post.dto.PostReportReq;
 import com.codepatissier.keki.post.service.PostService;
 import com.codepatissier.keki.user.service.AuthService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -15,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 
 import static com.codepatissier.keki.common.BaseResponseStatus.*;
 import static com.codepatissier.keki.common.Constant.Posts.*;
@@ -101,6 +100,27 @@ public class PostController {
             this.postService.doLike(authService.getUserIdx(), postIdx);
             return new BaseResponse<>(SUCCESS);
         }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
+     * 좋아요 피드 목록 조회
+     * [GET] /posts/likes? cursorDate= &size=
+     */
+    @ResponseBody
+    @GetMapping("/likes")
+    public BaseResponse<GetLikePostsRes> getLikePosts(String cursorDate, Integer size) {
+        try {
+            if(size == null) size = DEFAULT_SIZE;
+            if(size < 1) return new BaseResponse<>(INVALID_POSTS_SIZE);
+            Pageable pageable = PageRequest.of(0, size);
+
+            LocalDateTime date = null;
+            if (cursorDate != null) date = LocalDateTime.parse(cursorDate);
+
+            return new BaseResponse<>(this.postService.getLikePosts(authService.getUserIdx(), date, pageable));
+        } catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
         }
     }

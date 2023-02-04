@@ -3,11 +3,13 @@ package com.codepatissier.keki.post.entity;
 import com.codepatissier.keki.common.BaseEntity;
 import com.codepatissier.keki.user.entity.User;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 
+@Getter
 @Entity
 @NoArgsConstructor
 @DynamicInsert
