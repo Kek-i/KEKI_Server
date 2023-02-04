@@ -10,6 +10,7 @@ import com.codepatissier.keki.history.entity.PostHistory;
 import com.codepatissier.keki.history.entity.SearchHistory;
 import com.codepatissier.keki.history.repository.PostHistoryRepository;
 import com.codepatissier.keki.history.repository.SearchHistoryRepository;
+import com.codepatissier.keki.post.dto.GetPostRes;
 import com.codepatissier.keki.post.dto.GetPostsRes;
 import com.codepatissier.keki.post.dto.PostPostReq;
 import com.codepatissier.keki.post.entity.PostTag;
@@ -225,7 +226,7 @@ public class PostService {
                     .orElseThrow(() -> new BaseException(INVALID_STORE_IDX));
             User user =this.userRepository.findById(userIdx).orElse(null);
 
-            List<GetPostsRes.Feed> postList = cursorIdx == null?
+            List<GetPostRes> postList = cursorIdx == null?
                     this.getFeeds(store, user, page):
                     this.getFeedsWithCursor(store, user, cursorIdx, page);
 
@@ -246,7 +247,7 @@ public class PostService {
         try{
             User user =this.userRepository.findById(userIdx).orElse(null);
 
-            List<GetPostsRes.Feed> postList = cursorIdx == null?
+            List<GetPostRes> postList = cursorIdx == null?
                     this.getSearchFeeds(searchWord, user, sortType, page):
                     this.getSearchFeedsWithCursor(searchWord, user, sortType, cursorIdx, page);
 
@@ -277,7 +278,7 @@ public class PostService {
                     .orElseThrow(() -> new BaseException(INVALID_TAG));
             User user = this.userRepository.findById(userIdx).orElse(null);
 
-            List<GetPostsRes.Feed> postList = cursorIdx == null?
+            List<GetPostRes> postList = cursorIdx == null?
                     this.getFeedsByTag(tag, user, sortType, page):
                     this.getFeedsByTagWithCursor(tag, user, sortType, cursorIdx, page);
 
@@ -294,7 +295,7 @@ public class PostService {
     /**
      * 스토어별 최초 조회
      */
-    private List<GetPostsRes.Feed> getFeeds(Store store, User user, Pageable page) throws BaseException {
+    private List<GetPostRes> getFeeds(Store store, User user, Pageable page) throws BaseException {
         return this.postRepository.findByStoreAndStatusOrderByPostIdxDesc(store, ACTIVE_STATUS, page).stream()
                 .map(getFeedFunction(user))
                 .collect(Collectors.toList());
@@ -303,7 +304,7 @@ public class PostService {
     /**
      * 검색어별 최초 조회
      */
-    private List<GetPostsRes.Feed> getSearchFeeds(String searchWord, User user, String sortType, Pageable page) throws BaseException {
+    private List<GetPostRes> getSearchFeeds(String searchWord, User user, String sortType, Pageable page) throws BaseException {
         switch (sortType) {
             case NEW_SORT_TYPE:
                 return this.postRepository.findByDessertDessertNameContainingAndStatusOrderByPostIdxDesc(searchWord, ACTIVE_STATUS, page).stream()
@@ -325,7 +326,7 @@ public class PostService {
     /**
      * 태그별 최초 조회
      */
-    private List<GetPostsRes.Feed> getFeedsByTag(Tag tag, User user, String sortType, Pageable page) throws BaseException {
+    private List<GetPostRes> getFeedsByTag(Tag tag, User user, String sortType, Pageable page) throws BaseException {
         switch (sortType) {
             case NEW_SORT_TYPE:
                 return this.postTagRepository.findByTagAndPostStatusOrderByPostPostIdxDesc(tag, ACTIVE_STATUS, page).stream()
@@ -348,7 +349,7 @@ public class PostService {
     /**
      * 스토어별 최초 아닌 조회
      */
-    private List<GetPostsRes.Feed> getFeedsWithCursor(Store store, User user, Long cursorIdx, Pageable page) throws BaseException {
+    private List<GetPostRes> getFeedsWithCursor(Store store, User user, Long cursorIdx, Pageable page) throws BaseException {
         this.postRepository.findById(cursorIdx).orElseThrow(() -> new BaseException(INVALID_POST_IDX));
         return this.postRepository.findByStoreAndStatusAndPostIdxLessThanOrderByPostIdxDesc(store, ACTIVE_STATUS, cursorIdx, page).stream()
                 .map(getFeedFunction(user))
@@ -358,7 +359,7 @@ public class PostService {
     /**
      * 검색어별 최초 아닌 조회
      */
-    private List<GetPostsRes.Feed> getSearchFeedsWithCursor(String searchWord, User user, String sortType, Long cursorIdx, Pageable page) throws BaseException {
+    private List<GetPostRes> getSearchFeedsWithCursor(String searchWord, User user, String sortType, Long cursorIdx, Pageable page) throws BaseException {
         this.postRepository.findById(cursorIdx).orElseThrow(() -> new BaseException(INVALID_POST_IDX));
         switch (sortType) {
             case NEW_SORT_TYPE:
@@ -381,7 +382,7 @@ public class PostService {
     /**
      * 태그별 최초 아닌 조회
      */
-    private List<GetPostsRes.Feed> getFeedsByTagWithCursor(Tag tag, User user, String sortType, Long cursorIdx, Pageable page) throws BaseException {
+    private List<GetPostRes> getFeedsByTagWithCursor(Tag tag, User user, String sortType, Long cursorIdx, Pageable page) throws BaseException {
         this.postRepository.findById(cursorIdx).orElseThrow(() -> new BaseException(INVALID_POST_IDX));
 
         switch (sortType) {
@@ -401,32 +402,21 @@ public class PostService {
             default:
                 throw new BaseException(INVALID_SORT_TYPE);
         }
-//        return this.postTagRepository.findByTagAndPostPostIdxLessThanOrderByPostPostIdxDesc(tag, cursorIdx, page).stream()
-//                .map(PostTag::getPost)
-//                .map(getFeedFunction(user))
-//                .collect(Collectors.toList());
     }
 
     /**
      * Feed 만들기
      */
-    private Function<Post, GetPostsRes.Feed> getFeedFunction(User user) {
-        return post -> new GetPostsRes.Feed(
-                post.getPostIdx(),
-                post.getDessert().getDessertName(),
-                post.getDessert().getDessertPrice(),
-                post.getPostDescription(),
-                post.getImages().stream().map(PostImg::getImgUrl).collect(Collectors.toList()),
-                post.getTags().stream().map(postTag -> postTag.getTag().getTagName()).collect(Collectors.toList()),
-                post.getStore().getUser().getNickname(),
-                post.getStore().getUser().getProfileImg(),
+    private Function<Post, GetPostRes> getFeedFunction(User user) {
+        return post -> new GetPostRes(
+                post,
                 this.postLikeRepository.existsByPostAndUserAndStatus(post, user, ACTIVE_STATUS));
     }
 
     /**
      * @return 피드 목록의 마지막 피드 idx
      */
-    private static Long getLastIdxOfList(List<GetPostsRes.Feed> postList) {
+    private static Long getLastIdxOfList(List<GetPostRes> postList) {
         return postList.isEmpty() ?
                 null : postList.get(postList.size() - 1).getPostIdx();
     }
