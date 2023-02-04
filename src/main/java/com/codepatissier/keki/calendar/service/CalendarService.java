@@ -36,14 +36,7 @@ public class CalendarService {
     @Transactional(rollbackFor= Exception.class)
     public void createCalendar(Long userIdx, CalendarReq calendarReq) throws BaseException {
         try {
-            int day = (int) Duration.between(calendarReq.getDate().atStartOfDay(), LocalDate.now().atStartOfDay()).toDays();
-            if(calendarReq.getKindOfCalendar().equals(CalendarCategory.DATE_COUNT.getName()) && day<0){
-                throw new BaseException(BaseResponseStatus.INVALID_CALENDAR_DATE_COUNT);
-            }
-            CalendarCategory category = CalendarCategory.getCalendarCategoryByName(calendarReq.getKindOfCalendar());
-            if(category== null){
-                throw new BaseException(BaseResponseStatus.INVALID_CALENDAR_TAG);
-            }
+            CalendarCategory category = categoryMandatoryException(calendarReq);
             User user = findUserByUserIdx(userIdx);
             Calendar calendar = Calendar.builder()
                     .calendarCategory(category)
@@ -61,6 +54,18 @@ public class CalendarService {
         } catch (Exception e) {
             throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
         }
+    }
+
+    private CalendarCategory categoryMandatoryException(CalendarReq calendarReq) throws BaseException {
+        int day = (int) Duration.between(calendarReq.getDate().atStartOfDay(), LocalDate.now().atStartOfDay()).toDays();
+        if(calendarReq.getKindOfCalendar().equals(CalendarCategory.DATE_COUNT.getName()) && day<0){
+            throw new BaseException(BaseResponseStatus.INVALID_CALENDAR_DATE_COUNT);
+        }
+        CalendarCategory category = CalendarCategory.getCalendarCategoryByName(calendarReq.getKindOfCalendar());
+        if(category== null){
+            throw new BaseException(BaseResponseStatus.INVALID_CALENDAR_TAG);
+        }
+        return category;
     }
 
     private void saveHashTags(Calendar calendar, CalendarHashTag hashtag) throws BaseException {
@@ -250,10 +255,7 @@ public class CalendarService {
             User user = this.findUserByUserIdx(userIdx);
             Calendar calendar = this.findCalendarByCalendarIdx(calendarIdx);
             if (calendar.getUser() != user) throw new BaseException(BaseResponseStatus.NO_MATCH_CALENDAR_USER);
-            CalendarCategory category = CalendarCategory.getCalendarCategoryByName(calendarReq.getKindOfCalendar());
-            if (category == null) {
-                throw new BaseException(BaseResponseStatus.INVALID_CALENDAR_TAG);
-            }
+            CalendarCategory category = categoryMandatoryException(calendarReq);
 
             // TODO: 현재 수정 시 TAG의 경우에는 INACTIVE 후 새로 받은 것을 ACTIVE로 함 => DELETE로 변경?
             if (calendarReq.getTitle() != null){
