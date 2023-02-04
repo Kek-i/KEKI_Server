@@ -2,6 +2,7 @@ package com.codepatissier.keki.post.controller;
 
 import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.BaseResponse;
+import com.codepatissier.keki.post.dto.GetPostRes;
 import com.codepatissier.keki.post.dto.GetPostsRes;
 import com.codepatissier.keki.cs.entity.ReportCategory;
 import com.codepatissier.keki.post.dto.PostPostReq;
@@ -51,6 +52,22 @@ public class PostController {
             else if (searchWord != null) return new BaseResponse<>(this.postService.getSearchPosts(authService.getUserIdxOptional(),searchWord, sortType, cursorIdx, pageable));
             else if (searchTag != null) return new BaseResponse<>(this.postService.getPostsByTag(authService.getUserIdxOptional(), searchTag, sortType, cursorIdx, pageable));
             else return new BaseResponse<>(NO_PARAMETER);
+        } catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
+     * 피드 개별 조회
+     * [GET] /posts/:postIdx
+     */
+    @ResponseBody
+    @GetMapping("/{postIdx}")
+    public BaseResponse<GetPostRes> getPost(@PathVariable Long postIdx) {
+        try {
+            //TODO: blank 처리
+            if(postIdx == null) return  new BaseResponse<>(NULL_POST_IDX);
+            return new BaseResponse<>(this.postService.getPost(postIdx, authService.getUserIdxOptional()));
         } catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
         }

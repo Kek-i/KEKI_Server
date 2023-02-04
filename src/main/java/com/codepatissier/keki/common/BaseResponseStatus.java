@@ -30,6 +30,7 @@ public enum BaseResponseStatus {
     INVALID_REPORT_CATEGORY(false, 2203, "신고 카테고리를 찾을 수 없습니다."),
     INVALID_SORT_TYPE(false, 2204, "잘못된 정렬 카테고리입니다."),
     DO_NOT_STORE_SORT_TYPE(false, 2204, "스토어별 피드는 정렬 불가합니다."),
+    NULL_POST_IDX(false, 2205, "postIdx를 입력해주세요."),
 
     // desserts(2300~2399)
 
