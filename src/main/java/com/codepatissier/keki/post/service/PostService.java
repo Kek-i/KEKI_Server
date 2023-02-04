@@ -121,17 +121,21 @@ public class PostService {
             if (user == null) return;
             Post post = this.postRepository.findById(postIdx)
                     .orElseThrow(() -> new BaseException(INVALID_POST_IDX));
-            PostHistory postHistory = PostHistory.builder()
-                    .post(post)
-                    .user(user)
-                    .build();
 
-            this.postHistoryRepository.save(postHistory);
+            savePostHistory(user, post);
         } catch (BaseException e) {
             throw e;
         } catch (Exception e){
             throw new BaseException(DATABASE_ERROR);
         }
+    }
+
+    private void savePostHistory(User user, Post post) {
+        PostHistory postHistory = PostHistory.builder()
+                .post(post)
+                .user(user)
+                .build();
+        this.postHistoryRepository.save(postHistory);
     }
 
     /**
@@ -215,6 +219,25 @@ public class PostService {
                 .build();
         this.postRepository.save(post);
         return post;
+    }
+
+    /**
+     * 피드 개별 조회
+     */
+    public GetPostRes getPost(Long postIdx, Long userIdx) throws BaseException {
+        try{
+            Post post = this.postRepository.findById(postIdx)
+                    .orElseThrow(() -> new BaseException(INVALID_POST_IDX));
+            User user = this.userRepository.findById(userIdx).orElse(null);
+
+            GetPostRes feed = new GetPostRes(post, this.postLikeRepository.existsByPostAndUserAndStatus(post, user, ACTIVE_STATUS));
+            if(user != null) savePostHistory(user, post);
+            return feed;
+        } catch (BaseException e){
+            throw e;
+        } catch (Exception e){
+            throw new BaseException(DATABASE_ERROR);
+        }
     }
 
     /**
