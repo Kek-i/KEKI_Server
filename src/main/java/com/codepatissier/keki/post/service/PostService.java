@@ -10,14 +10,11 @@ import com.codepatissier.keki.history.entity.PostHistory;
 import com.codepatissier.keki.history.entity.SearchHistory;
 import com.codepatissier.keki.history.repository.PostHistoryRepository;
 import com.codepatissier.keki.history.repository.SearchHistoryRepository;
-import com.codepatissier.keki.post.dto.GetPostRes;
-import com.codepatissier.keki.post.dto.GetPostsRes;
-import com.codepatissier.keki.post.dto.PostPostReq;
+import com.codepatissier.keki.post.dto.*;
 import com.codepatissier.keki.post.entity.PostTag;
 import com.codepatissier.keki.cs.entity.Report;
 import com.codepatissier.keki.cs.entity.ReportCategory;
 import com.codepatissier.keki.cs.repository.ReportRepository;
-import com.codepatissier.keki.post.dto.PostReportReq;
 import com.codepatissier.keki.post.entity.Post;
 import com.codepatissier.keki.post.entity.PostImg;
 import com.codepatissier.keki.post.entity.PostLike;
@@ -34,6 +31,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -240,6 +238,25 @@ public class PostService {
         }
     }
 
+    public GetLikePostsRes getLikePosts(Long userIdx, LocalDateTime cursorDate, Pageable page) throws BaseException {
+        try{
+            User user = this.userRepository.findById(userIdx)
+                    .orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+
+            List<GetPostRes> postList = cursorDate == null?
+                    this.getFeeds(user, page):
+                    this.getFeedsWithCursor(user, cursorDate, page);
+
+            LocalDateTime lastDateOfList = getLastDateOfList(postList, user);
+            int numOfRows = postList.size();
+            return new GetLikePostsRes(postList, lastDateOfList, hasNext(user, lastDateOfList), numOfRows);
+        } catch (BaseException e){
+            throw e;
+        } catch (Exception e){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
     /**
      * 스토어별 조회
      */
@@ -316,6 +333,15 @@ public class PostService {
     }
 
     /**
+     * 좋아요별 최초 조회
+     */
+    private List<GetPostRes> getFeeds(User user, Pageable page) throws BaseException {
+        return this.postLikeRepository.findByUserAndStatusOrderByLastModifiedDateDesc(user, ACTIVE_STATUS, page).stream()
+                .map(postLike -> new GetPostRes(postLike.getPost(), true))
+                .collect(Collectors.toList());
+    }
+
+    /**
      * 스토어별 최초 조회
      */
     private List<GetPostRes> getFeeds(Store store, User user, Pageable page) throws BaseException {
@@ -367,6 +393,15 @@ public class PostService {
             default:
                 throw new BaseException(INVALID_SORT_TYPE);
         }
+    }
+
+    /**
+     * 좋아요별 최초 아닌 조회
+     */
+    private List<GetPostRes> getFeedsWithCursor(User user, LocalDateTime lastModifiedDate, Pageable page) throws BaseException {
+        return this.postLikeRepository.findByUserAndStatusAndLastModifiedDateLessThanOrderByLastModifiedDateDesc(user, ACTIVE_STATUS, lastModifiedDate, page).stream()
+                .map(postLike -> new GetPostRes(postLike.getPost(), true))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -442,6 +477,23 @@ public class PostService {
     private static Long getLastIdxOfList(List<GetPostRes> postList) {
         return postList.isEmpty() ?
                 null : postList.get(postList.size() - 1).getPostIdx();
+    }
+
+    /**
+     * @return 피드 목록의 마지막 lastModifiedDate
+     */
+    private LocalDateTime getLastDateOfList(List<GetPostRes> postList, User user) {
+        return postList.isEmpty() ?
+                null : this.postLikeRepository.findByPostAndUser(
+                        this.postRepository.findById(postList.get(postList.size()-1).getPostIdx()).get(), user).getLastModifiedDate();
+    }
+
+    /**
+     * 좋아요별
+     * @return 다음에 조회될 피드 존재 여부
+     */
+    private Boolean hasNext(User user, LocalDateTime lastDate) {
+        return lastDate != null && this.postLikeRepository.existsByUserAndStatusAndLastModifiedDateLessThan(user, ACTIVE_STATUS, lastDate);
     }
 
     /**
