@@ -82,6 +82,8 @@ public enum BaseResponseStatus {
     INVALID_CALENDAR_IDX(false, 3403, "존재하지 않는 캘린더 입니다."),
     NO_MATCH_CALENDAR_USER(false, 3404, "캘린더를 생성한 사용자가 아닙니다."),
     INVALID_CALENDAR_DATE_COUNT(false, 3405, "날짜 수는 미래 생성이 불가능 합니다."),
+    NULL_CALENDAR_TITLE(false, 3406, "제목을 입력해주세요"),
+    NULL_CALENDAR_CATEGORY(false, 3407, "카테고리를 입력해주세요"),
 
     // histories(3500~3599)
 

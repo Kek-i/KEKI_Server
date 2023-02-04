@@ -17,7 +17,6 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-@Convert(converter = EmptyStringToNullConverter.class)
 public class CalendarReq {
     private String kindOfCalendar; // 캘린더 종류
     private String title;
