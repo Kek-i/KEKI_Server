@@ -13,6 +13,7 @@ import static com.codepatissier.keki.history.entity.QSearchHistory.searchHistory
 public class SearchHistoryRepositoryImpl implements SearchHistoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
 
+    // 인기 검색어
     @Override
     public List<SearchRes> getPopularSearches() {
         return jpaQueryFactory.select(new QSearchRes(searchHistory.searchWord))
