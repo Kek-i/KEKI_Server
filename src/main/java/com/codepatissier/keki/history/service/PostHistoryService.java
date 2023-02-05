@@ -28,7 +28,7 @@ public class PostHistoryService {
         try{
             User user = this.userRepository.findById(userIdx)
                     .orElseThrow(() -> new BaseException(BaseResponseStatus.INVALID_USER_IDX));
-            return this.postHistoryRepository.findByUserOrderByCreatedDate(user).stream()
+            return this.postHistoryRepository.findTop5ByUserOrderByCreatedDateDesc(user).stream()
                     .map(postSearch -> new PostSearchRes(postSearch.getPost().getPostIdx(),
                             this.representPostImgUrl(postSearch.getPost().getImages()))).collect(Collectors.toList());
         }catch (Exception e){

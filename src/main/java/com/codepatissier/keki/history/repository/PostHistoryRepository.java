@@ -10,5 +10,5 @@ import java.util.List;
 @Repository
 public interface PostHistoryRepository extends JpaRepository<PostHistory, Long> {
 
-    List<PostHistory> findByUserOrderByCreatedDate(User user);
+    List<PostHistory> findTop5ByUserOrderByCreatedDateDesc(User user);
 }
