@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface PostHistoryRepository extends JpaRepository<PostHistory, Long> {
+public interface PostHistoryRepository extends JpaRepository<PostHistory, Long>, PostHistoryCustom{
 
-    List<PostHistory> findByUserOrderByCreatedDate(User user);
 }
