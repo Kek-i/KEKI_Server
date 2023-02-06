@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.codepatissier.keki.common.Constant.ACTIVE_STATUS;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -28,8 +30,14 @@ public class GetPostRes {
         this.dessertName = post.getDessert().getDessertName();
         this.dessertPrice = post.getDessert().getDessertPrice();
         this.description = post.getPostDescription();
-        this.postImgUrls = post.getImages().stream().map(PostImg::getImgUrl).collect(Collectors.toList());
-        this.tags = post.getTags().stream().map(postTag -> postTag.getTag().getTagName()).collect(Collectors.toList());
+        this.postImgUrls = post.getImages().stream()
+                .filter(postImg -> postImg.getStatus().equals(ACTIVE_STATUS))
+                .map(PostImg::getImgUrl)
+                .collect(Collectors.toList());
+        this.tags = post.getTags().stream()
+                .filter(postTag -> postTag.getStatus().equals(ACTIVE_STATUS))
+                .map(postTag -> postTag.getTag().getTagName())
+                .collect(Collectors.toList());
         this.storeName = post.getStore().getUser().getNickname();
         this.storeProfileImg = post.getStore().getUser().getProfileImg();
         this.like = like;

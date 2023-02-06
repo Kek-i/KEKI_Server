@@ -156,6 +156,21 @@ public class PostController {
     }
 
     /**
+     * 게시물 수정
+     * [PATCH] /posts/:postIdx/edit
+     */
+    @ResponseBody
+    @PatchMapping("/{postIdx}/edit")
+    public BaseResponse<String> modifyPost(@RequestBody PatchPostReq patchPostReq, @PathVariable Long postIdx){
+        try{
+            this.postService.modifyPost(authService.getUserIdx(), postIdx, patchPostReq);
+            return new BaseResponse<>(SUCCESS);
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
      * 게시물 삭제
      * [PATCH] /posts/:postIdx
      */
