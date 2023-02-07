@@ -31,6 +31,9 @@ public enum BaseResponseStatus {
     INVALID_SORT_TYPE(false, 2204, "잘못된 정렬 카테고리입니다."),
     DO_NOT_STORE_SORT_TYPE(false, 2204, "스토어별 피드는 정렬 불가합니다."),
     NULL_POST_IDX(false, 2205, "postIdx를 입력해주세요."),
+    NULL_CURSOR(false, 2206, "필요한 cursor를 모두 입력해주세요."),
+    MANY_CURSOR_PARAMETER(false, 2207, "cursor 조건을 한개만 입력해주세요."),
+    INVALID_SORT_TYPE_CURSOR(false, 2208, "정렬 조건과 cursor 조건을 맞춰서 입력해주세요."),
 
     // desserts(2300~2399)
 

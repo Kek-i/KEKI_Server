@@ -11,4 +11,6 @@ import java.util.List;
 public interface PostHistoryRepository extends JpaRepository<PostHistory, Long> {
 
     List<PostHistory> findByUserOrderByCreatedDate(User user);
+
+    int countByPostPostIdxEquals(Long postIdx);
 }

@@ -12,6 +12,8 @@ import java.util.List;
 public class GetPostsRes {
     private List<GetPostRes> feeds;
     private Long cursorIdx;
+    private Integer cursorPrice;
+    private Integer cursorPopularNum;
     private boolean hasNext;
     private int numOfRows;
 }

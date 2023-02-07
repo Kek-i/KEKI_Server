@@ -332,8 +332,7 @@ public class PostService {
                     this.getFeedsWithCursor(store, user, cursorIdx, page);
 
             Long lastIdxOfList = getLastIdxOfList(postList);
-            int numOfRows = postList.size();
-            return new GetPostsRes(postList, lastIdxOfList, hasNext(store,lastIdxOfList), numOfRows);
+            return new GetPostsRes(postList, lastIdxOfList, null, null, hasNext(store, lastIdxOfList), postList.size());
         } catch (BaseException e){
             throw e;
         } catch (Exception e){
@@ -344,14 +343,9 @@ public class PostService {
     /**
      * 검색 조회
      */
-    public GetPostsRes getSearchPosts(Long userIdx, String searchWord, String sortType, Long cursorIdx, Pageable page) throws BaseException {
+    public GetPostsRes getSearchPosts(Long userIdx, String searchWord, String sortType, Long cursorIdx, Integer cursorPrice, Long cursorPopularNum, Pageable page) throws BaseException {
         try{
             User user =this.userRepository.findById(userIdx).orElse(null);
-
-            List<GetPostRes> postList = cursorIdx == null?
-                    this.getSearchFeeds(searchWord, user, sortType, page):
-                    this.getSearchFeedsWithCursor(searchWord, user, sortType, cursorIdx, page);
-
             if (user != null) {
                 SearchHistory searchHistory = SearchHistory.builder()
                         .user(user)
@@ -359,10 +353,9 @@ public class PostService {
                         .build();
                 this.searchHistoryRepository.save(searchHistory);
             }
-
-            Long lastIdxOfList = getLastIdxOfList(postList);
-            int numOfRows = postList.size();
-            return new GetPostsRes(postList, lastIdxOfList, hasNext(searchWord, lastIdxOfList), numOfRows);
+            return cursorIdx == null?
+                    this.getSearchFeeds(searchWord, user, sortType, page):
+                    this.getSearchFeedsWithCursor(searchWord, user, sortType, cursorIdx, cursorPrice, cursorPopularNum, page);
         } catch (BaseException e){
             throw e;
         } catch (Exception e){
@@ -373,19 +366,15 @@ public class PostService {
     /**
      * 태그 검색 조회
      */
-    public GetPostsRes getPostsByTag(Long userIdx, String searchTag, String sortType, Long cursorIdx, Pageable page) throws BaseException {
+    public GetPostsRes getPostsByTag(Long userIdx, String searchTag, String sortType, Long cursorIdx, Integer cursorPrice, Long cursorPopularNum, Pageable page) throws BaseException {
         try{
             Tag tag = this.tagRepository.findByTagName(searchTag)
                     .orElseThrow(() -> new BaseException(INVALID_TAG));
             User user = this.userRepository.findById(userIdx).orElse(null);
 
-            List<GetPostRes> postList = cursorIdx == null?
-                    this.getFeedsByTag(tag, user, sortType, page):
-                    this.getFeedsByTagWithCursor(tag, user, sortType, cursorIdx, page);
-
-            Long lastIdxOfList = getLastIdxOfList(postList);
-            int numOfRows = postList.size();
-            return new GetPostsRes(postList, lastIdxOfList, hasNext(tag, lastIdxOfList), numOfRows);
+            return cursorIdx == null?
+                    this.getResByTag(tag, user, sortType, page):
+                    this.getResByTagWithCursor(tag, user, sortType, cursorIdx, cursorPrice, cursorPopularNum, page);
         } catch (BaseException e){
             throw e;
         } catch (Exception e){
@@ -403,65 +392,20 @@ public class PostService {
     }
 
     /**
-     * 스토어별 최초 조회
-     */
-    private List<GetPostRes> getFeeds(Store store, User user, Pageable page) throws BaseException {
-        return this.postRepository.findByStoreAndStatusOrderByPostIdxDesc(store, ACTIVE_STATUS, page).stream()
-                .map(getFeedFunction(user))
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * 검색어별 최초 조회
-     */
-    private List<GetPostRes> getSearchFeeds(String searchWord, User user, String sortType, Pageable page) throws BaseException {
-        switch (sortType) {
-            case NEW_SORT_TYPE:
-                return this.postRepository.findByDessertDessertNameContainingAndStatusOrderByPostIdxDesc(searchWord, ACTIVE_STATUS, page).stream()
-                        .map(getFeedFunction(user))
-                        .collect(Collectors.toList());
-            case POPULAR_SORT_TYPE:
-                return this.postRepository.getPopularSortSearchPosts(searchWord, page).stream()
-                        .map(getFeedFunction(user))
-                        .collect(Collectors.toList());
-            case LOW_PRICE_SORT_TYPE:
-                return this.postRepository.findByDessertDessertNameContainingAndStatusOrderByDessertDessertPriceAscPostIdxDesc(searchWord, ACTIVE_STATUS, page).stream()
-                        .map(getFeedFunction(user))
-                        .collect(Collectors.toList());
-            default:
-                throw new BaseException(INVALID_SORT_TYPE);
-        }
-    }
-
-    /**
-     * 태그별 최초 조회
-     */
-    private List<GetPostRes> getFeedsByTag(Tag tag, User user, String sortType, Pageable page) throws BaseException {
-        switch (sortType) {
-            case NEW_SORT_TYPE:
-                return this.postTagRepository.findByTagAndStatusAndPostStatusOrderByPostPostIdxDesc(tag, ACTIVE_STATUS, ACTIVE_STATUS, page).stream()
-                        .map(PostTag::getPost)
-                        .map(getFeedFunction(user))
-                        .collect(Collectors.toList());
-            case POPULAR_SORT_TYPE:
-                return this.postTagRepository.getPopularSortTagPosts(tag, page).stream()
-                        .map(getFeedFunction(user))
-                        .collect(Collectors.toList());
-            case LOW_PRICE_SORT_TYPE:
-                return this.postTagRepository.getLowPriceSortTagPosts(tag, page).stream()
-                        .map(getFeedFunction(user))
-                        .collect(Collectors.toList());
-            default:
-                throw new BaseException(INVALID_SORT_TYPE);
-        }
-    }
-
-    /**
      * 좋아요별 최초 아닌 조회
      */
     private List<GetPostRes> getFeedsWithCursor(User user, LocalDateTime lastModifiedDate, Pageable page) throws BaseException {
         return this.postLikeRepository.findByUserAndStatusAndLastModifiedDateLessThanOrderByLastModifiedDateDesc(user, ACTIVE_STATUS, lastModifiedDate, page).stream()
                 .map(postLike -> new GetPostRes(postLike.getPost(), true))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 스토어별 최초 조회
+     */
+    private List<GetPostRes> getFeeds(Store store, User user, Pageable page) throws BaseException {
+        return this.postRepository.findByStoreAndStatusOrderByPostIdxDesc(store, ACTIVE_STATUS, page).stream()
+                .map(getFeedFunction(user))
                 .collect(Collectors.toList());
     }
 
@@ -476,51 +420,147 @@ public class PostService {
     }
 
     /**
-     * 검색어별 최초 아닌 조회
+     * 검색어별 최초 조회
      */
-    private List<GetPostRes> getSearchFeedsWithCursor(String searchWord, User user, String sortType, Long cursorIdx, Pageable page) throws BaseException {
-        this.postRepository.findById(cursorIdx).orElseThrow(() -> new BaseException(INVALID_POST_IDX));
+    private GetPostsRes getSearchFeeds(String searchWord, User user, String sortType, Pageable page) throws BaseException {
+        List<GetPostRes> list;
+        Integer lastPopularNum = null;
+        Integer lastPrice = null;
+        boolean hasNext;
         switch (sortType) {
             case NEW_SORT_TYPE:
-                return this.postRepository.findByDessertDessertNameContainingAndStatusAndPostIdxLessThanOrderByPostIdxDesc(searchWord, ACTIVE_STATUS, cursorIdx, page).stream()
+                list = this.postRepository.findByDessertDessertNameContainingAndStatusOrderByPostIdxDesc(searchWord, ACTIVE_STATUS, page).stream()
                         .map(getFeedFunction(user))
                         .collect(Collectors.toList());
+                hasNext = hasNext(searchWord, getLastIdxOfList(list));
+                break;
             case POPULAR_SORT_TYPE:
-                return this.postRepository.getPopularSortSearchPostsWithCursor(searchWord, cursorIdx, page).stream()
+                list = this.postRepository.getPopularSortSearchPosts(searchWord, page).stream()
                         .map(getFeedFunction(user))
                         .collect(Collectors.toList());
+                lastPopularNum = getLastPopularNumOfList(list);
+                hasNext = hasNextByPopular(searchWord, getLastIdxOfList(list), lastPopularNum);
+                break;
             case LOW_PRICE_SORT_TYPE:
-                return this.postRepository.findByDessertDessertNameContainingAndStatusAndPostIdxLessThanOrderByDessertDessertPriceAscPostIdxDesc(searchWord, ACTIVE_STATUS, cursorIdx, page).stream()
+                list = this.postRepository.findByDessertDessertNameContainingAndStatusOrderByDessertDessertPriceAscPostIdxDesc(searchWord, ACTIVE_STATUS, page).stream()
                         .map(getFeedFunction(user))
                         .collect(Collectors.toList());
+                lastPrice = getLastPriceOfList(list);
+                hasNext = hasNextByPrice(searchWord, getLastIdxOfList(list), lastPrice);
+                break;
             default:
                 throw new BaseException(INVALID_SORT_TYPE);
         }
+        return new GetPostsRes(list, getLastIdxOfList(list),lastPrice,lastPopularNum, hasNext, list.size());
+    }
+
+    /**
+     * 검색어별 최초 아닌 조회
+     */
+    private GetPostsRes getSearchFeedsWithCursor(String searchWord, User user, String sortType, Long cursorIdx, Integer cursorPrice, Long cursorPopularNum, Pageable page) throws BaseException {
+        this.postRepository.findById(cursorIdx).orElseThrow(() -> new BaseException(INVALID_POST_IDX));
+        List<GetPostRes> list;
+        Integer lastPopularNum = null;
+        Integer lastPrice = null;
+        boolean hasNext;
+        switch (sortType) {
+            case NEW_SORT_TYPE:
+                list = this.postRepository.findByDessertDessertNameContainingAndStatusAndPostIdxLessThanOrderByPostIdxDesc(searchWord, ACTIVE_STATUS, cursorIdx, page).stream()
+                        .map(getFeedFunction(user))
+                        .collect(Collectors.toList());
+                hasNext = hasNext(searchWord, getLastIdxOfList(list));
+                break;
+            case POPULAR_SORT_TYPE:
+                list = this.postRepository.getPopularSortSearchPostsWithCursor(searchWord, cursorIdx, cursorPopularNum, page).stream()
+                        .map(getFeedFunction(user))
+                        .collect(Collectors.toList());
+                lastPopularNum = getLastPopularNumOfList(list);
+                hasNext = hasNextByPopular(searchWord, getLastIdxOfList(list), lastPopularNum);
+                break;
+            case LOW_PRICE_SORT_TYPE:
+                list = this.postRepository.getLowPriceSortSearchPostsWithCursor(searchWord, cursorIdx, cursorPrice, page).stream()
+                        .map(getFeedFunction(user))
+                        .collect(Collectors.toList());
+                lastPrice = getLastPriceOfList(list);
+                hasNext = hasNextByPrice(searchWord, getLastIdxOfList(list), lastPrice);
+                break;
+            default:
+                throw new BaseException(INVALID_SORT_TYPE);
+        }
+        return new GetPostsRes(list, getLastIdxOfList(list),lastPrice,lastPopularNum, hasNext, list.size());
+    }
+
+    /**
+     * 태그별 최초 조회
+     */
+    private GetPostsRes getResByTag(Tag tag, User user, String sortType, Pageable page) throws BaseException {
+        List<GetPostRes> list;
+        Integer lastPopularNum = null;
+        Integer lastPrice = null;
+        boolean hasNext;
+        switch (sortType) {
+            case NEW_SORT_TYPE:
+                list = this.postTagRepository.findByTagAndStatusAndPostStatusOrderByPostPostIdxDesc(tag, ACTIVE_STATUS, ACTIVE_STATUS, page).stream()
+                        .map(PostTag::getPost)
+                        .map(getFeedFunction(user))
+                        .collect(Collectors.toList());
+                hasNext = hasNext(tag, getLastIdxOfList(list));
+                break;
+            case POPULAR_SORT_TYPE:
+                list = this.postTagRepository.getPopularSortTagPosts(tag, page).stream()
+                        .map(getFeedFunction(user))
+                        .collect(Collectors.toList());
+                lastPopularNum = getLastPopularNumOfList(list);
+                hasNext = hasNextByPopular(tag, getLastIdxOfList(list), lastPopularNum);
+                break;
+            case LOW_PRICE_SORT_TYPE:
+                list = this.postTagRepository.getLowPriceSortTagPosts(tag, page).stream()
+                        .map(getFeedFunction(user))
+                        .collect(Collectors.toList());
+                lastPrice = getLastPriceOfList(list);
+                hasNext = hasNextByPrice(tag, getLastIdxOfList(list), lastPrice);
+                break;
+            default:
+                throw new BaseException(INVALID_SORT_TYPE);
+        }
+        return new GetPostsRes(list, getLastIdxOfList(list),lastPrice,lastPopularNum, hasNext, list.size());
     }
 
     /**
      * 태그별 최초 아닌 조회
      */
-    private List<GetPostRes> getFeedsByTagWithCursor(Tag tag, User user, String sortType, Long cursorIdx, Pageable page) throws BaseException {
+    private GetPostsRes getResByTagWithCursor(Tag tag, User user, String sortType, Long cursorIdx, Integer cursorPrice, Long cursorPopularNum, Pageable page) throws BaseException {
         this.postRepository.findById(cursorIdx).orElseThrow(() -> new BaseException(INVALID_POST_IDX));
-
+        List<GetPostRes> list;
+        Integer lastPopularNum = null;
+        Integer lastPrice = null;
+        boolean hasNext;
         switch (sortType) {
             case NEW_SORT_TYPE:
-                return this.postTagRepository.findByTagAndStatusAndPostStatusAndPostPostIdxLessThanOrderByPostPostIdxDesc(tag, ACTIVE_STATUS, ACTIVE_STATUS, cursorIdx, page).stream()
+                list = this.postTagRepository.findByTagAndStatusAndPostStatusAndPostPostIdxLessThanOrderByPostPostIdxDesc(tag, ACTIVE_STATUS, ACTIVE_STATUS, cursorIdx, page).stream()
                         .map(PostTag::getPost)
                         .map(getFeedFunction(user))
                         .collect(Collectors.toList());
+                hasNext = hasNext(tag, getLastIdxOfList(list));
+                break;
             case POPULAR_SORT_TYPE:
-                return this.postTagRepository.getPopularSortTagPostsWithCursor(tag, cursorIdx, page).stream()
+                list = this.postTagRepository.getPopularSortTagPostsWithCursor(tag, cursorIdx, cursorPopularNum, page).stream()
                         .map(getFeedFunction(user))
                         .collect(Collectors.toList());
+                lastPopularNum = getLastPopularNumOfList(list);
+                hasNext = hasNextByPopular(tag, getLastIdxOfList(list), lastPopularNum);
+                break;
             case LOW_PRICE_SORT_TYPE:
-                return this.postTagRepository.getLowPriceSortTagPostsWithCursor(tag, cursorIdx, page).stream()
+                list =  this.postTagRepository.getLowPriceSortTagPostsWithCursor(tag, cursorIdx, cursorPrice, page).stream()
                         .map(getFeedFunction(user))
                         .collect(Collectors.toList());
+                lastPrice = getLastPriceOfList(list);
+                hasNext = hasNextByPrice(tag, getLastIdxOfList(list), lastPrice);
+                break;
             default:
                 throw new BaseException(INVALID_SORT_TYPE);
         }
+        return new GetPostsRes(list, getLastIdxOfList(list),lastPrice, lastPopularNum, hasNext, list.size());
     }
 
     /**
@@ -535,9 +575,25 @@ public class PostService {
     /**
      * @return 피드 목록의 마지막 피드 idx
      */
-    private static Long getLastIdxOfList(List<GetPostRes> postList) {
+    private Long getLastIdxOfList(List<GetPostRes> postList) {
         return postList.isEmpty() ?
                 null : postList.get(postList.size() - 1).getPostIdx();
+    }
+
+    /**
+     * @return 피드 목록의 마지막 피드 가격
+     */
+    private Integer getLastPriceOfList(List<GetPostRes> postList) {
+        return postList.isEmpty() ?
+                null : postList.get(postList.size() - 1).getDessertPrice();
+    }
+
+    /**
+     * @return 피드 목록의 마지막 피드 조회수
+     */
+    private Integer getLastPopularNumOfList(List<GetPostRes> postList) {
+        return postList.isEmpty() ?
+                null : this.postHistoryRepository.countByPostPostIdxEquals(postList.get(postList.size()-1).getPostIdx());
     }
 
     /**
@@ -553,7 +609,7 @@ public class PostService {
      * 좋아요별
      * @return 다음에 조회될 피드 존재 여부
      */
-    private Boolean hasNext(User user, LocalDateTime lastDate) {
+    private boolean hasNext(User user, LocalDateTime lastDate) {
         return lastDate != null && this.postLikeRepository.existsByUserAndStatusAndLastModifiedDateLessThan(user, ACTIVE_STATUS, lastDate);
     }
 
@@ -561,23 +617,55 @@ public class PostService {
      * 스토어별
      * @return 다음에 조회될 피드 존재 여부
      */
-    private Boolean hasNext(Store store, Long lastIdx) {
+    private boolean hasNext(Store store, Long lastIdx) {
         return lastIdx != null && this.postRepository.existsByStoreAndStatusAndPostIdxLessThan(store, ACTIVE_STATUS, lastIdx);
     }
 
     /**
-     * 검색어별
+     * 검색어별 최신순
      * @return 다음에 조회될 피드 존재 여부
      */
-    private Boolean hasNext(String searchWord, Long lastIdx) {
+    private boolean hasNext(String searchWord, Long lastIdx) {
         return lastIdx != null && this.postRepository.existsByDessertDessertNameContainingAndStatusAndPostIdxLessThan(searchWord, ACTIVE_STATUS, lastIdx);
     }
 
     /**
-     * 태그별
+     * 검색어별 인기순
      * @return 다음에 조회될 피드 존재 여부
      */
-    private Boolean hasNext(Tag tag, Long lastIdx) {
+    private boolean hasNextByPopular(String searchWord, Long lastIdx, int lastPopularNum) {
+        return lastIdx != null && this.postRepository.existNextByPopularAndPostIdx(searchWord, lastIdx, (long) lastPopularNum);
+    }
+
+    /**
+     * 검색어별 낮은가격순
+     * @return 다음에 조회될 피드 존재 여부
+     */
+    private boolean hasNextByPrice(String searchWord, Long lastIdx, int lastPrice) {
+        return lastIdx != null && this.postRepository.existNextByPriceAndPostIdx(searchWord, lastIdx, lastPrice);
+    }
+
+    /**
+     * 태그별 최신순
+     * @return 다음에 조회될 피드 존재 여부
+     */
+    private boolean hasNext(Tag tag, Long lastIdx) {
         return lastIdx != null && this.postTagRepository.existsByTagAndPostPostIdxLessThan(tag, lastIdx);
+    }
+
+    /**
+     * 태그별 낮은가격순
+     * @return 다음에 조회될 피드 존재 여부
+     */
+    private boolean hasNextByPrice(Tag tag, Long lastIdx, int lastPrice) {
+        return lastIdx != null && this.postTagRepository.existNextByPriceAndPostIdx(tag, lastIdx, lastPrice);
+    }
+
+    /**
+     * 태그별 인기순
+     * @return 다음에 조회될 피드 존재 여부
+     */
+    private boolean hasNextByPopular(Tag tag, Long lastIdx, int lastPopularNum) {
+        return lastIdx != null && this.postTagRepository.existNextByPopularAndPostIdx(tag, lastIdx, (long) lastPopularNum);
     }
 }

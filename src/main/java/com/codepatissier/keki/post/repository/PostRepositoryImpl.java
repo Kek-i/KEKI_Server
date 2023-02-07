@@ -1,6 +1,7 @@
 package com.codepatissier.keki.post.repository;
 
 import com.codepatissier.keki.post.entity.Post;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -17,29 +18,58 @@ public class PostRepositoryImpl implements PostCustom {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<Post> getPopularSortSearchPosts(String searchWord, Pageable page) {
-        return jpaQueryFactory.select(post)
-                .from(post, postHistory)
-                .rightJoin(postHistory.post, post)
-                .where(post.dessert.dessertName.contains(searchWord),
-                        post.status.eq(ACTIVE_STATUS))
-                .groupBy(post.postIdx)
+    public List<Post> getPopularSortSearchPosts(String word, Pageable page) {
+        return getPopularSortSearchPostsQuery(word)
                 .limit(page.getPageSize())
-                .orderBy(postHistory.post.postIdx.count().desc(), post.postIdx.desc())
                 .fetch();
     }
 
     @Override
-    public List<Post> getPopularSortSearchPostsWithCursor(String searchWord, Long cursorIdx, Pageable page) {
-        return jpaQueryFactory.select(post)
-                .from(post, postHistory)
-                .rightJoin(postHistory.post, post)
-                .where(post.dessert.dessertName.contains(searchWord),
-                        post.status.eq(ACTIVE_STATUS),
-                        post.postIdx.loe(cursorIdx-1L))
-                .groupBy(post.postIdx)
+    public List<Post> getPopularSortSearchPostsWithCursor(String word, Long cursorIdx, Long cursorPopularNum, Pageable page) {
+        return getPopularSortSearchPostsQuery(word)
+                .having(postHistory.post.postIdx.count().loe(cursorPopularNum),
+                        postHistory.post.postIdx.count().eq(cursorPopularNum).and(post.postIdx.goe(cursorIdx - 1L)).not())
                 .limit(page.getPageSize())
-                .orderBy(postHistory.post.postIdx.count().desc(), post.postIdx.desc())
                 .fetch();
+    }
+
+    private JPAQuery<Post> getPopularSortSearchPostsQuery(String word) {
+        return jpaQueryFactory.selectFrom(post)
+                .leftJoin(postHistory).on(post.eq(postHistory.post))
+                .where(post.dessert.dessertName.contains(word),
+                        post.status.eq(ACTIVE_STATUS))
+                .groupBy(post)
+                .orderBy(postHistory.post.postIdx.count().desc(), post.postIdx.desc());
+    }
+
+    @Override
+    public boolean existNextByPopularAndPostIdx(String word, Long cursorIdx, Long cursorPopularNum) {
+        return getPopularSortSearchPostsQuery(word)
+                .having(postHistory.post.postIdx.count().loe(cursorPopularNum),
+                        postHistory.post.postIdx.count().eq(cursorPopularNum).and(post.postIdx.goe(cursorIdx - 1L)).not())
+                .fetchFirst() != null;
+    }
+
+    @Override
+    public List<Post> getLowPriceSortSearchPostsWithCursor(String word, Long cursorIdx, int cursorPrice, Pageable page) {
+        return getLowPriceSortSearchPostsQuery(word, cursorIdx, cursorPrice)
+                .limit(page.getPageSize())
+                .fetch();
+    }
+
+    private JPAQuery<Post> getLowPriceSortSearchPostsQuery(String word, Long cursorIdx, int cursorPrice) {
+        return jpaQueryFactory.selectFrom(post)
+                .where(post.dessert.dessertName.contains(word),
+                        post.status.eq(ACTIVE_STATUS),
+                        post.dessert.dessertPrice.goe(cursorPrice),
+                        post.dessert.dessertPrice.eq(cursorPrice).and(post.postIdx.goe(cursorIdx - 1L)).not())
+                .groupBy(post)
+                .orderBy(post.dessert.dessertPrice.asc(), post.postIdx.desc());
+    }
+
+    @Override
+    public boolean existNextByPriceAndPostIdx(String word, Long cursorIdx, int cursorPrice) {
+        return getLowPriceSortSearchPostsQuery(word, cursorIdx, cursorPrice)
+                .fetchFirst() != null;
     }
 }
