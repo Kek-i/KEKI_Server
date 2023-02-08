@@ -162,6 +162,68 @@ public class PostService {
     }
 
     /**
+     * 게시물 수정
+     */
+    @Transactional(rollbackFor= Exception.class)
+    public void modifyPost(Long userIdx, Long postIdx, PatchPostReq patchPostReq) throws BaseException {
+        try {
+            User user = this.userRepository.findByUserIdxAndStatusEquals(userIdx, ACTIVE_STATUS)
+                    .orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+            if (!Role.getRoleByName(user.getRole()).equals(Role.STORE))
+                throw new BaseException(NO_STORE_ROLE);
+
+            Post post = this.postRepository.findById(postIdx)
+                    .orElseThrow(() -> new BaseException(INVALID_POST_IDX));
+            if(!user.getUserIdx().equals(post.getStore().getUser().getUserIdx()))
+                throw new BaseException(NO_MATCH_POST_STORE);
+
+            if(patchPostReq.getDessertIdx() != null){
+                Dessert dessert = this.dessertRepository.findById(patchPostReq.getDessertIdx())
+                                .orElseThrow(() -> new BaseException(INVALID_DESSERT_IDX));
+                post.setDessert(dessert);
+            }
+            if(patchPostReq.getDescription() != null){
+                post.setPostDescription(patchPostReq.getDescription());
+            }
+            if(patchPostReq.getTags() != null){
+                List<PostTag> postTags = new ArrayList<>();
+                post.getTags().forEach(postTag -> postTag.setStatus(INACTIVE_STATUS));
+
+                for (String tagStr:patchPostReq.getTags()) {
+                    Tag tag = this.tagRepository.findByTagName(tagStr)
+                            .orElseThrow(()->new BaseException(INVALID_TAG));
+                    PostTag postTag = this.postTagRepository.findByPostAndTag(post, tag);
+                    if(postTag != null) postTag.setStatus(ACTIVE_STATUS);
+                    else postTags.add(PostTag.builder()
+                                .post(post)
+                                .tag(tag)
+                                .build());
+                }
+                this.postTagRepository.saveAll(postTags);
+            }
+            if(patchPostReq.getPostImgUrls() != null){
+                List<PostImg> postImgs = new ArrayList<>();
+                post.getImages().forEach(postImg -> postImg.setStatus(INACTIVE_STATUS));
+
+                for (String imgUrl:patchPostReq.getPostImgUrls()){
+                    PostImg postImg = this.postImgRepository.findByPostAndImgUrl(post, imgUrl);
+                    if (postImg != null) postImg.setStatus(ACTIVE_STATUS);
+                    else postImgs.add(PostImg.builder()
+                            .post(post)
+                            .imgUrl(imgUrl)
+                            .build());
+                }
+                this.postImgRepository.saveAll(postImgs);
+            }
+            this.postRepository.save(post);
+        } catch (BaseException e) {
+            throw e;
+        } catch (Exception e){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
      * 게시물 등록
      */
     @Transactional(rollbackFor= Exception.class)
@@ -378,7 +440,7 @@ public class PostService {
     private List<GetPostRes> getFeedsByTag(Tag tag, User user, String sortType, Pageable page) throws BaseException {
         switch (sortType) {
             case NEW_SORT_TYPE:
-                return this.postTagRepository.findByTagAndPostStatusOrderByPostPostIdxDesc(tag, ACTIVE_STATUS, page).stream()
+                return this.postTagRepository.findByTagAndStatusAndPostStatusOrderByPostPostIdxDesc(tag, ACTIVE_STATUS, ACTIVE_STATUS, page).stream()
                         .map(PostTag::getPost)
                         .map(getFeedFunction(user))
                         .collect(Collectors.toList());
@@ -445,7 +507,7 @@ public class PostService {
 
         switch (sortType) {
             case NEW_SORT_TYPE:
-                return this.postTagRepository.findByTagAndPostStatusAndPostPostIdxLessThanOrderByPostPostIdxDesc(tag, ACTIVE_STATUS, cursorIdx, page).stream()
+                return this.postTagRepository.findByTagAndStatusAndPostStatusAndPostPostIdxLessThanOrderByPostPostIdxDesc(tag, ACTIVE_STATUS, ACTIVE_STATUS, cursorIdx, page).stream()
                         .map(PostTag::getPost)
                         .map(getFeedFunction(user))
                         .collect(Collectors.toList());

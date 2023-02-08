@@ -25,6 +25,7 @@ public class PostTagRepositoryImpl implements PostTagCustom {
                 .leftJoin(post).on(post.eq(postTag.post))
                 .leftJoin(postHistory).on(post.eq(postHistory.post))
                 .where(postTag.tag.eq(searchTag),
+                        postTag.status.eq(ACTIVE_STATUS),
                         post.status.eq(ACTIVE_STATUS))
                 .groupBy(post)
                 .limit(page.getPageSize())
@@ -39,6 +40,7 @@ public class PostTagRepositoryImpl implements PostTagCustom {
                 .leftJoin(post).on(post.eq(postTag.post))
                 .leftJoin(postHistory).on(post.eq(postHistory.post))
                 .where(postTag.tag.eq(searchTag),
+                        postTag.status.eq(ACTIVE_STATUS),
                         post.status.eq(ACTIVE_STATUS),
                         post.postIdx.loe(cursorIdx-1L))
                 .groupBy(post)
@@ -53,6 +55,7 @@ public class PostTagRepositoryImpl implements PostTagCustom {
                 .from(postTag)
                 .leftJoin(post).on(post.eq(postTag.post))
                 .where(postTag.tag.eq(searchTag),
+                        postTag.status.eq(ACTIVE_STATUS),
                         post.status.eq(ACTIVE_STATUS))
                 .groupBy(post)
                 .limit(page.getPageSize())
@@ -66,6 +69,7 @@ public class PostTagRepositoryImpl implements PostTagCustom {
                 .from(postTag)
                 .leftJoin(post).on(post.eq(postTag.post))
                 .where(postTag.tag.eq(searchTag),
+                        postTag.status.eq(ACTIVE_STATUS),
                         post.status.eq(ACTIVE_STATUS),
                         post.postIdx.loe(cursorIdx-1L))
                 .groupBy(post)

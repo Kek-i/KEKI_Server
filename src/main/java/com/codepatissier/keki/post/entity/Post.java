@@ -44,4 +44,11 @@ public class Post extends BaseEntity {
         this.store = store;
         this.postDescription = postDescription;
     }
+
+    public void setDessert(Dessert dessert) {
+        this.dessert = dessert;
+    }
+    public void setPostDescription(String postDescription) {
+        this.postDescription = postDescription;
+    }
 }
