@@ -32,11 +32,18 @@ public class PostController {
      * [GET] /posts? storeIdx= &searchTag= &searchWord= &sortType= &size=
      * or
      * 피드 목록 조회(다음 호출)
-     * [GET] /posts? storeIdx= &searchTag= &searchWord= &cursorIdx= &sortType= &size=
+     * [GET] /posts? storeIdx= &searchTag= &searchWord= &sortType= &cursorIdx= &cursorPrice= &cursorPopularNum &size=
      */
     @ResponseBody
     @GetMapping("")
-    public BaseResponse<GetPostsRes> getPosts(@RequestParam(required = false) Long storeIdx, @RequestParam(required = false) String searchTag, @RequestParam(required = false) String searchWord, @RequestParam(required = false) String sortType, @RequestParam(required = false) Long cursorIdx, @RequestParam(required = false) Integer size){
+    public BaseResponse<GetPostsRes> getPosts(@RequestParam(required = false) Long storeIdx,
+                                              @RequestParam(required = false) String searchTag,
+                                              @RequestParam(required = false) String searchWord,
+                                              @RequestParam(required = false) String sortType,
+                                              @RequestParam(required = false) Long cursorIdx,
+                                              @RequestParam(required = false) Integer cursorPrice,
+                                              @RequestParam(required = false) Long cursorPopularNum,
+                                              @RequestParam(required = false) Integer size){
         try{
             if(size == null) size = DEFAULT_SIZE;
             if(size < 1) return new BaseResponse<>(INVALID_POSTS_SIZE);
@@ -44,12 +51,19 @@ public class PostController {
                 return new BaseResponse<>(MANY_PARAMETER);
             if(sortType != null && storeIdx != null) return new BaseResponse<>(DO_NOT_STORE_SORT_TYPE);
             if(sortType == null) sortType = NEW_SORT_TYPE;
+            if((sortType.equals(LOW_PRICE_SORT_TYPE) && cursorPrice == null) ||
+                    (sortType.equals(POPULAR_SORT_TYPE) && cursorPopularNum == null))
+                return new BaseResponse<>(INVALID_SORT_TYPE_CURSOR);
+            if((cursorIdx != null && (cursorPrice == null && cursorPopularNum == null)) ||
+                    (cursorIdx == null && (cursorPrice != null || cursorPopularNum != null)))
+                return new BaseResponse<>(NULL_CURSOR);
+            if(cursorPrice != null && cursorPopularNum != null) return new BaseResponse<>(MANY_CURSOR_PARAMETER);
 
             Pageable pageable = PageRequest.of(0, size);
 
             if (storeIdx != null) return new BaseResponse<>(this.postService.getPosts(authService.getUserIdxOptional(), storeIdx, cursorIdx, pageable));
-            else if (searchWord != null) return new BaseResponse<>(this.postService.getSearchPosts(authService.getUserIdxOptional(),searchWord, sortType, cursorIdx, pageable));
-            else if (searchTag != null) return new BaseResponse<>(this.postService.getPostsByTag(authService.getUserIdxOptional(), searchTag, sortType, cursorIdx, pageable));
+            else if (searchWord != null) return new BaseResponse<>(this.postService.getSearchPosts(authService.getUserIdxOptional(),searchWord, sortType, cursorIdx, cursorPrice, cursorPopularNum, pageable));
+            else if (searchTag != null) return new BaseResponse<>(this.postService.getPostsByTag(authService.getUserIdxOptional(), searchTag, sortType, cursorIdx, cursorPrice, cursorPopularNum, pageable));
             else return new BaseResponse<>(NO_PARAMETER);
         } catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
