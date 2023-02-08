@@ -6,7 +6,6 @@ import com.codepatissier.keki.store.entity.Store;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
@@ -22,7 +21,6 @@ public class Post extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long postIdx;
 
-    @Setter
     @ManyToOne
     @JoinColumn(nullable = false, name = "dessertIdx")
     private Dessert dessert;
@@ -31,15 +29,12 @@ public class Post extends BaseEntity {
     @JoinColumn(nullable = false, name = "storeIdx")
     private Store store;
 
-    @Setter
     @Column(nullable = false, length = 300)
     private String postDescription;
 
-    @Setter
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "post", orphanRemoval = true)
     private List<PostImg> images = new ArrayList<>();
 
-    @Setter
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", orphanRemoval = true)
     private List<PostTag> tags = new ArrayList<>();
 
@@ -47,6 +42,13 @@ public class Post extends BaseEntity {
     public Post(Dessert dessert, Store store, String postDescription) {
         this.dessert = dessert;
         this.store = store;
+        this.postDescription = postDescription;
+    }
+
+    public void setDessert(Dessert dessert) {
+        this.dessert = dessert;
+    }
+    public void setPostDescription(String postDescription) {
         this.postDescription = postDescription;
     }
 }
