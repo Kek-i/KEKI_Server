@@ -215,6 +215,7 @@ public class PostService {
                 }
                 this.postImgRepository.saveAll(postImgs);
             }
+            this.postRepository.save(post);
         } catch (BaseException e) {
             throw e;
         } catch (Exception e){

@@ -41,6 +41,18 @@ public class CalendarController {
         }
     }
 
+    // 캘린더 수정
+    @ResponseBody
+    @PatchMapping("/{calendarIdx}/edit")
+    public BaseResponse<String> modifyCalendar(@RequestBody CalendarReq calendarReq, @PathVariable("calendarIdx") Long calendarIdx){
+        try{
+            this.calendarService.modifyCalendar(this.authService.getUserIdx(), calendarReq, calendarIdx);
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS);
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
     // 캘린더 삭제
     @ResponseBody
     @PatchMapping("/{calendarIdx}")
