@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetMyPageStoreProfileRes {
+    private Long storeIdx;
     private String storeImgUrl;
     private String email;
     private String nickname;

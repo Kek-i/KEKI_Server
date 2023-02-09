@@ -81,14 +81,14 @@ public class StoreService {
         }
     }
 
-    // 마이페이지 판매자 프로필 조회
-    // 가게 사진, 이름, 주소, 소개, 주문 링크, 사업자 정보, 이메일
+    // [판매자] 판매자 프로필 조회
+    // 가게 사진, 이름, 주소, 소개, 주문 링크, 사업자 정보, 이메일, 가게 Idx
     public GetMyPageStoreProfileRes getStoreProfileMyPage(Long userIdx) throws BaseException {
         try {
             User user = userRepository.findByUserIdxAndStatusEquals(userIdx, Constant.ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
             Store store = storeRepository.findByUserAndStatus(user, Constant.ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_STORE_IDX));
 
-            return new GetMyPageStoreProfileRes(store.getUser().getProfileImg(), store.getUser().getEmail(), store.getUser().getNickname(), store.getAddress(), store.getIntroduction(), store.getOrderUrl(),
+            return new GetMyPageStoreProfileRes(store.getStoreIdx(), store.getUser().getProfileImg(), store.getUser().getEmail(), store.getUser().getNickname(), store.getAddress(), store.getIntroduction(), store.getOrderUrl(),
                     store.getBusinessName(), store.getBrandName(), store.getBusinessAddress(), store.getBusinessNumber());
         } catch (BaseException e) {
             throw e;
