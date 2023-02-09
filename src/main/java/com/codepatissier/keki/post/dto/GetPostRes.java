@@ -21,6 +21,7 @@ public class GetPostRes {
     private String description;
     private List<String> postImgUrls;
     private List<String> tags;
+    private Long storeIdx;
     private String storeName;
     private String storeProfileImg;
     private boolean like;
@@ -38,6 +39,7 @@ public class GetPostRes {
                 .filter(postTag -> postTag.getStatus().equals(ACTIVE_STATUS))
                 .map(postTag -> postTag.getTag().getTagName())
                 .collect(Collectors.toList());
+        this.storeIdx = post.getStore().getStoreIdx();
         this.storeName = post.getStore().getUser().getNickname();
         this.storeProfileImg = post.getStore().getUser().getProfileImg();
         this.like = like;
