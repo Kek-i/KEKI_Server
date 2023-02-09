@@ -305,7 +305,7 @@ public class PostService {
             User user = this.userRepository.findById(userIdx)
                     .orElseThrow(() -> new BaseException(INVALID_USER_IDX));
 
-            List<GetPostRes> postList = cursorDate == null?
+            List<GetLikePostRes> postList = cursorDate == null?
                     this.getFeeds(user, page):
                     this.getFeedsWithCursor(user, cursorDate, page);
 
@@ -386,18 +386,18 @@ public class PostService {
     /**
      * 좋아요별 최초 조회
      */
-    private List<GetPostRes> getFeeds(User user, Pageable page) throws BaseException {
+    private List<GetLikePostRes> getFeeds(User user, Pageable page) throws BaseException {
         return this.postLikeRepository.findByUserAndStatusOrderByLastModifiedDateDesc(user, ACTIVE_STATUS, page).stream()
-                .map(postLike -> new GetPostRes(postLike.getPost(), true))
+                .map(postLike -> new GetLikePostRes(postLike.getPost()))
                 .collect(Collectors.toList());
     }
 
     /**
      * 좋아요별 최초 아닌 조회
      */
-    private List<GetPostRes> getFeedsWithCursor(User user, LocalDateTime lastModifiedDate, Pageable page) throws BaseException {
+    private List<GetLikePostRes> getFeedsWithCursor(User user, LocalDateTime lastModifiedDate, Pageable page) throws BaseException {
         return this.postLikeRepository.findByUserAndStatusAndLastModifiedDateLessThanOrderByLastModifiedDateDesc(user, ACTIVE_STATUS, lastModifiedDate, page).stream()
-                .map(postLike -> new GetPostRes(postLike.getPost(), true))
+                .map(postLike -> new GetLikePostRes(postLike.getPost()))
                 .collect(Collectors.toList());
     }
 
@@ -600,7 +600,7 @@ public class PostService {
     /**
      * @return 피드 목록의 마지막 lastModifiedDate
      */
-    private LocalDateTime getLastDateOfList(List<GetPostRes> postList, User user) {
+    private LocalDateTime getLastDateOfList(List<GetLikePostRes> postList, User user) {
         return postList.isEmpty() ?
                 null : this.postLikeRepository.findByPostAndUser(
                         this.postRepository.findById(postList.get(postList.size()-1).getPostIdx()).get(), user).getLastModifiedDate();

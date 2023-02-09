@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GetLikePostsRes {
-    private List<GetPostRes> feeds;
+    private List<GetLikePostRes> feeds;
     private LocalDateTime cursorDate;
     private boolean hasNext;
     private int numOfRows;
