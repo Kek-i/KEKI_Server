@@ -17,4 +17,6 @@ public interface PostLikeRepository extends JpaRepository<PostLike, Long> {
     List<PostLike> findByUserAndStatusAndLastModifiedDateLessThanOrderByLastModifiedDateDesc(User user, String status, LocalDateTime lastModifiedDate, Pageable page);
     boolean existsByPostAndUserAndStatus(Post post, User user, String status);
     boolean existsByUserAndStatusAndLastModifiedDateLessThan(User user, String status, LocalDateTime lastDate);
+
+    void deleteByPost(Post post);
 }

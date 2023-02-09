@@ -189,7 +189,7 @@ public class PostController {
      * [PATCH] /posts/:postIdx
      */
     @ResponseBody
-    @PatchMapping("/{postIdx}")
+    @DeleteMapping("/{postIdx}")
     public BaseResponse<String> deletePost(@PathVariable Long postIdx){
         try{
             this.postService.deletePost(authService.getUserIdx(), postIdx);

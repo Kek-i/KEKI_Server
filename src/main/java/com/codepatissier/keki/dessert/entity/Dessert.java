@@ -1,11 +1,13 @@
 package com.codepatissier.keki.dessert.entity;
 
 import com.codepatissier.keki.common.BaseEntity;
+import com.codepatissier.keki.common.entityListener.DessertEntityListener;
 import com.codepatissier.keki.store.entity.Store;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -14,6 +16,8 @@ import javax.validation.constraints.NotBlank;
 @Entity
 @NoArgsConstructor
 @DynamicInsert
+@SQLDelete(sql = "UPDATE dessert SET status = 'inactive' WHERE dessert_idx = ?")
+@EntityListeners(DessertEntityListener.class)
 public class Dessert extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,12 +1,14 @@
 package com.codepatissier.keki.post.entity;
 
 import com.codepatissier.keki.common.BaseEntity;
+import com.codepatissier.keki.common.entityListener.PostEntityListener;
 import com.codepatissier.keki.dessert.entity.Dessert;
 import com.codepatissier.keki.store.entity.Store;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -16,6 +18,8 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @DynamicInsert
+@SQLDelete(sql = "UPDATE post SET status = 'inactive' WHERE post_idx = ?")
+@EntityListeners(PostEntityListener.class)
 public class Post extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

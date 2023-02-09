@@ -151,9 +151,10 @@ public class PostService {
             if(!user.getUserIdx().equals(post.getStore().getUser().getUserIdx()))
                 throw new BaseException(NO_MATCH_POST_STORE);
 
-            post.setStatus(INACTIVE_STATUS);
-
-            this.postRepository.save(post);
+            this.postRepository.deleteById(postIdx);
+//            post.setStatus(INACTIVE_STATUS);
+//
+//            this.postRepository.save(post);
         } catch (BaseException e) {
             throw e;
         } catch (Exception e){
