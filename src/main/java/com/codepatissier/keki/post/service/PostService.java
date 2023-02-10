@@ -164,6 +164,38 @@ public class PostService {
     }
 
     /**
+     * 게시물 수정 화면
+     */
+    public GetModifyPostRes getModifyPostView(Long userIdx, Long postIdx) throws BaseException {
+        try {
+            User user = this.userRepository.findByUserIdxAndStatusEquals(userIdx, ACTIVE_STATUS)
+                    .orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+            if (!Role.getRoleByName(user.getRole()).equals(Role.STORE))
+                throw new BaseException(NO_STORE_ROLE);
+            Store store = this.storeRepository.findByUser(user)
+                    .orElseThrow(()->new BaseException(INVALID_STORE_IDX));
+            Post post = this.postRepository.findById(postIdx)
+                    .orElseThrow(() -> new BaseException(INVALID_POST_IDX));
+
+            return new GetModifyPostRes(post, getDefaultDessertsAndTags(store));
+        } catch (BaseException e) {
+            throw e;
+        } catch (Exception e){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    private GetMakePostRes getDefaultDessertsAndTags(Store store) {
+        List<DessertsRes> desserts = this.dessertRepository.findByStoreAndStatusOrderByDessertIdx(store, ACTIVE_STATUS).stream()
+                .map(dessert -> new DessertsRes(dessert.getDessertIdx(), dessert.getDessertName()))
+                .collect(Collectors.toList());
+        List<String> tags = this.tagRepository.findByStatus(Constant.ACTIVE_STATUS).stream()
+                .map(Tag::getTagName)
+                .collect(Collectors.toList());
+        return new GetMakePostRes(desserts, tags);
+    }
+
+    /**
      * 게시물 수정
      */
     @Transactional(rollbackFor= Exception.class)
@@ -237,13 +269,7 @@ public class PostService {
 
             Store store = this.storeRepository.findByUser(user)
                     .orElseThrow(()->new BaseException(INVALID_STORE_IDX));
-            List<GetMakePostRes.DessertsRes> desserts = this.dessertRepository.findByStoreAndStatusOrderByDessertIdx(store, ACTIVE_STATUS).stream()
-                    .map(dessert -> new GetMakePostRes.DessertsRes(dessert.getDessertIdx(), dessert.getDessertName()))
-                    .collect(Collectors.toList());
-            List<String> tags = this.tagRepository.findByStatus(Constant.ACTIVE_STATUS).stream()
-                    .map(Tag::getTagName)
-                    .collect(Collectors.toList());
-            return new GetMakePostRes(desserts, tags);
+            return getDefaultDessertsAndTags(store);
         } catch (BaseException e) {
             throw e;
         } catch (Exception e){
