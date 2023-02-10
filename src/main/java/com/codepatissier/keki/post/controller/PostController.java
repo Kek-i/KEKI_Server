@@ -155,6 +155,20 @@ public class PostController {
     }
 
     /**
+     * 게시물 등록 화면
+     * [GET] /posts/makeView
+     */
+    @ResponseBody
+    @GetMapping("/makeView")
+    public BaseResponse<GetMakePostRes> getMakePostView(){
+        try{
+            return new BaseResponse<>(this.postService.getMakePostView(authService.getUserIdx()));
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
      * 게시물 등록
      * [POST] /posts
      */
