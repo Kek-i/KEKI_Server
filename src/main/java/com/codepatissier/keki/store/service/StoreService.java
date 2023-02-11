@@ -97,7 +97,7 @@ public class StoreService {
         }
     }
 
-    // 가게 프로필 수정
+    // [판매자] 가게 프로필 수정
     // 가게 사진, 이름, 주소, 소개, 주문 링크, 사업자 정보
     @Transactional(rollbackFor = Exception.class)
     public void modifyProfile(Long userIdx, PatchProfileReq patchProfileReq) throws BaseException {

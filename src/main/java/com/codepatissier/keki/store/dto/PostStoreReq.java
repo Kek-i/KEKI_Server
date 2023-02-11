@@ -1,33 +1,29 @@
 package com.codepatissier.keki.store.dto;
 
 import com.codepatissier.keki.common.EmptyStringToNullConverter;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import javax.persistence.Convert;
 import javax.validation.constraints.NotBlank;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class PostStoreReq {
-    @NotBlank
+    @NotBlank(message = "닉네임은 필수 항목입니다.")
     private String nickname;
     @Convert(converter = EmptyStringToNullConverter.class)
     private String storeImgUrl;
-    @NotBlank
+    @NotBlank(message = "가게 주소는 필수 항목입니다.")
     private String address;
     @Convert(converter = EmptyStringToNullConverter.class)
     private String introduction;
-    @NotBlank
+    @NotBlank(message = "주문 링크는 필수 항목입니다.")
     private String orderUrl;
-    @NotBlank
+    @NotBlank(message = "대표자명은 필수 항목입니다.")
     private String businessName;
-    @NotBlank
+    @NotBlank(message = "상호명은 필수 항목입니다.")
     private String brandName;
-    @NotBlank
+    @NotBlank(message = "사업자 주소는 필수 항목입니다.")
     private String businessAddress;
-    @NotBlank
+    @NotBlank(message = "사업자 번호는 필수 항목입니다.")
     private String businessNumber;
 }
