@@ -98,7 +98,7 @@ public class DessertController {
      */
     @ResponseBody
     @PatchMapping("/{dessertIdx}/editDessert")
-    public BaseResponse<String> editDessert(@Valid @RequestBody PatchDessertReq patchDessertReq, @PathVariable("dessertIdx") Long dessertIdx) {
+    public BaseResponse<String> editDessert(@RequestBody PatchDessertReq patchDessertReq, @PathVariable("dessertIdx") Long dessertIdx) {
         try {
             dessertService.modifyDessert(patchDessertReq, dessertIdx, authService.getUserIdx());
             return new BaseResponse<>(SUCCESS);
