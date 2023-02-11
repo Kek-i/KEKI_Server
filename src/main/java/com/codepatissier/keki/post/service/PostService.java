@@ -1,6 +1,8 @@
 package com.codepatissier.keki.post.service;
 
+import com.codepatissier.keki.calendar.dto.TagRes;
 import com.codepatissier.keki.common.BaseException;
+import com.codepatissier.keki.common.Constant;
 import com.codepatissier.keki.common.Role;
 import com.codepatissier.keki.common.Tag.Tag;
 import com.codepatissier.keki.common.Tag.TagRepository;
@@ -216,6 +218,32 @@ public class PostService {
                 this.postImgRepository.saveAll(postImgs);
             }
             this.postRepository.save(post);
+        } catch (BaseException e) {
+            throw e;
+        } catch (Exception e){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     * 게시물 등록 화면
+     */
+    public GetMakePostRes getMakePostView(Long userIdx) throws BaseException {
+        try {
+            User user = this.userRepository.findByUserIdxAndStatusEquals(userIdx, ACTIVE_STATUS)
+                    .orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+            if (!Role.getRoleByName(user.getRole()).equals(Role.STORE))
+                throw new BaseException(NO_STORE_ROLE);
+
+            Store store = this.storeRepository.findByUser(user)
+                    .orElseThrow(()->new BaseException(INVALID_STORE_IDX));
+            List<GetMakePostRes.DessertsRes> desserts = this.dessertRepository.findByStoreAndStatusOrderByDessertIdx(store, ACTIVE_STATUS).stream()
+                    .map(dessert -> new GetMakePostRes.DessertsRes(dessert.getDessertIdx(), dessert.getDessertName()))
+                    .collect(Collectors.toList());
+            List<String> tags = this.tagRepository.findByStatus(Constant.ACTIVE_STATUS).stream()
+                    .map(Tag::getTagName)
+                    .collect(Collectors.toList());
+            return new GetMakePostRes(desserts, tags);
         } catch (BaseException e) {
             throw e;
         } catch (Exception e){
