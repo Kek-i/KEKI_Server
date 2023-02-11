@@ -184,6 +184,20 @@ public class PostController {
     }
 
     /**
+     * 게시물 수정 화면
+     * [GET] /posts/:postIdx/editView
+     */
+    @ResponseBody
+    @GetMapping("/{postIdx}/editView")
+    public BaseResponse<GetModifyPostRes> getModifyPostView(@PathVariable Long postIdx){
+        try{
+            return new BaseResponse<>(this.postService.getModifyPostView(authService.getUserIdx(), postIdx));
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
      * 게시물 수정
      * [PATCH] /posts/:postIdx/edit
      */
