@@ -79,7 +79,7 @@ public class DessertController {
 
     /**
      * [판매자] 상품 삭제
-     * [PATCH] /desserts/:dessertIdx
+     * [DELETE] /desserts/:dessertIdx
      */
     @ResponseBody
     @DeleteMapping("/{dessertIdx}")
