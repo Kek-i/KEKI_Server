@@ -14,7 +14,7 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor
 @DynamicInsert
-@SQLDelete(sql = "UPDATE post_like SET status = 'inactive' WHERE post_like_idx = ?")
+@SQLDelete(sql = "UPDATE post_like SET status = 'inactive', last_modified_date = current_timestamp WHERE post_like_idx = ?")
 public class PostLike extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -16,7 +16,7 @@ import javax.validation.constraints.NotBlank;
 @Entity
 @NoArgsConstructor
 @DynamicInsert
-@SQLDelete(sql = "UPDATE dessert SET status = 'inactive' WHERE dessert_idx = ?")
+@SQLDelete(sql = "UPDATE dessert SET status = 'inactive', last_modified_date = current_timestamp WHERE dessert_idx = ?")
 @EntityListeners(DessertEntityListener.class)
 public class Dessert extends BaseEntity {
     @Id

@@ -18,7 +18,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @DynamicInsert
-@SQLDelete(sql = "UPDATE post SET status = 'inactive' WHERE post_idx = ?")
+@SQLDelete(sql = "UPDATE post SET status = 'inactive', last_modified_date = current_timestamp WHERE post_idx = ?")
 @EntityListeners(PostEntityListener.class)
 public class Post extends BaseEntity {
     @Id
