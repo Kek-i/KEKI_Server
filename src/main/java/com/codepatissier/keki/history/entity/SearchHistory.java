@@ -19,7 +19,7 @@ public class SearchHistory extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long searchHistoryIdx;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(nullable = false, name = "userIdx")
     private User user;
 
