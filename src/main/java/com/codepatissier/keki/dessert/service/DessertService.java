@@ -134,11 +134,8 @@ public class DessertService {
     public void deleteDessert(Long userIdx, Long dessertIdx) throws BaseException {
         try {
             checkStore(userIdx);
-            Dessert dessert = dessertRepository.findByDessertIdxAndStatus(dessertIdx, Constant.ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_DESSERT_IDX));
-            dessert.setStatus(INACTIVE_STATUS);
-            dessertRepository.save(dessert);
-        } catch (BaseException e) {
-            throw e;
+            dessertRepository.deleteById(dessertIdx);
+//            dessertRepository.save(dessert);
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
