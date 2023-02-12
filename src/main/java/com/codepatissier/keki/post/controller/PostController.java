@@ -176,6 +176,10 @@ public class PostController {
     @PostMapping("")
     public BaseResponse<String> makePost(@RequestBody PostPostReq postPostReq){
         try{
+            if (postPostReq.getPostImgUrls().size() > 5 || postPostReq.getPostImgUrls().size() < 1)
+                return new BaseResponse<>(INVALID_IMAGE_NUM);
+            if (postPostReq.getTags().size() > 3 || postPostReq.getTags().size() < 1)
+                return new BaseResponse<>(INVALID_TAG_NUM);
             this.postService.makePost(authService.getUserIdx(), postPostReq);
             return new BaseResponse<>(SUCCESS);
         }catch (BaseException e){
@@ -205,6 +209,10 @@ public class PostController {
     @PatchMapping("/{postIdx}/edit")
     public BaseResponse<String> modifyPost(@RequestBody PatchPostReq patchPostReq, @PathVariable Long postIdx){
         try{
+            if (patchPostReq.getPostImgUrls() != null && (patchPostReq.getPostImgUrls().size() > 5 || patchPostReq.getPostImgUrls().size() < 1))
+                return new BaseResponse<>(INVALID_IMAGE_NUM);
+            if (patchPostReq.getTags() != null && (patchPostReq.getTags().size() > 3 || patchPostReq.getTags().size() < 1))
+                return new BaseResponse<>(INVALID_TAG_NUM);
             this.postService.modifyPost(authService.getUserIdx(), postIdx, patchPostReq);
             return new BaseResponse<>(SUCCESS);
         }catch (BaseException e){
