@@ -71,13 +71,6 @@ public class CalendarService {
         return category;
     }
 
-    // tag 저장
-    private void saveHashTags(Calendar calendar, CalendarHashTag hashtag) throws BaseException {
-        this.calendarTagRepository.save(CalendarTag.builder()
-                .tag(findByTagName(hashtag))
-                .calendar(calendar)
-                .build());
-    }
 
     /**
      * tag 찾기
@@ -123,15 +116,6 @@ public class CalendarService {
         }
     }
 
-    // 기념일 계산 return String
-    private String calculateDateReturnString(int day){
-        String returnCalendar;
-        if(day == 0) returnCalendar = "D-DAY";
-        else if(day > 0) returnCalendar = "D+" + day;
-        else returnCalendar = "D" + day;
-        return returnCalendar;
-    }
-
     // 기념일 계산
     private int calculateDate(Calendar calendar) {
         int returnCalendar;
@@ -153,6 +137,15 @@ public class CalendarService {
             else if(day > 0) returnCalendar = day;
             else returnCalendar = day;
         }
+        return returnCalendar;
+    }
+
+    // 기념일 계산 return String
+    private String calculateDateReturnString(int day){
+        String returnCalendar;
+        if(day == 0) returnCalendar = "D-DAY";
+        else if(day > 0) returnCalendar = "D+" + day;
+        else returnCalendar = "D" + day;
         return returnCalendar;
     }
 
@@ -216,13 +209,6 @@ public class CalendarService {
         }
     }
 
-    // tag 별 게시물 찾기
-    private List<HomeTagRes> getPostByTag(List<PopularTagRes> popularTagRes) {
-        return popularTagRes.stream()
-                .map(tag -> new HomeTagRes(tag.getTagIdx(), tag.getTagName(),
-                        this.calendarRepository.getTagByPostLimit5(tag.getTagIdx())))
-                .collect(Collectors.toList());
-    }
 
     // home api
     public HomeRes getHomeTagPost(HomeRes home) throws BaseException{
@@ -241,36 +227,6 @@ public class CalendarService {
         }
     }
 
-    // 사용자 찾기
-    private User findUserByUserIdx(Long userIdx) throws BaseException {
-        return this.userRepository.findByUserIdxAndStatusEquals(userIdx, Constant.ACTIVE_STATUS).
-                orElseThrow(() -> new BaseException(BaseResponseStatus.INVALID_USER_IDX));
-    }
-
-    // 캘린더 번호로 캘린더 찾기
-    private Calendar findCalendarByCalendarIdx(Long calendarIdx) throws BaseException {
-        return this.calendarRepository.findByCalendarIdxAndStatus(calendarIdx, Constant.ACTIVE_STATUS)
-                .orElseThrow(() -> new BaseException(BaseResponseStatus.INVALID_CALENDAR_IDX));
-    }
-
-    // 태그 상태 변경
-    private void changeCalendarTagStatus(Calendar calendar, String status){
-        String getStatus = null;
-        if(status.equals(ACTIVE_STATUS)) getStatus = INACTIVE_STATUS;
-        else getStatus = ACTIVE_STATUS;
-
-        this.calendarTagRepository.findByCalendarAndStatus(calendar, getStatus).stream()
-                .forEach(tag -> {
-                    tag.setStatus(status);
-                    this.calendarTagRepository.save(tag);
-                });
-    }
-
-    // 캘린더 상태 변경 [삭제 시]
-    private void changeCalendarStatus(Calendar calendar, String status) {
-        calendar.setStatus(status);
-        this.calendarRepository.save(calendar);
-    }
 
     // 캘린더 수정
     @Transactional(rollbackFor= Exception.class)
@@ -311,5 +267,56 @@ public class CalendarService {
             throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
         }
 
+    }
+
+    /**
+     * extract method
+     */
+
+    // 사용자 찾기
+    private User findUserByUserIdx(Long userIdx) throws BaseException {
+        return this.userRepository.findByUserIdxAndStatusEquals(userIdx, Constant.ACTIVE_STATUS).
+                orElseThrow(() -> new BaseException(BaseResponseStatus.INVALID_USER_IDX));
+    }
+
+    // 캘린더 번호로 캘린더 찾기
+    private Calendar findCalendarByCalendarIdx(Long calendarIdx) throws BaseException {
+        return this.calendarRepository.findByCalendarIdxAndStatus(calendarIdx, Constant.ACTIVE_STATUS)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.INVALID_CALENDAR_IDX));
+    }
+
+    // 태그 상태 변경
+    private void changeCalendarTagStatus(Calendar calendar, String status){
+        String getStatus = null;
+        if(status.equals(ACTIVE_STATUS)) getStatus = INACTIVE_STATUS;
+        else getStatus = ACTIVE_STATUS;
+
+        this.calendarTagRepository.findByCalendarAndStatus(calendar, getStatus).stream()
+                .forEach(tag -> {
+                    tag.setStatus(status);
+                    this.calendarTagRepository.save(tag);
+                });
+    }
+
+    // tag 별 게시물 찾기
+    private List<HomeTagRes> getPostByTag(List<PopularTagRes> popularTagRes) {
+        return popularTagRes.stream()
+                .map(tag -> new HomeTagRes(tag.getTagIdx(), tag.getTagName(),
+                        this.calendarRepository.getTagByPostLimit5(tag.getTagIdx())))
+                .collect(Collectors.toList());
+    }
+
+    // 캘린더 상태 변경 [삭제 시]
+    private void changeCalendarStatus(Calendar calendar, String status) {
+        calendar.setStatus(status);
+        this.calendarRepository.save(calendar);
+    }
+
+    // tag 저장
+    private void saveHashTags(Calendar calendar, CalendarHashTag hashtag) throws BaseException {
+        this.calendarTagRepository.save(CalendarTag.builder()
+                .tag(findByTagName(hashtag))
+                .calendar(calendar)
+                .build());
     }
 }
