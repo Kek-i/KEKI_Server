@@ -299,7 +299,6 @@ public class CalendarService {
     public CalendarRes getEditCalendar(Long userIdx, Long calendarIdx) throws BaseException{
         User user = findUserByUserIdx(userIdx);
         Calendar calendar = findCalendarByCalendarIdx(calendarIdx);
-        if (calendar.getUser() != user) throw new BaseException(BaseResponseStatus.NO_MATCH_CALENDAR_USER);
         List<Tag> tags = this.tagRepository.findByStatus(ACTIVE_STATUS);
 
         if (calendar.getUser() != user) throw new BaseException(BaseResponseStatus.NO_MATCH_CALENDAR_USER);
