@@ -21,7 +21,7 @@ public class CalendarReq {
     private String kindOfCalendar; // 캘린더 종류
     private String title;
 
-    @JsonDeserialize(using = LocalDateDeserializer.class)
+//    @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd") //2022-01-01
     private LocalDate date;
 

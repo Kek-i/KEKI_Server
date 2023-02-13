@@ -44,6 +44,7 @@ public enum BaseResponseStatus {
     NULL_TITLE(false, 2400, "캘린더 제목을 입력해주세요."),
     NULL_KIND_OF_CALENDARS(false, 2401, "캘린더 종류를 선택해주세요."),
     NULL_DATE(false, 2402, "날짜를 입력해주세요."),
+    NULL_TAG(false, 2403, "태그를 입력해주세요"),
 
     // histories(2500~2599)
 
