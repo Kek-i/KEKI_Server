@@ -126,4 +126,31 @@ public class CalendarController {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
+    // 태그 추가 api
+    @ResponseBody
+    @PostMapping("/categories")
+    public BaseResponse<String> createTag(@RequestBody CalendarHashTag tag){
+        try{
+            if(tag.getCalendarHashTag() == null) return new BaseResponse<>(BaseResponseStatus.NULL_TAG);
+            this.calendarService.createTag(tag);
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS);
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    // 태그 active, inactive 처리 api
+    @ResponseBody
+    @PatchMapping("/categories")
+    public BaseResponse<String> patchTag(@RequestBody TagStatus tag){
+        try{
+            if(tag.getCalendarHashTag() == null) return new BaseResponse<>(BaseResponseStatus.NULL_TAG);
+            this.calendarService.patchTag(tag);
+
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS);
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
 }

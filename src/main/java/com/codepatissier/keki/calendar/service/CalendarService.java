@@ -174,6 +174,32 @@ public class CalendarService {
         }
     }
 
+    // 카테고리 생성 api
+    @Transactional(rollbackFor= Exception.class)
+    public void createTag(CalendarHashTag tag) throws BaseException{
+        try{
+            this.tagRepository.save(Tag.builder()
+                    .tagName(tag.getCalendarHashTag())
+                    .build());
+        }catch (Exception e){
+            throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
+        }
+
+    }
+
+    // 카테고리 상태 변경
+    @Transactional(rollbackFor= Exception.class)
+    public void patchTag(TagStatus tag) throws BaseException{
+        Tag findTag = this.tagRepository.findByTagName(tag.getCalendarHashTag())
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.INVALID_TAG));
+        try{
+            if(tag.getStatus()) findTag.setStatus(ACTIVE_STATUS);
+            else findTag.setStatus(INACTIVE_STATUS);
+        }catch (Exception e){
+            throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
+        }
+    }
+
     public HomeRes getHomeCalendar(Long userIdx) throws BaseException{
         User user = this.findUserByUserIdx(userIdx);
         try{
@@ -288,6 +314,8 @@ public class CalendarService {
         }
     }
 
+
+
     /**
      * extract method
      */
@@ -338,5 +366,7 @@ public class CalendarService {
                 .calendar(calendar)
                 .build());
     }
+
+
 
 }
