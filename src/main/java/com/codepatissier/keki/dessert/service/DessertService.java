@@ -193,7 +193,7 @@ public class DessertService {
             checkStore(userIdx);
             Dessert dessert = dessertRepository.findByDessertIdxAndStatus(dessertIdx, Constant.ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_DESSERT_IDX));
 
-            return new GetStoreDessertRes(dessert.getDessertImg(), dessert.getDessertName(), dessert.getDessertPrice(), dessert.getDessertDescription());
+            return new GetStoreDessertRes(dessert.getStore().getUser().getNickname(), dessert.getDessertImg(), dessert.getDessertName(), dessert.getDessertPrice(), dessert.getDessertDescription());
         } catch (BaseException e) {
             throw e;
         } catch (Exception e) {

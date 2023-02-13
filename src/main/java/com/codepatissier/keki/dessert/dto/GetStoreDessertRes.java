@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GetStoreDessertRes {
+    private String nickname;
     private String dessertImg;
     private String dessertName;
     private Integer dessertPrice;
