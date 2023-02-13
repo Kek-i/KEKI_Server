@@ -51,13 +51,15 @@ public class PostController {
                 return new BaseResponse<>(MANY_PARAMETER);
             if(sortType != null && storeIdx != null) return new BaseResponse<>(DO_NOT_STORE_SORT_TYPE);
             if(sortType == null) sortType = NEW_SORT_TYPE;
-            if((sortType.equals(LOW_PRICE_SORT_TYPE) && cursorPrice == null) ||
-                    (sortType.equals(POPULAR_SORT_TYPE) && cursorPopularNum == null))
-                return new BaseResponse<>(INVALID_SORT_TYPE_CURSOR);
-            if((cursorIdx != null && (cursorPrice == null && cursorPopularNum == null)) ||
-                    (cursorIdx == null && (cursorPrice != null || cursorPopularNum != null)))
+            if(cursorIdx != null){
+                if (cursorPrice == null && cursorPopularNum == null) return new BaseResponse<>(NULL_CURSOR);
+                if ((sortType.equals(LOW_PRICE_SORT_TYPE) && cursorPrice == null) ||
+                        (sortType.equals(POPULAR_SORT_TYPE) && cursorPopularNum == null))
+                    return new BaseResponse<>(INVALID_SORT_TYPE_CURSOR);
+                if(cursorPrice != null && cursorPopularNum != null) return new BaseResponse<>(MANY_CURSOR_PARAMETER);
+            }
+            if(cursorIdx == null && (cursorPrice != null || cursorPopularNum != null))
                 return new BaseResponse<>(NULL_CURSOR);
-            if(cursorPrice != null && cursorPopularNum != null) return new BaseResponse<>(MANY_CURSOR_PARAMETER);
 
             Pageable pageable = PageRequest.of(0, size);
 
