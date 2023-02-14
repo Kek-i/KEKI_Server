@@ -56,9 +56,11 @@ public class User extends BaseEntity {
         return this.role.getName();
     }
 
-    public void storeSignUp(String nickname, String profileImg) {
+    public void storeSignUp(String nickname, String profileImg, String refreshToken, Role role) {
         this.nickname = nickname;
         this.profileImg = profileImg;
+        this.refreshToken = refreshToken;
+        this.role = role;
     }
     
     public void modifyNickname(String nickname) {

@@ -18,6 +18,7 @@ public enum BaseResponseStatus {
     NULL_EMAIL(false, 2001, "이메일을 입력해주세요."),
     NULL_PROVIDER(false, 2002, "소셜 이름을 입력해주세요."),
     INVALID_PROVIDER(false, 2003, "잘못된 소셜 이름입니다."),
+    ALREADY_WITHDRAW_USER(false, 2003, "이미 삭제된 회원입니다."),
 
     // stores(2100~2199)
 
@@ -29,6 +30,12 @@ public enum BaseResponseStatus {
     INVALID_REPORT_CATEGORY(false, 2203, "신고 카테고리를 찾을 수 없습니다."),
     INVALID_SORT_TYPE(false, 2204, "잘못된 정렬 카테고리입니다."),
     DO_NOT_STORE_SORT_TYPE(false, 2204, "스토어별 피드는 정렬 불가합니다."),
+    NULL_POST_IDX(false, 2205, "postIdx를 입력해주세요."),
+    NULL_CURSOR(false, 2206, "필요한 cursor를 모두 입력해주세요."),
+    MANY_CURSOR_PARAMETER(false, 2207, "cursor 조건을 한개만 입력해주세요."),
+    INVALID_SORT_TYPE_CURSOR(false, 2208, "정렬 조건과 cursor 조건을 맞춰서 입력해주세요."),
+    INVALID_IMAGE_NUM(false, 2209, "이미지는 1개~5개로 등록해주세요."),
+    INVALID_TAG_NUM(false, 2210, "태그는 1개~3개로 등록해주세요."),
 
     // desserts(2300~2399)
 
@@ -37,6 +44,7 @@ public enum BaseResponseStatus {
     NULL_TITLE(false, 2400, "캘린더 제목을 입력해주세요."),
     NULL_KIND_OF_CALENDARS(false, 2401, "캘린더 종류를 선택해주세요."),
     NULL_DATE(false, 2402, "날짜를 입력해주세요."),
+    NULL_TAG(false, 2403, "태그를 입력해주세요"),
 
     // histories(2500~2599)
 
@@ -81,6 +89,8 @@ public enum BaseResponseStatus {
     INVALID_CALENDAR_IDX(false, 3403, "존재하지 않는 캘린더 입니다."),
     NO_MATCH_CALENDAR_USER(false, 3404, "캘린더를 생성한 사용자가 아닙니다."),
     INVALID_CALENDAR_DATE_COUNT(false, 3405, "날짜 수는 미래 생성이 불가능 합니다."),
+    NULL_CALENDAR_TITLE(false, 3406, "제목을 입력해주세요"),
+    NULL_CALENDAR_CATEGORY(false, 3407, "카테고리를 입력해주세요"),
 
     // histories(3500~3599)
 

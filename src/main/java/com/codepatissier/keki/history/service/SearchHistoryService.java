@@ -28,7 +28,7 @@ public class SearchHistoryService {
             User user = this.userRepository.findById(userIdx)
                     .orElseThrow(() -> new BaseException(BaseResponseStatus.INVALID_USER_IDX));
 
-            return this.searchHistoryRepository.findTop5ByUserAndStatusOrderByCreatedDateDesc(user,ACTIVE_STATUS).stream()
+            return this.searchHistoryRepository.getRecentSearches(user,ACTIVE_STATUS).stream()
                     .map(searches -> new SearchRes(searches.getSearchWord())).collect(Collectors.toList());
         }catch (Exception e){
             throw new BaseException(BaseResponseStatus.DATABASE_ERROR);

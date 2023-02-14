@@ -9,6 +9,7 @@ import com.codepatissier.keki.calendar.repository.CalendarTag.CalendarTagReposit
 import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.BaseResponseStatus;
 import com.codepatissier.keki.common.Constant;
+import com.codepatissier.keki.common.Tag.Tag;
 import com.codepatissier.keki.common.Tag.TagRepository;
 import com.codepatissier.keki.user.entity.User;
 import com.codepatissier.keki.user.repository.UserRepository;
@@ -33,16 +34,14 @@ public class CalendarService {
     private final TagRepository tagRepository;
     private final UserRepository userRepository;
 
+    // 캘린더 생성
     @Transactional(rollbackFor= Exception.class)
     public void createCalendar(Long userIdx, CalendarReq calendarReq) throws BaseException {
         try {
-            int day = (int) Duration.between(calendarReq.getDate().atStartOfDay(), LocalDate.now().atStartOfDay()).toDays();
-            if(calendarReq.getKindOfCalendar().equals(CalendarCategory.DATE_COUNT.getName()) && day<0){
-                throw new BaseException(BaseResponseStatus.INVALID_CALENDAR_DATE_COUNT);
-            }
+            CalendarCategory category = categoryMandatoryException(calendarReq);
             User user = findUserByUserIdx(userIdx);
             Calendar calendar = Calendar.builder()
-                    .calendarCategory(CalendarCategory.getCalendarCategoryByName(calendarReq.getKindOfCalendar()))
+                    .calendarCategory(category)
                     .calendarTitle(calendarReq.getTitle())
                     .calendarDate(calendarReq.getDate())
                     .user(user)
@@ -59,13 +58,30 @@ public class CalendarService {
         }
     }
 
-    private void saveHashTags(Calendar calendar, CalendarHashTag hashtag) throws BaseException {
-        this.calendarTagRepository.save(CalendarTag.builder()
-                .tag(this.tagRepository.findByTagName(hashtag.getCalendarHashTag()).orElseThrow(() -> new BaseException(BaseResponseStatus.INVALID_TAG)))
-                .calendar(calendar)
-                .build());
+    // 캘린더 별 날짜 예외 처리 + 캘린더 태그 예외 처리
+    private CalendarCategory categoryMandatoryException(CalendarReq calendarReq) throws BaseException {
+        int day = (int) Duration.between(calendarReq.getDate().atStartOfDay(), LocalDate.now().atStartOfDay()).toDays();
+        if(calendarReq.getKindOfCalendar().equals(CalendarCategory.DATE_COUNT.getName()) && day<0){
+            throw new BaseException(BaseResponseStatus.INVALID_CALENDAR_DATE_COUNT);
+        }
+        CalendarCategory category = CalendarCategory.getCalendarCategoryByName(calendarReq.getKindOfCalendar());
+        if(category== null){
+            throw new BaseException(BaseResponseStatus.INVALID_CALENDAR_TAG);
+        }
+        return category;
     }
 
+
+    /**
+     * tag 찾기
+     * active로 하지 않은 이유는
+     * inactive인 tag여도 active인 상태일 때 저장한 것이 있을 수도 있기 때문
+     */
+    private Tag findByTagName(CalendarHashTag hashtag) throws BaseException {
+        return this.tagRepository.findByTagName(hashtag.getCalendarHashTag()).orElseThrow(() -> new BaseException(BaseResponseStatus.INVALID_TAG));
+    }
+
+    // 캘린더 삭제
     @Transactional(rollbackFor= Exception.class)
     public void deleteCalendar(Long calendarIdx, Long userIdx) throws BaseException{
         User user = findUserByUserIdx(userIdx);
@@ -81,10 +97,11 @@ public class CalendarService {
         }
     }
 
+    // 캘린더 하나 조회
     public CalendarRes getCalendar(Long calendarIdx, Long userIdx) throws BaseException {
         User user = findUserByUserIdx(userIdx);
         Calendar calendar = findCalendarByCalendarIdx(calendarIdx);
-        List<CalendarTag> tag = this.calendarTagRepository.findByCalendar(calendar);
+        List<CalendarTag> tag = this.calendarTagRepository.findByCalendarAndStatus(calendar, ACTIVE_STATUS);
 
         if (calendar.getUser() != user) throw new BaseException(BaseResponseStatus.NO_MATCH_CALENDAR_USER);
 
@@ -97,15 +114,6 @@ public class CalendarService {
         } catch (Exception e) {
             throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
         }
-    }
-
-    // 기념일 계산 return String
-    private String calculateDateReturnString(int day){
-        String returnCalendar;
-        if(day == 0) returnCalendar = "D-DAY";
-        else if(day > 0) returnCalendar = "D+" + day;
-        else returnCalendar = "D" + day;
-        return returnCalendar;
     }
 
     // 기념일 계산
@@ -132,6 +140,16 @@ public class CalendarService {
         return returnCalendar;
     }
 
+    // 기념일 계산 return String
+    private String calculateDateReturnString(int day){
+        String returnCalendar;
+        if(day == 0) returnCalendar = "D-DAY";
+        else if(day > 0) returnCalendar = "D+" + day;
+        else returnCalendar = "D" + day;
+        return returnCalendar;
+    }
+
+    // 캘린더 리스트 조회
     public List<CalendarListRes> getCalendarList(Long userIdx) throws BaseException {
         User user = this.findUserByUserIdx(userIdx);
         try{
@@ -145,11 +163,38 @@ public class CalendarService {
         }
     }
 
+    // 카테고리 list 불러오기
     public List<TagRes> getCategories() throws BaseException{
         try{
             return this.tagRepository.findByStatus(Constant.ACTIVE_STATUS).stream()
                     .map(tag -> new TagRes(tag.getTagIdx(), tag.getTagName()))
                     .collect(Collectors.toList());
+        }catch (Exception e){
+            throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
+        }
+    }
+
+    // 카테고리 생성 api
+    @Transactional(rollbackFor= Exception.class)
+    public void createTag(CalendarHashTag tag) throws BaseException{
+        try{
+            this.tagRepository.save(Tag.builder()
+                    .tagName(tag.getCalendarHashTag())
+                    .build());
+        }catch (Exception e){
+            throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
+        }
+
+    }
+
+    // 카테고리 상태 변경
+    @Transactional(rollbackFor= Exception.class)
+    public void patchTag(TagStatus tag) throws BaseException{
+        Tag findTag = this.tagRepository.findByTagName(tag.getCalendarHashTag())
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.INVALID_TAG));
+        try{
+            if(tag.getStatus()) findTag.setStatus(ACTIVE_STATUS);
+            else findTag.setStatus(INACTIVE_STATUS);
         }catch (Exception e){
             throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
         }
@@ -190,13 +235,8 @@ public class CalendarService {
         }
     }
 
-    private List<HomeTagRes> getPostByTag(List<PopularTagRes> popularTagRes) {
-        return popularTagRes.stream()
-                .map(tag -> new HomeTagRes(tag.getTagIdx(), tag.getTagName(),
-                        this.calendarRepository.getTagByPostLimit5(tag.getTagIdx())))
-                .collect(Collectors.toList());
-    }
 
+    // home api
     public HomeRes getHomeTagPost(HomeRes home) throws BaseException{
         User user = this.findUserByUserIdx(home.getUserIdx());
         try{
@@ -213,27 +253,120 @@ public class CalendarService {
         }
     }
 
+
+    // 캘린더 수정
+    @Transactional(rollbackFor= Exception.class)
+    public void modifyCalendar(Long userIdx, CalendarReq calendarReq, Long calendarIdx) throws BaseException{
+        try{
+            User user = this.findUserByUserIdx(userIdx);
+            Calendar calendar = this.findCalendarByCalendarIdx(calendarIdx);
+            if (calendar.getUser() != user) throw new BaseException(BaseResponseStatus.NO_MATCH_CALENDAR_USER);
+
+
+            // TODO: 현재 수정 시 TAG의 경우에는 INACTIVE 후 새로 받은 것을 ACTIVE로 함 => DELETE로 변경?
+            if (calendarReq.getTitle() != null){
+                if(calendarReq.getTitle().equals("") || calendarReq.getTitle().equals(" "))
+                    throw new BaseException(BaseResponseStatus.NULL_CALENDAR_TITLE);
+                calendar.setCalendarTitle(calendarReq.getTitle());
+            }
+            if (calendarReq.getDate() != null) {
+                calendar.setCalendarDate(calendarReq.getDate());
+            }
+            if (calendarReq.getKindOfCalendar() != null){
+                CalendarCategory category = categoryMandatoryException(calendarReq);
+                if(calendarReq.getKindOfCalendar().equals("") || calendarReq.getKindOfCalendar().equals(" "))
+                    throw new BaseException(BaseResponseStatus.NULL_CALENDAR_CATEGORY);
+                calendar.setCalendarCategory(CalendarCategory.getCalendarCategoryByName(calendarReq.getKindOfCalendar()));
+            }
+
+            if (calendarReq.getHashTags() != null && calendarReq.getHashTags().size() != 0) {
+                this.changeCalendarTagStatus(calendar, INACTIVE_STATUS);
+                for (CalendarHashTag hashTag : calendarReq.getHashTags()) {
+                    CalendarTag calendarTag =  this.calendarTagRepository.findByCalendarAndTag(calendar, this.findByTagName(hashTag));
+                    if(calendarTag == null) saveHashTags(calendar, hashTag);
+                    else calendarTag.setStatus(ACTIVE_STATUS);
+                }
+            }
+        }catch (BaseException e) {
+            throw e;
+        }catch (Exception e){
+            throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
+        }
+
+    }
+
+    // 캘린더 수정 조회 api
+    public CalendarRes getEditCalendar(Long userIdx, Long calendarIdx) throws BaseException{
+        User user = findUserByUserIdx(userIdx);
+        Calendar calendar = findCalendarByCalendarIdx(calendarIdx);
+        List<Tag> tags = this.tagRepository.findByStatus(ACTIVE_STATUS);
+
+        if (calendar.getUser() != user) throw new BaseException(BaseResponseStatus.NO_MATCH_CALENDAR_USER);
+
+        try {
+            return new CalendarRes(calendar.getCalendarCategory().getName(),
+                    calendar.getCalendarTitle(),
+                    calendar.getCalendarDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                    calculateDateReturnString(calculateDate(calendar)),
+                    tags.stream().map(tag -> new CalendarHashTag(tag.getTagName())).collect(Collectors.toList()));
+        } catch (Exception e) {
+            throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
+        }
+    }
+
+
+
+    /**
+     * extract method
+     */
+
+    // 사용자 찾기
     private User findUserByUserIdx(Long userIdx) throws BaseException {
         return this.userRepository.findByUserIdxAndStatusEquals(userIdx, Constant.ACTIVE_STATUS).
                 orElseThrow(() -> new BaseException(BaseResponseStatus.INVALID_USER_IDX));
     }
 
+    // 캘린더 번호로 캘린더 찾기
     private Calendar findCalendarByCalendarIdx(Long calendarIdx) throws BaseException {
         return this.calendarRepository.findByCalendarIdxAndStatus(calendarIdx, Constant.ACTIVE_STATUS)
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.INVALID_CALENDAR_IDX));
     }
 
+    // 태그 상태 변경
     private void changeCalendarTagStatus(Calendar calendar, String status){
-        this.calendarTagRepository.findByCalendar(calendar).stream()
+        String getStatus = null;
+        if(status.equals(ACTIVE_STATUS)) getStatus = INACTIVE_STATUS;
+        else getStatus = ACTIVE_STATUS;
+
+        this.calendarTagRepository.findByCalendarAndStatus(calendar, getStatus).stream()
                 .forEach(tag -> {
                     tag.setStatus(status);
                     this.calendarTagRepository.save(tag);
                 });
     }
 
+    // tag 별 게시물 찾기
+    private List<HomeTagRes> getPostByTag(List<PopularTagRes> popularTagRes) {
+        return popularTagRes.stream()
+                .map(tag -> new HomeTagRes(tag.getTagIdx(), tag.getTagName(),
+                        this.calendarRepository.getTagByPostLimit5(tag.getTagIdx())))
+                .collect(Collectors.toList());
+    }
+
+    // 캘린더 상태 변경 [삭제 시]
     private void changeCalendarStatus(Calendar calendar, String status) {
         calendar.setStatus(status);
         this.calendarRepository.save(calendar);
     }
+
+    // tag 저장
+    private void saveHashTags(Calendar calendar, CalendarHashTag hashtag) throws BaseException {
+        this.calendarTagRepository.save(CalendarTag.builder()
+                .tag(findByTagName(hashtag))
+                .calendar(calendar)
+                .build());
+    }
+
+
 
 }

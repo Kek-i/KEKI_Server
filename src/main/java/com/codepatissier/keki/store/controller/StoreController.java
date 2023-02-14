@@ -29,10 +29,9 @@ public class StoreController {
      */
     @ResponseBody
     @PostMapping("/signup")
-    public BaseResponse<String> createSeller(@Valid @RequestBody PostStoreReq postStoreReq) {
+    public BaseResponse<PostStoreRes> signup(@Valid @RequestBody PostStoreReq postStoreReq) {
         try {
-            storeService.createSeller(authService.getUserIdx(), postStoreReq);
-            return new BaseResponse<>(SUCCESS);
+            return new BaseResponse<>(storeService.signUpStore(authService.getUserIdx(), postStoreReq));
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
@@ -74,7 +73,7 @@ public class StoreController {
      * [판매자] 프로필 조회
      * [GET] /stores/profile
      * 마이페이지 판매자 프로필 편집
-     * @return 가게 사진, 이름, 주소, 소개, 주문 링크, 사업자 정보, 이메일
+     * @return 가게 사진, 이름, 주소, 소개, 주문 링크, 사업자 정보, 이메일, 가게 Idx
      */
     @ResponseBody
     @GetMapping("/profile")

@@ -18,10 +18,8 @@ public interface PostRepository extends JpaRepository<Post, Long>, PostCustom {
     List<Post> findByDessertDessertNameContainingAndStatusOrderByPostIdxDesc(String word, String status, Pageable page);
     List<Post> findByDessertDessertNameContainingAndStatusAndPostIdxLessThanOrderByPostIdxDesc(String word, String status, Long postIdx, Pageable page);
     List<Post> findByDessertDessertNameContainingAndStatusOrderByDessertDessertPriceAscPostIdxDesc(String word, String status, Pageable page);
-    List<Post> findByDessertDessertNameContainingAndStatusAndPostIdxLessThanOrderByDessertDessertPriceAscPostIdxDesc(String word, String status, Long postIdx, Pageable page);
 
     boolean existsByStoreAndStatusAndPostIdxLessThan(Store store, String status, Long postIdx);
     boolean existsByDessertDessertNameContainingAndStatusAndPostIdxLessThan(String word, String status, Long postIdx);
-    boolean existsByPostIdxLessThan(Long postIdx);
     List<Post> findTop5ByDessertAndStatusOrderByPostIdxDesc(Dessert dessert, String activeStatus);
 }

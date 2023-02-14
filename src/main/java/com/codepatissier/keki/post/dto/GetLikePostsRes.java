@@ -4,16 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class GetPostsRes {
-    private List<GetPostRes> feeds;
-    private Long cursorIdx;
-    private Integer cursorPrice;
-    private Integer cursorPopularNum;
+public class GetLikePostsRes {
+    private List<GetLikePostRes> feeds;
+    private LocalDateTime cursorDate;
     private boolean hasNext;
     private int numOfRows;
 }

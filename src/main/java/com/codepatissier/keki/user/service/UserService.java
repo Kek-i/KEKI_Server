@@ -37,8 +37,9 @@ public class UserService {
 
     // 회원가입 또는 기존 로그인
     private PostUserRes signUpOrLogin(String email, Provider provider) throws BaseException {
-        User user = userRepository.findByEmailAndProviderAndStatusNot(email, provider, Constant.INACTIVE_STATUS);
+        User user = userRepository.findByEmailAndProvider(email, provider);
         if (user==null) user = signup(email, provider);
+        if (user.getStatus().equals(Constant.INACTIVE_STATUS)) throw new BaseException(ALREADY_WITHDRAW_USER);
         user.login();
         userRepository.save(user);
         return authService.createToken(user);
@@ -55,7 +56,7 @@ public class UserService {
     }
 
     // 구매자 회원가입
-    @Transactional
+    @Transactional // TODO @Transactional(rollbackFor = Exception.class) 수정
     public PostUserRes signupCustomer(Long userIdx, PostCustomerReq postCustomerReq) throws BaseException{
         try {
             User user = userRepository.findByUserIdxAndStatusEquals(userIdx, Constant.ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
@@ -97,7 +98,6 @@ public class UserService {
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
-
     }
 
     // 회원 탈퇴

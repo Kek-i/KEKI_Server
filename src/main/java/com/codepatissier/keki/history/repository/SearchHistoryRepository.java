@@ -9,7 +9,5 @@ import java.util.List;
 
 @Repository
 public interface SearchHistoryRepository extends JpaRepository<SearchHistory, Long>, SearchHistoryCustom {
-    List<SearchHistory> findTop5ByUserAndStatusOrderByCreatedDateDesc(User user, String status);
-
     List<SearchHistory> findByUserAndStatus(User user, String activeStatus);
 }
