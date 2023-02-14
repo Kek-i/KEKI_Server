@@ -34,7 +34,7 @@ public class SearchHistoryRepositoryImpl implements SearchHistoryCustom {
                         .and(searchHistory.status.eq(status)))
                 .groupBy(searchHistory.searchWord)
                 .limit(5)
-                .orderBy(searchHistory.createdDate.desc())
+                .orderBy(searchHistory.lastModifiedDate.desc())
                 .fetch();
     }
 }
