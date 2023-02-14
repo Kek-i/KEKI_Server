@@ -67,6 +67,9 @@ feature/7-desserts-patchDessert
 <br>
 
 ## API
+[API 명세서]( https://broadleaf-mist-919.notion.site/API-72e2b7a446544ee18493354baa0cda17 )
+<br>
+<br>
 
 ## Member
 |[박소정](https://github.com/sojungpp)|[장채은](https://github.com/JoongHyun-Kim)|[김중현](https://github.com/JoongHyun-Kim)|[박서연](https://github.com/psyeon1120)|
