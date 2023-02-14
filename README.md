@@ -21,6 +21,8 @@
 <br>
 
 ## Project Architecture
+![project_architecture](https://user-images.githubusercontent.com/80838501/218668180-d608b96f-524d-42a6-8f80-238e876de591.png)
+
 <br>
 
 ## Project Structure
