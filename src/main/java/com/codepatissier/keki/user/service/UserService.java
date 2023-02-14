@@ -4,6 +4,7 @@ import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.BaseResponseStatus;
 import com.codepatissier.keki.common.Constant;
 import com.codepatissier.keki.common.Role;
+import com.codepatissier.keki.store.repository.StoreRepository;
 import com.codepatissier.keki.user.dto.*;
 import com.codepatissier.keki.user.entity.Provider;
 import com.codepatissier.keki.user.entity.User;
@@ -21,6 +22,7 @@ import static com.codepatissier.keki.common.BaseResponseStatus.*;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final StoreRepository storeRepository;
     private final AuthService authService;
 
     // 로그인
@@ -105,6 +107,7 @@ public class UserService {
     public void signout(Long userIdx) throws BaseException {
         try{
             User user = userRepository.findByUserIdxAndStatusEquals(userIdx, Constant.ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+            storeRepository.findByUser(user).ifPresent(storeRepository::delete);
             user.signout();
             // TODO redis 사용해 토큰 관리
         } catch (BaseException e) {
