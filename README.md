@@ -30,7 +30,18 @@
 <br>
 
 ## Commit/PR Convention
+**Commit**
+```
+#1 feat: 일정 등록 API 추가
+```
+- #이슈번호 타입: 커밋 설명
+<br>
 
+**Pull Request**
+```
+[feature/1-create-calender] 일정 등록
+```
+- [브랜치명]  설명
 <br>
 
 ## Branch Strategy
