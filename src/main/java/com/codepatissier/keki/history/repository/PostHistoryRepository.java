@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PostHistoryRepository extends JpaRepository<PostHistory, Long>, PostHistoryCustom{
     int countByPostPostIdxEquals(Long postIdx);
-    void deleteAllByPost(Post post);
+    void deleteByPost(Post post);
 }

@@ -15,6 +15,6 @@ public class PostEntityListener {
         postLikeRepository.deleteByPost(post);
 
         PostHistoryRepository postHistoryRepository = BeanUtils.getBean(PostHistoryRepository.class);
-        postHistoryRepository.deleteAllByPost(post);
+        postHistoryRepository.deleteByPost(post);
     }
 }
