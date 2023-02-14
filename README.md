@@ -27,6 +27,8 @@
 <br>
 
 ## DB 
+![keki-erd](https://user-images.githubusercontent.com/80838501/218660483-b06e9835-7dd5-4292-aa94-073ae466c235.png)
+
 <br>
 
 ## Commit/PR Convention
