@@ -24,6 +24,249 @@
 <br>
 
 ## Project Structure
+```jsx
+.
+│  .gitignore
+│  build.gradle
+│  Dockerfile
+│  gradlew
+│  gradlew.bat
+│  result.txt
+│  settings.gradle
+│                      
+├─gradle
+│  └─wrapper
+│          gradle-wrapper.jar
+│          gradle-wrapper.properties
+│          
+└─src
+    ├─main
+    │  ├─java
+    │  │  └─com
+    │  │      └─codepatissier
+    │  │          └─keki
+    │  │              │  KekiApplication.java
+    │  │              │  TestController.java
+    │  │              │  
+    │  │              ├─calendar
+    │  │              │  │  CalendarCategory.java
+    │  │              │  │  
+    │  │              │  ├─contoller
+    │  │              │  │      CalendarController.java
+    │  │              │  │      
+    │  │              │  ├─dto
+    │  │              │  │      CalendarHashTag.java
+    │  │              │  │      CalendarListRes.java
+    │  │              │  │      CalendarReq.java
+    │  │              │  │      CalendarRes.java
+    │  │              │  │      HomePostRes.java
+    │  │              │  │      HomeRes.java
+    │  │              │  │      HomeTagRes.java
+    │  │              │  │      PopularTagRes.java
+    │  │              │  │      TagRes.java
+    │  │              │  │      
+    │  │              │  ├─entity
+    │  │              │  │      Calendar.java
+    │  │              │  │      CalendarTag.java
+    │  │              │  │      
+    │  │              │  ├─repository
+    │  │              │  │  ├─Calendar
+    │  │              │  │  │      CalendarCustom.java
+    │  │              │  │  │      CalendarRepository.java
+    │  │              │  │  │      CalendarRepositoryImpl.java
+    │  │              │  │  │      
+    │  │              │  │  └─CalendarTag
+    │  │              │  │          CalendarTagCustom.java
+    │  │              │  │          CalendarTagRepository.java
+    │  │              │  │          CalendarTagRepositoryImpl.java
+    │  │              │  │          
+    │  │              │  └─service
+    │  │              │          CalendarService.java
+    │  │              │          
+    │  │              ├─common
+    │  │              │  │  BaseEntity.java
+    │  │              │  │  BaseException.java
+    │  │              │  │  BaseResponse.java
+    │  │              │  │  BaseResponseStatus.java
+    │  │              │  │  Constant.java
+    │  │              │  │  EmptyStringToNullConverter.java
+    │  │              │  │  Role.java
+    │  │              │  │  
+    │  │              │  ├─config
+    │  │              │  │      JasyptConfig.java
+    │  │              │  │      QueryDslConfig.java
+    │  │              │  │      SwaggerConfig.java
+    │  │              │  │      WebSecurityConfig.java
+    │  │              │  │      
+    │  │              │  └─Tag
+    │  │              │         Tag.java
+    │  │              │         TagRepository.java
+    │  │              │          
+    │  │              ├─cs
+    │  │              │  ├─controller
+    │  │              │  │      CsController.java
+    │  │              │  │      
+    │  │              │  ├─dto
+    │  │              │  │      GetNoticeListRes.java
+    │  │              │  │      GetNoticeRes.java
+    │  │              │  │      
+    │  │              │  ├─entity
+    │  │              │  │      Hide.java
+    │  │              │  │      Notice.java
+    │  │              │  │      Report.java
+    │  │              │  │      ReportCategory.java
+    │  │              │  │      
+    │  │              │  ├─repository
+    │  │              │  │      HideRepository.java
+    │  │              │  │      NoticeRepository.java
+    │  │              │  │      ReportRepository.java
+    │  │              │  │      
+    │  │              │  └─service
+    │  │              │          CsService.java
+    │  │              │          
+    │  │              ├─dessert
+    │  │              │  ├─controller
+    │  │              │  │      DessertController.java
+    │  │              │  │      
+    │  │              │  ├─dto
+    │  │              │  │      GetDessertRes.java
+    │  │              │  │      GetStoreDessertRes.java
+    │  │              │  │      GetStoreDessertsRes.java
+    │  │              │  │      PatchDessertReq.java
+    │  │              │  │      PostDessertReq.java
+    │  │              │  │      
+    │  │              │  ├─entity
+    │  │              │  │      Dessert.java
+    │  │              │  │      
+    │  │              │  ├─repository
+    │  │              │  │      DessertRepository.java
+    │  │              │  │      
+    │  │              │  └─service
+    │  │              │          DessertService.java
+    │  │              │          
+    │  │              ├─history
+    │  │              │  ├─controller
+    │  │              │  │      HistoryController.java
+    │  │              │  │      
+    │  │              │  ├─dto
+    │  │              │  │      HistorySearchRes.java
+    │  │              │  │      PostSearchRes.java
+    │  │              │  │      SearchRes.java
+    │  │              │  │      
+    │  │              │  ├─entity
+    │  │              │  │      PostHistory.java
+    │  │              │  │      SearchHistory.java
+    │  │              │  │      
+    │  │              │  ├─repository
+    │  │              │  │      PostHistoryCustom.java
+    │  │              │  │      PostHistoryRepository.java
+    │  │              │  │      PostHistoryRepositoryImpl.java
+    │  │              │  │      SearchHistoryCustom.java
+    │  │              │  │      SearchHistoryRepository.java
+    │  │              │  │      SearchHistoryRepositoryImpl.java
+    │  │              │  │      
+    │  │              │  └─service
+    │  │              │          PostHistoryService.java
+    │  │              │          SearchHistoryService.java
+    │  │              │          
+    │  │              ├─post
+    │  │              │  ├─controller
+    │  │              │  │      PostController.java
+    │  │              │  │      
+    │  │              │  ├─dto
+    │  │              │  │      DessertsRes.java
+    │  │              │  │      GetLikePostRes.java
+    │  │              │  │      GetLikePostsRes.java
+    │  │              │  │      GetMakePostRes.java
+    │  │              │  │      GetModifyPostRes.java
+    │  │              │  │      GetPostRes.java
+    │  │              │  │      GetPostsRes.java
+    │  │              │  │      PatchPostReq.java
+    │  │              │  │      PostPostReq.java
+    │  │              │  │      PostReportReq.java
+    │  │              │  │      
+    │  │              │  ├─entity
+    │  │              │  │      Post.java
+    │  │              │  │      PostImg.java
+    │  │              │  │      PostLike.java
+    │  │              │  │      PostTag.java
+    │  │              │  │      
+    │  │              │  ├─repository
+    │  │              │  │      PostCustom.java
+    │  │              │  │      PostImgRepository.java
+    │  │              │  │      PostLikeRepository.java
+    │  │              │  │      PostRepository.java
+    │  │              │  │      PostRepositoryImpl.java
+    │  │              │  │      PostTagCustom.java
+    │  │              │  │      PostTagRepository.java
+    │  │              │  │      PostTagRepositoryImpl.java
+    │  │              │  │      
+    │  │              │  └─service
+    │  │              │          PostService.java
+    │  │              │          
+    │  │              ├─store
+    │  │              │  ├─controller
+    │  │              │  │      StoreController.java
+    │  │              │  │      
+    │  │              │  ├─dto
+    │  │              │  │      GetMyPageStoreProfileRes.java
+    │  │              │  │      GetStoreInfoRes.java
+    │  │              │  │      GetStoreProfileRes.java
+    │  │              │  │      PatchProfileReq.java
+    │  │              │  │      PostStoreReq.java
+    │  │              │  │      PostStoreRes.java
+    │  │              │  │      
+    │  │              │  ├─entity
+    │  │              │  │      Store.java
+    │  │              │  │      
+    │  │              │  ├─repository
+    │  │              │  │      StoreRepository.java
+    │  │              │  │      
+    │  │              │  └─service
+    │  │              │          StoreService.java
+    │  │              │          
+    │  │              └─user
+    │  │                  ├─controller
+    │  │                  │      UserController.java
+    │  │                  │      
+    │  │                  ├─dto
+    │  │                  │      GetProfileRes.java
+    │  │                  │      GoogleLogin.java
+    │  │                  │      KakaoLogin.java
+    │  │                  │      NaverLogin.java
+    │  │                  │      PatchProfileReq.java
+    │  │                  │      PostCustomerReq.java
+    │  │                  │      PostNicknameReq.java
+    │  │                  │      PostUserReq.java
+    │  │                  │      PostUserRes.java
+    │  │                  │      
+    │  │                  ├─entity
+    │  │                  │      Provider.java
+    │  │                  │      User.java
+    │  │                  │      
+    │  │                  ├─repository
+    │  │                  │      UserRepository.java
+    │  │                  │      
+    │  │                  └─service
+    │  │                          AuthService.java
+    │  │                          GoogleService.java
+    │  │                          KakaoService.java
+    │  │                          NaverService.java
+    │  │                          UserService.java
+    │  │                          
+    │  └─resources
+    │          application-oauth.properties
+    │          application.properties
+    │          
+    ├─querydsl
+    │  └─java
+    └─test
+        └─java
+            └─com
+                └─codepatissier
+                    └─keki
+                         KekiApplicationTests.java
+```
 <br>
 
 ## DB 
