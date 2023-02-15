@@ -294,7 +294,7 @@ public class CalendarService {
 
     // 캘린더 수정 조회 api
     public CalendarEditRes getEditCalendar(Long userIdx, Long calendarIdx) throws BaseException{
-        CalendarRes calendar = this.getCalendar(userIdx, calendarIdx);
+        CalendarRes calendar = this.getCalendar(calendarIdx, userIdx);
         return new CalendarEditRes(calendar.getKindOfCalendar(), calendar.getTitle(), calendar.getDate(),
                 calendar.getHashTags(), this.tagRepository.findByStatus(ACTIVE_STATUS).stream()
                 .map(tag -> new CalendarHashTag(tag.getTagName())).collect(Collectors.toList()));
