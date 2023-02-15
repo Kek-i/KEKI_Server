@@ -1,5 +1,6 @@
 package com.codepatissier.keki.calendar.repository.Calendar;
 
+import com.codepatissier.keki.calendar.CalendarCategory;
 import com.codepatissier.keki.calendar.dto.HomePostRes;
 import com.codepatissier.keki.calendar.dto.QHomePostRes;
 import com.codepatissier.keki.calendar.entity.Calendar;
@@ -10,6 +11,8 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 import java.util.List;
 
 import static com.codepatissier.keki.calendar.entity.QCalendar.calendar;
@@ -25,7 +28,18 @@ public class CalendarRepositoryImpl implements CalendarCustom {
     public Calendar getRecentDateCalendar(User userEntity) {
         LocalDate beginTimePath = LocalDate.now();
         return jpaQueryFactory.selectFrom(calendar)
-                .where(calendar.calendarDate.after(beginTimePath))
+                // 과거의 시간이거나
+                .where(calendar.calendarDate.after(beginTimePath).or(
+                        // 만약 날짜가 같은 경우에는
+                        // 디데이 일경우: 같은 날짜, 년도인 경우
+                        // 매년 반복: 같은 날짜인경우
+                        // 날짜 수: 같은 날짜, 같은 년도인 경우
+                        calendar.calendarDate.month().eq(beginTimePath.getMonth().getValue()).and(
+                                calendar.calendarDate.dayOfMonth().eq(beginTimePath.getDayOfMonth())
+                        ).and(calendar.calendarCategory.eq(CalendarCategory.EVERY_YEAR))
+                ).or(
+                        calendar.calendarDate.eq(beginTimePath)
+                ))
                 .where(calendar.user.userIdx.eq(userEntity.getUserIdx()))
                 .where(calendar.status.eq(Constant.ACTIVE_STATUS))
                 .orderBy(calendar.calendarDate.asc())

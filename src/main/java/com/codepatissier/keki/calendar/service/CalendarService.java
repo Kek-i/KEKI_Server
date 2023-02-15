@@ -208,7 +208,7 @@ public class CalendarService {
             String title = null;
             if(calendar != null){
                 title = calendar.getCalendarTitle();
-                day = (int) Duration.between(calendar.getCalendarDate().atStartOfDay(), LocalDate.now().atStartOfDay()).toDays();
+                day = calculateDate(calendar);
             }
             // 사용자의 매년 반복 캘린더 불러와서 하나씩 비교해보고, 값이 더 가까우면? 매년 반복으로 홈 화면 기념일 불러오기
             List<Calendar> listCalendars = this.calendarRepository.findByUserAndCalendarCategoryAndStatus(user, CalendarCategory.EVERY_YEAR, ACTIVE_STATUS);
