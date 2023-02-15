@@ -56,7 +56,7 @@ public class CalendarController {
     // 캘린더 수정 조회
     @ResponseBody
     @GetMapping("/{calendarIdx}/edit")
-    public BaseResponse<CalendarRes> getEditCalendar(@PathVariable("calendarIdx") Long calendarIdx){
+    public BaseResponse<CalendarEditRes> getEditCalendar(@PathVariable("calendarIdx") Long calendarIdx){
         try{
             return new BaseResponse<>(this.calendarService.getEditCalendar(this.authService.getUserIdx(), calendarIdx));
         }catch (BaseException e){

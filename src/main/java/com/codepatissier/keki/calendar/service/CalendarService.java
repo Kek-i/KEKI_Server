@@ -293,22 +293,11 @@ public class CalendarService {
     }
 
     // 캘린더 수정 조회 api
-    public CalendarRes getEditCalendar(Long userIdx, Long calendarIdx) throws BaseException{
-        User user = findUserByUserIdx(userIdx);
-        Calendar calendar = findCalendarByCalendarIdx(calendarIdx);
-        List<Tag> tags = this.tagRepository.findByStatus(ACTIVE_STATUS);
-
-        if (calendar.getUser() != user) throw new BaseException(BaseResponseStatus.NO_MATCH_CALENDAR_USER);
-
-        try {
-            return new CalendarRes(calendar.getCalendarCategory().getName(),
-                    calendar.getCalendarTitle(),
-                    calendar.getCalendarDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-                    calculateDateReturnString(calculateDate(calendar)),
-                    tags.stream().map(tag -> new CalendarHashTag(tag.getTagName())).collect(Collectors.toList()));
-        } catch (Exception e) {
-            throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
-        }
+    public CalendarEditRes getEditCalendar(Long userIdx, Long calendarIdx) throws BaseException{
+        CalendarRes calendar = this.getCalendar(userIdx, calendarIdx);
+        return new CalendarEditRes(calendar.getKindOfCalendar(), calendar.getTitle(), calendar.getDate(),
+                calendar.getHashTags(), this.tagRepository.findByStatus(ACTIVE_STATUS).stream()
+                .map(tag -> new CalendarHashTag(tag.getTagName())).collect(Collectors.toList()));
     }
 
 
