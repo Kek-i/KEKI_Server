@@ -33,12 +33,12 @@ public class CalendarRepositoryImpl implements CalendarCustom {
                         // 만약 날짜가 같은 경우에는
                         // 디데이 일경우: 같은 날짜, 년도인 경우
                         // 매년 반복: 같은 날짜인경우
+                        // 날짜 수: 같은 날짜, 같은 년도인 경우
                         calendar.calendarDate.month().eq(beginTimePath.getMonth().getValue()).and(
                                 calendar.calendarDate.dayOfMonth().eq(beginTimePath.getDayOfMonth())
                         ).and(calendar.calendarCategory.eq(CalendarCategory.EVERY_YEAR))
                 ).or(
                         calendar.calendarDate.eq(beginTimePath)
-                                .and(calendar.calendarCategory.eq(CalendarCategory.D_DAY))
                 ))
                 .where(calendar.user.userIdx.eq(userEntity.getUserIdx()))
                 .where(calendar.status.eq(Constant.ACTIVE_STATUS))
