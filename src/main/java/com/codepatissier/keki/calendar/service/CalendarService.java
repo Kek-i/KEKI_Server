@@ -200,26 +200,26 @@ public class CalendarService {
         }
     }
 
+    // TODO: 날짜수의 경우에는 100일, 200일, 일년 주기로 꾸며지게 되는데 일단 그 기능을 구현하지는 못함
     public HomeRes getHomeCalendar(Long userIdx) throws BaseException{
         User user = this.findUserByUserIdx(userIdx);
         try{
             Calendar calendar = this.calendarRepository.getRecentDateCalendar(user); // 현재 가장 가까운 캘린더 불러오기
-            int day = 0;
-            String title = null;
             if(calendar != null){
-                title = calendar.getCalendarTitle();
+                int day = 0;
                 day = calculateDate(calendar);
-            }
-            // 사용자의 매년 반복 캘린더 불러와서 하나씩 비교해보고, 값이 더 가까우면? 매년 반복으로 홈 화면 기념일 불러오기
-            List<Calendar> listCalendars = this.calendarRepository.findByUserAndCalendarCategoryAndStatus(user, CalendarCategory.EVERY_YEAR, ACTIVE_STATUS);
-            for(Calendar cal: listCalendars){
-                if(this.calculateDate(cal) > day){
-                    title = cal.getCalendarTitle();
-                    day = this.calculateDate(cal);
+                // 사용자의 매년 반복 캘린더 불러와서 하나씩 비교해보고, 값이 더 가까우면? 매년 반복으로 홈 화면 기념일 불러오기
+                List<Calendar> listCalendars = this.calendarRepository.findByUserAndCalendarCategoryAndStatus(user, CalendarCategory.EVERY_YEAR, ACTIVE_STATUS);
+                for(Calendar cal: listCalendars){
+                    if(this.calculateDate(cal) > day){
+                        calendar = cal;
+                    }
                 }
+                day = this.calculateDate(calendar);
+                if(calendar.getCalendarCategory().equals(CalendarCategory.DATE_COUNT)) day--; // 값을 하나 빼줌
+                return new HomeRes(user.getUserIdx(), user.getNickname(), calendar.getCalendarTitle(), Math.abs(day), null);
             }
-            return new HomeRes(user.getUserIdx(), user.getNickname(), title, Math.abs(day), null);
-
+            return new HomeRes(user.getUserIdx(), user.getNickname(), null, 0, null);
         }catch (Exception e){
             throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
         }
