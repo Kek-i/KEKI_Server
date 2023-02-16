@@ -45,6 +45,7 @@ public class CalendarTagRepositoryImpl implements CalendarTagCustom {
                 .leftJoin(user).on(calendar.user.eq(user))
                 .where(user.userIdx.eq(userEntity.getUserIdx()))
                 .where(tag.status.eq(Constant.ACTIVE_STATUS))
+                .where(calendarTag.status.eq(Constant.ACTIVE_STATUS))
                 .groupBy(tag.tagIdx)
                 .orderBy(tag.tagIdx.count().desc())
                 .limit(Constant.Home.HOME_RETURN_TAG_COUNT)
