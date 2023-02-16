@@ -51,7 +51,7 @@ public class PostController {
                 return new BaseResponse<>(MANY_PARAMETER);
             if(sortType != null && storeIdx != null) return new BaseResponse<>(DO_NOT_STORE_SORT_TYPE);
             if(sortType == null) sortType = NEW_SORT_TYPE;
-            if(cursorIdx != null){
+            if(cursorIdx != null && !sortType.equals(NEW_SORT_TYPE)){
                 if (cursorPrice == null && cursorPopularNum == null) return new BaseResponse<>(NULL_CURSOR);
                 if ((sortType.equals(LOW_PRICE_SORT_TYPE) && cursorPrice == null) ||
                         (sortType.equals(POPULAR_SORT_TYPE) && cursorPopularNum == null))

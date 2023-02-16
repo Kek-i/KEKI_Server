@@ -8,4 +8,5 @@ import java.util.Optional;
 public interface TagRepository extends JpaRepository<Tag, Long> {
     Optional<Tag> findByTagName(String calendarHashTag);
     List<Tag> findByStatus(String activeStatus);
+
 }
