@@ -107,8 +107,7 @@ public class UserService {
     public void signout(Long userIdx) throws BaseException {
         try{
             User user = userRepository.findByUserIdxAndStatusEquals(userIdx, Constant.ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
-            storeRepository.findByUser(user).ifPresent(storeRepository::delete);
-            user.signout();
+            userRepository.delete(user);
             // TODO redis 사용해 토큰 관리
         } catch (BaseException e) {
             throw e;

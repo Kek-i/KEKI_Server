@@ -12,4 +12,6 @@ public interface CalendarRepository extends JpaRepository<Calendar, Long> , Cale
     List<Calendar> findByUserAndStatus(User user, String status);
     Optional<Calendar> findByCalendarIdxAndStatus(Long calendarIdx, String status);
     List<Calendar> findByUserAndCalendarCategoryAndStatus(User user, CalendarCategory calendarCategory, String status);
+
+    void deleteByUser(User user);
 }

@@ -15,7 +15,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @DynamicInsert
 @Getter
-@SQLDelete(sql = "UPDATE post_history SET status = 'inactive', last_modified_date = current_timestamp WHERE post_idx = ?")
+@SQLDelete(sql = "UPDATE post_history SET status = 'inactive', last_modified_date = current_timestamp WHERE post_history_idx = ?")
 public class PostHistory extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

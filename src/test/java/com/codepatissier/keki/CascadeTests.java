@@ -1,8 +1,12 @@
 package com.codepatissier.keki;
 
+import com.codepatissier.keki.calendar.entity.CalendarTag;
+import com.codepatissier.keki.calendar.repository.CalendarTag.CalendarTagRepository;
 import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.dessert.entity.Dessert;
 import com.codepatissier.keki.dessert.repository.DessertRepository;
+import com.codepatissier.keki.history.entity.PostHistory;
+import com.codepatissier.keki.history.repository.PostHistoryRepository;
 import com.codepatissier.keki.store.entity.Store;
 import com.codepatissier.keki.store.repository.StoreRepository;
 import com.codepatissier.keki.user.entity.User;
@@ -30,6 +34,10 @@ public class CascadeTests {
     StoreRepository storeRepository;
     @Autowired
     DessertRepository dessertRepository;
+    @Autowired
+    PostHistoryRepository postHistoryRepository;
+    @Autowired
+    CalendarTagRepository calendarTagRepository;
 
     @Test
     @DisplayName("판매자 회원탈퇴 시 관련 DB 전체 INACTIVE 처리")
@@ -44,5 +52,20 @@ public class CascadeTests {
         assertThat(user.getStatus()).isEqualTo(INACTIVE_STATUS);
         assertThat(store.getStatus()).isEqualTo(INACTIVE_STATUS);
         assertThat(desserts.size()).isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("구매자 회원탈퇴 시 관련 DB 전체 INACTIVE 처리")
+    void signOutCustomer_AllConnectedDB_INACTIVE() throws BaseException {
+        // given
+        User user = userRepository.findById(3L).orElseThrow();
+        // when
+        userService.signout(user.getUserIdx());
+        // then
+        List<PostHistory> postHistoryList = postHistoryRepository.findByUserAndStatus(user, ACTIVE_STATUS);
+        List<CalendarTag> calendarTagList = calendarTagRepository.findByCalendarUserAndStatus(user, ACTIVE_STATUS);
+        assertThat(user.getStatus()).isEqualTo(INACTIVE_STATUS);
+        assertThat(postHistoryList.size()).isEqualTo(0);
+        assertThat(calendarTagList.size()).isEqualTo(0);
     }
 }

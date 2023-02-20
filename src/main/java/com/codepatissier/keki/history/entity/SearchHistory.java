@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.*;
 
@@ -13,6 +14,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @DynamicInsert
 @Getter
+@SQLDelete(sql = "UPDATE search_history SET status = 'inactive', last_modified_date = current_timestamp WHERE search_history_idx = ?")
 public class SearchHistory extends BaseEntity {
 
     @Id
