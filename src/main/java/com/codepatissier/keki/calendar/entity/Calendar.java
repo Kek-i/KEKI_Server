@@ -2,22 +2,24 @@ package com.codepatissier.keki.calendar.entity;
 
 import com.codepatissier.keki.calendar.CalendarCategory;
 import com.codepatissier.keki.common.BaseEntity;
+import com.codepatissier.keki.common.entityListener.CalendarEntityListener;
 import com.codepatissier.keki.user.entity.User;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
-import java.util.Date;
 
 @Getter
 @Entity
 @NoArgsConstructor
 @DynamicInsert
+@SQLDelete(sql = "UPDATE calendar SET status = 'inactive', last_modified_date = current_timestamp WHERE calendar_idx = ?")
+@EntityListeners(CalendarEntityListener.class)
 public class Calendar extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

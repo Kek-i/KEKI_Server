@@ -22,4 +22,6 @@ public interface PostRepository extends JpaRepository<Post, Long>, PostCustom {
     boolean existsByStoreAndStatusAndPostIdxLessThan(Store store, String status, Long postIdx);
     boolean existsByDessertDessertNameContainingAndStatusAndPostIdxLessThan(String word, String status, Long postIdx);
     List<Post> findTop5ByDessertAndStatusOrderByPostIdxDesc(Dessert dessert, String activeStatus);
+
+    void deleteByDessert(Dessert dessert);
 }

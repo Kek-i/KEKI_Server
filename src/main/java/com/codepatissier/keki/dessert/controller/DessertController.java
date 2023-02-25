@@ -79,10 +79,10 @@ public class DessertController {
 
     /**
      * [판매자] 상품 삭제
-     * [PATCH] /desserts/:dessertIdx
+     * [DELETE] /desserts/:dessertIdx
      */
     @ResponseBody
-    @PatchMapping("/{dessertIdx}")
+    @DeleteMapping("/{dessertIdx}")
     public BaseResponse<String> deleteDessert(@PathVariable("dessertIdx") Long dessertIdx) {
         try {
             dessertService.deleteDessert(authService.getUserIdx(), dessertIdx);

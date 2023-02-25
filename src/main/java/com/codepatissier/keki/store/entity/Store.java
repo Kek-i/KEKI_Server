@@ -1,11 +1,13 @@
 package com.codepatissier.keki.store.entity;
 
 import com.codepatissier.keki.common.BaseEntity;
+import com.codepatissier.keki.common.entityListener.StoreEntityListener;
 import com.codepatissier.keki.user.entity.User;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.*;
 
@@ -13,6 +15,8 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor
 @DynamicInsert
+@SQLDelete(sql = "UPDATE store SET status = 'inactive', last_modified_date = current_timestamp WHERE store_idx = ?")
+@EntityListeners(StoreEntityListener.class)
 public class Store extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -10,4 +10,6 @@ import java.util.List;
 @Repository
 public interface SearchHistoryRepository extends JpaRepository<SearchHistory, Long>, SearchHistoryCustom {
     List<SearchHistory> findByUserAndStatus(User user, String activeStatus);
+
+    void deleteByUser(User user);
 }
