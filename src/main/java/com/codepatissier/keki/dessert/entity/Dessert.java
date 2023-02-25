@@ -10,7 +10,6 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 
 @Getter
 @Entity
@@ -23,24 +22,19 @@ public class Dessert extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long dessertIdx;
 
-    @NotBlank
     @ManyToOne
     @JoinColumn(name = "storeIdx")
     private Store store;
 
-    @NotBlank
     @Column(length = 100)
     private String dessertName;
 
-    @NotBlank
     @Column
     private Integer dessertPrice;
 
-    @NotBlank
     @Column(length = 300)
     private String dessertDescription;
 
-    @NotBlank
     @Column(length = 300)
     private String dessertImg;
 

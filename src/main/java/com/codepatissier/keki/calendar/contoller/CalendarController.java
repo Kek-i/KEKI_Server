@@ -53,6 +53,17 @@ public class CalendarController {
         }
     }
 
+    // 캘린더 수정 조회
+    @ResponseBody
+    @GetMapping("/{calendarIdx}/edit")
+    public BaseResponse<CalendarEditRes> getEditCalendar(@PathVariable("calendarIdx") Long calendarIdx){
+        try{
+            return new BaseResponse<>(this.calendarService.getEditCalendar(this.authService.getUserIdx(), calendarIdx));
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
     // 캘린더 삭제
     @ResponseBody
     @PatchMapping("/{calendarIdx}")
@@ -112,6 +123,33 @@ public class CalendarController {
             // 태그가 3개 이상이면 태그별로 랜덤하게 불러오기
             return new BaseResponse<>(this.calendarService.getHomeTagPost(home));
         } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    // 태그 추가 api
+    @ResponseBody
+    @PostMapping("/categories")
+    public BaseResponse<String> createTag(@RequestBody CalendarHashTag tag){
+        try{
+            if(tag.getCalendarHashTag() == null) return new BaseResponse<>(BaseResponseStatus.NULL_TAG);
+            this.calendarService.createTag(tag);
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS);
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    // 태그 active, inactive 처리 api
+    @ResponseBody
+    @PatchMapping("/categories")
+    public BaseResponse<String> patchTag(@RequestBody TagStatus tag){
+        try{
+            if(tag.getCalendarHashTag() == null) return new BaseResponse<>(BaseResponseStatus.NULL_TAG);
+            this.calendarService.patchTag(tag);
+
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS);
+        }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
         }
     }

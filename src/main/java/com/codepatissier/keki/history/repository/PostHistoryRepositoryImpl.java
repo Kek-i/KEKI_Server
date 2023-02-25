@@ -21,7 +21,7 @@ public class PostHistoryRepositoryImpl implements PostHistoryCustom {
         return jpaQueryFactory.selectFrom(postHistory)
                 .where(user.eq(userEntity))
                 .groupBy(post)
-                .orderBy(postHistory.createdDate.desc())
+                .orderBy(postHistory.lastModifiedDate.desc())
                 .limit(5)
                 .fetch();
     }

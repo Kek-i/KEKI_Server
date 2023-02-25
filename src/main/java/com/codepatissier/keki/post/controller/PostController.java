@@ -51,13 +51,15 @@ public class PostController {
                 return new BaseResponse<>(MANY_PARAMETER);
             if(sortType != null && storeIdx != null) return new BaseResponse<>(DO_NOT_STORE_SORT_TYPE);
             if(sortType == null) sortType = NEW_SORT_TYPE;
-            if((sortType.equals(LOW_PRICE_SORT_TYPE) && cursorPrice == null) ||
-                    (sortType.equals(POPULAR_SORT_TYPE) && cursorPopularNum == null))
-                return new BaseResponse<>(INVALID_SORT_TYPE_CURSOR);
-            if((cursorIdx != null && (cursorPrice == null && cursorPopularNum == null)) ||
-                    (cursorIdx == null && (cursorPrice != null || cursorPopularNum != null)))
+            if(cursorIdx != null && !sortType.equals(NEW_SORT_TYPE)){
+                if (cursorPrice == null && cursorPopularNum == null) return new BaseResponse<>(NULL_CURSOR);
+                if ((sortType.equals(LOW_PRICE_SORT_TYPE) && cursorPrice == null) ||
+                        (sortType.equals(POPULAR_SORT_TYPE) && cursorPopularNum == null))
+                    return new BaseResponse<>(INVALID_SORT_TYPE_CURSOR);
+                if(cursorPrice != null && cursorPopularNum != null) return new BaseResponse<>(MANY_CURSOR_PARAMETER);
+            }
+            if(cursorIdx == null && (cursorPrice != null || cursorPopularNum != null))
                 return new BaseResponse<>(NULL_CURSOR);
-            if(cursorPrice != null && cursorPopularNum != null) return new BaseResponse<>(MANY_CURSOR_PARAMETER);
 
             Pageable pageable = PageRequest.of(0, size);
 
@@ -176,6 +178,10 @@ public class PostController {
     @PostMapping("")
     public BaseResponse<String> makePost(@RequestBody PostPostReq postPostReq){
         try{
+            if (postPostReq.getPostImgUrls().size() > 5 || postPostReq.getPostImgUrls().size() < 1)
+                return new BaseResponse<>(INVALID_IMAGE_NUM);
+            if (postPostReq.getTags().size() > 3 || postPostReq.getTags().size() < 1)
+                return new BaseResponse<>(INVALID_TAG_NUM);
             this.postService.makePost(authService.getUserIdx(), postPostReq);
             return new BaseResponse<>(SUCCESS);
         }catch (BaseException e){
@@ -205,6 +211,10 @@ public class PostController {
     @PatchMapping("/{postIdx}/edit")
     public BaseResponse<String> modifyPost(@RequestBody PatchPostReq patchPostReq, @PathVariable Long postIdx){
         try{
+            if (patchPostReq.getPostImgUrls() != null && (patchPostReq.getPostImgUrls().size() > 5 || patchPostReq.getPostImgUrls().size() < 1))
+                return new BaseResponse<>(INVALID_IMAGE_NUM);
+            if (patchPostReq.getTags() != null && (patchPostReq.getTags().size() > 3 || patchPostReq.getTags().size() < 1))
+                return new BaseResponse<>(INVALID_TAG_NUM);
             this.postService.modifyPost(authService.getUserIdx(), postIdx, patchPostReq);
             return new BaseResponse<>(SUCCESS);
         }catch (BaseException e){

@@ -40,6 +40,8 @@ public enum BaseResponseStatus {
     NULL_CURSOR(false, 2206, "필요한 cursor를 모두 입력해주세요."),
     MANY_CURSOR_PARAMETER(false, 2207, "cursor 조건을 한개만 입력해주세요."),
     INVALID_SORT_TYPE_CURSOR(false, 2208, "정렬 조건과 cursor 조건을 맞춰서 입력해주세요."),
+    INVALID_IMAGE_NUM(false, 2209, "이미지는 1개~5개로 등록해주세요."),
+    INVALID_TAG_NUM(false, 2210, "태그는 1개~3개로 등록해주세요."),
 
     // desserts(2300~2399)
     NULL_DESSERT_IMG(false, 3301, "디저트 이미지를 추가해주세요."),
@@ -52,6 +54,7 @@ public enum BaseResponseStatus {
     NULL_TITLE(false, 2400, "캘린더 제목을 입력해주세요."),
     NULL_KIND_OF_CALENDARS(false, 2401, "캘린더 종류를 선택해주세요."),
     NULL_DATE(false, 2402, "날짜를 입력해주세요."),
+    NULL_TAG(false, 2403, "태그를 입력해주세요"),
 
     // histories(2500~2599)
 
