@@ -90,8 +90,7 @@ public class CalendarService {
             if(!calendar.getUser().equals(user) || user.getStatus().equals(INACTIVE_STATUS)){
                 throw new BaseException(BaseResponseStatus.INVALID_USER_AND_STATUS);
             }
-            changeCalendarStatus(calendar, INACTIVE_STATUS);
-            changeCalendarTagStatus(calendar, INACTIVE_STATUS);
+            this.calendarRepository.delete(calendar);
         }catch (Exception e){
             throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
         }
@@ -276,7 +275,7 @@ public class CalendarService {
                     throw new BaseException(BaseResponseStatus.NULL_CALENDAR_CATEGORY);
                 calendar.setCalendarCategory(CalendarCategory.getCalendarCategoryByName(calendarReq.getKindOfCalendar()));
             }
-            this.changeCalendarTagStatus(calendar, INACTIVE_STATUS);
+            this.calendarTagRepository.deleteByCalendar(calendar);
             if (calendarReq.getHashTags() != null && calendarReq.getHashTags().size() != 0) {
                 for (CalendarHashTag hashTag : calendarReq.getHashTags()) {
                     CalendarTag calendarTag =  this.calendarTagRepository.findByCalendarAndTag(calendar, this.findByTagName(hashTag));
@@ -337,12 +336,6 @@ public class CalendarService {
                 .map(tag -> new HomeTagRes(tag.getTagIdx(), tag.getTagName(),
                         this.calendarRepository.getTagByPostLimit5(tag.getTagIdx())))
                 .collect(Collectors.toList());
-    }
-
-    // 캘린더 상태 변경 [삭제 시]
-    private void changeCalendarStatus(Calendar calendar, String status) {
-        calendar.setStatus(status);
-        this.calendarRepository.save(calendar);
     }
 
     // tag 저장
