@@ -107,7 +107,7 @@ public class UserController {
     }
 
     // 회원 탈퇴
-    @PatchMapping("/signout")
+    @DeleteMapping("/signout")
     public BaseResponse<?> signout() {
         try{
             Long userIdx = authService.getUserIdx();
