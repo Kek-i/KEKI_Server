@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.codepatissier.keki.common.Constant.ACTIVE_STATUS;
-import static com.codepatissier.keki.common.Constant.INACTIVE_STATUS;
 
 @Service
 @RequiredArgsConstructor
@@ -39,11 +38,7 @@ public class SearchHistoryService {
         try{
             User user = this.userRepository.findById(userIdx)
                     .orElseThrow(() -> new BaseException(BaseResponseStatus.INVALID_USER_IDX));
-            this.searchHistoryRepository.findByUserAndStatus(user, ACTIVE_STATUS).stream()
-                    .forEach(searches -> {
-                        searches.setStatus(INACTIVE_STATUS);
-                        this.searchHistoryRepository.save(searches);
-                    });
+            this.searchHistoryRepository.deleteAll(this.searchHistoryRepository.findByUserAndStatus(user, ACTIVE_STATUS));
         }catch (Exception e){
             throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
         }
