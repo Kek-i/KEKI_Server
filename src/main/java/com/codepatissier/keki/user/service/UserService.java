@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
-
 import static com.codepatissier.keki.common.BaseResponseStatus.*;
 
 
@@ -22,7 +21,6 @@ import static com.codepatissier.keki.common.BaseResponseStatus.*;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-    private final StoreRepository storeRepository;
     private final AuthService authService;
 
     // 로그인

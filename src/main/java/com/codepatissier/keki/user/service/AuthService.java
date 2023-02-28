@@ -1,5 +1,6 @@
 package com.codepatissier.keki.user.service;
 
+import java.time.Duration;
 import java.util.Date;
 
 
@@ -13,6 +14,7 @@ import com.codepatissier.keki.user.entity.User;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import org.springframework.web.context.request.RequestContextHolder;
@@ -31,6 +33,8 @@ public class AuthService {
     // TODO 액세스토큰 만료시간 추후 줄이기 (테스트 위해 임시 설정)
     private final int accessTokenExpiryDate = 604800000;
     private final int refreshTokenExpiryDate = 604800000;
+
+    private final RedisTemplate<String, String> redisTemplate;
 
     @Value("${auth.key}")
     private String key;
@@ -91,6 +95,7 @@ public class AuthService {
                 .setExpiration(new Date(now.getTime() + refreshTokenExpiryDate))
                 .signWith(SignatureAlgorithm.HS256, key)
                 .compact();
+        redisTemplate.opsForValue().set(String.valueOf(userIdx), refreshToken, Duration.ofMillis(refreshTokenExpiryDate));
         return refreshToken;
     }
 
