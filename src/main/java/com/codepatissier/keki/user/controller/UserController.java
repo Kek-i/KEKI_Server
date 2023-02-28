@@ -130,4 +130,15 @@ public class UserController {
         }
     }
 
+    // AccessToken 재발급
+    @ResponseBody
+    @PostMapping("/reissue")
+    public BaseResponse<?> reissueToken(@RequestBody PostTokenReq postTokenReq) {
+        try{
+            return new BaseResponse<>(userService.reissueToken(postTokenReq));
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
 }

@@ -110,4 +110,9 @@ public class AuthService {
         return accessToken;
     }
 
+    public String validateRefreshToken(Long userIdx, String refreshTokenReq) throws BaseException {
+        String refreshToken = (String) redisTemplate.opsForValue().get(String.valueOf(userIdx));
+        if(!refreshToken.equals(refreshTokenReq)) throw new BaseException(INVALID_TOKEN);
+        return refreshToken;
+    }
 }
