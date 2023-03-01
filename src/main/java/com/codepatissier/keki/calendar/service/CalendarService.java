@@ -1,6 +1,7 @@
 package com.codepatissier.keki.calendar.service;
 
 import com.codepatissier.keki.calendar.CalendarCategory;
+import com.codepatissier.keki.calendar.DateCountCategory;
 import com.codepatissier.keki.calendar.dto.*;
 import com.codepatissier.keki.calendar.entity.Calendar;
 import com.codepatissier.keki.calendar.entity.CalendarTag;
@@ -14,6 +15,7 @@ import com.codepatissier.keki.common.Tag.TagRepository;
 import com.codepatissier.keki.user.entity.User;
 import com.codepatissier.keki.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +30,7 @@ import static com.codepatissier.keki.common.Constant.INACTIVE_STATUS;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CalendarService {
     private final CalendarRepository calendarRepository;
     private final CalendarTagRepository calendarTagRepository;
@@ -139,6 +142,16 @@ public class CalendarService {
         return returnCalendar;
     }
 
+    // 날짜 수 기념일 계산 (100일, 200일, 300일 등등)
+    // 현재 2000일 미만으로 불러오도록 생성
+    private CalendarDateReturn calculateDateForDateCount(Calendar cal) {
+        int day = this.calculateDate(cal); // 날짜수를 구해서
+        for(DateCountCategory count: DateCountCategory.values()){
+            if(day < count.getCount()) return new CalendarDateReturn(count.getCount()-day, count);
+        }
+        return new CalendarDateReturn(day, null);
+    }
+
     // 기념일 계산 return String
     private String calculateDateReturnString(int day){
         String returnCalendar;
@@ -199,21 +212,35 @@ public class CalendarService {
         }
     }
 
-    // TODO: 날짜수의 경우에는 100일, 200일, 일년 주기로 꾸며지게 되는데 일단 그 기능을 구현하지는 못함
+    // 홈 기념일 조회
     public HomeRes getHomeCalendar(Long userIdx) throws BaseException{
         User user = this.findUserByUserIdx(userIdx);
         try{
             Calendar calendar = this.calendarRepository.getRecentDateCalendar(user); // 현재 가장 가까운 캘린더 불러오기
-            if(calendar != null){
-                int day = 0;
-                day = calculateDate(calendar);
-                // 사용자의 매년 반복 캘린더 불러와서 하나씩 비교해보고, 값이 더 가까우면? 매년 반복으로 홈 화면 기념일 불러오기
-                List<Calendar> listCalendars = this.calendarRepository.findByUserAndCalendarCategoryAndStatus(user, CalendarCategory.EVERY_YEAR, ACTIVE_STATUS);
-                for(Calendar cal: listCalendars){
-                    if(this.calculateDate(cal) > day){
-                        calendar = cal;
-                    }
+            List<Calendar> listEYCalendars = this.calendarRepository.findByUserAndCalendarCategoryAndStatus(user, CalendarCategory.EVERY_YEAR, ACTIVE_STATUS);
+            int day = Integer.MAX_VALUE;
+
+            // 사용자의 매년 반복 캘린더 불러와서 하나씩 비교해보고, 값이 더 가까우면? 매년 반복으로 홈 화면 기념일 불러오기
+            for(Calendar cal: listEYCalendars){
+                int calDay = this.calculateDate(cal);
+                if(calDay < Math.abs(day)){
+                    calendar = cal;
+                    day = calDay;
                 }
+            }
+
+            // 날짜 수인 경우 100일, 200일 불러오기
+            List<Calendar> listDCCalendars = this.calendarRepository.findByUserAndCalendarCategoryAndStatus(user, CalendarCategory.DATE_COUNT, ACTIVE_STATUS);
+            for (Calendar cal : listDCCalendars) {
+                CalendarDateReturn calDateReturn = this.calculateDateForDateCount(cal);
+                if (calDateReturn.getCalDate()<Math.abs(day) && calDateReturn.getDateCountCategory() != null) {
+                    calendar = cal;
+                    calendar.setCalendarTitle(calendar.getCalendarTitle()+"의 " + calDateReturn.getDateCountCategory().getCount() + "일");
+                }
+            }
+
+            if(calendar != null){
+                // 날짜 계산
                 day = this.calculateDate(calendar);
                 if(calendar.getCalendarCategory().equals(CalendarCategory.DATE_COUNT)) day--; // 값을 하나 빼줌
                 return new HomeRes(user.getUserIdx(), user.getNickname(), calendar.getCalendarTitle(), Math.abs(day), null);
@@ -223,6 +250,8 @@ public class CalendarService {
             throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
         }
     }
+
+
 
     // 로그 아웃 된 상태에서 홈 정보 불러오기
     public HomeRes getHomeCalendarAndPostLogout() throws BaseException{
