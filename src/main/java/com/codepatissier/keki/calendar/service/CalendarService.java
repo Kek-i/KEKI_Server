@@ -145,9 +145,9 @@ public class CalendarService {
     // 날짜 수 기념일 계산 (100일, 200일, 300일 등등)
     // 현재 2000일 미만으로 불러오도록 생성
     private CalendarDateReturn calculateDateForDateCount(Calendar cal) {
-        int day = this.calculateDate(cal); // 날짜수를 구해서
+        int day = this.calculateDate(cal) - 1; // 날짜수를 구함 -> 기존에 +1 을 해서 return 하기 때문에 +1을 해줌
         for(DateCountCategory count: DateCountCategory.values()){
-            if(day < count.getCount()) return new CalendarDateReturn(count.getCount()-day, count);
+            if(day <= count.getCount()) return new CalendarDateReturn(count.getCount()-day, count);
         }
         return new CalendarDateReturn(day, null);
     }
@@ -236,13 +236,12 @@ public class CalendarService {
                 if (calDateReturn.getCalDate()<Math.abs(day) && calDateReturn.getDateCountCategory() != null) {
                     calendar = cal;
                     calendar.setCalendarTitle(calendar.getCalendarTitle()+"의 " + calDateReturn.getDateCountCategory().getDate());
+                    day = calDateReturn.getCalDate();
                 }
             }
 
             if(calendar != null){
                 // 날짜 계산
-                day = this.calculateDate(calendar);
-                if(calendar.getCalendarCategory().equals(CalendarCategory.DATE_COUNT)) day--; // 값을 하나 빼줌
                 return new HomeRes(user.getUserIdx(), user.getNickname(), calendar.getCalendarTitle(), Math.abs(day), null, calendar);
             }
             return new HomeRes(user.getUserIdx(), user.getNickname(), null, 0, null, null);
