@@ -235,7 +235,7 @@ public class CalendarService {
                 CalendarDateReturn calDateReturn = this.calculateDateForDateCount(cal);
                 if (calDateReturn.getCalDate()<Math.abs(day) && calDateReturn.getDateCountCategory() != null) {
                     calendar = cal;
-                    calendar.setCalendarTitle(calendar.getCalendarTitle()+"의 " + calDateReturn.getDateCountCategory().getCount() + "일");
+                    calendar.setCalendarTitle(calendar.getCalendarTitle()+"의 " + calDateReturn.getDateCountCategory().getDate());
                 }
             }
 
