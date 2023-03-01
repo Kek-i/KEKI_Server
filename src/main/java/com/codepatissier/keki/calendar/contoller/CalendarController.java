@@ -119,8 +119,8 @@ public class CalendarController {
             }
             // 아닌 경우에는 가장 가까운 기념일을 불러오고
             HomeRes home = this.calendarService.getHomeCalendar(this.authService.getUserIdx());
-            // 기념일의 태그가 3개 미만이면 다 랜덤으로 불러오고
-            // 태그가 3개 이상이면 태그별로 랜덤하게 불러오기
+            // 기념일의 태그가 없으면 랜덤으로
+            // 아니면 기념일 태그의 게시물만
             return new BaseResponse<>(this.calendarService.getHomeTagPost(home));
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());

@@ -243,9 +243,9 @@ public class CalendarService {
                 // 날짜 계산
                 day = this.calculateDate(calendar);
                 if(calendar.getCalendarCategory().equals(CalendarCategory.DATE_COUNT)) day--; // 값을 하나 빼줌
-                return new HomeRes(user.getUserIdx(), user.getNickname(), calendar.getCalendarTitle(), Math.abs(day), null);
+                return new HomeRes(user.getUserIdx(), user.getNickname(), calendar.getCalendarTitle(), Math.abs(day), null, calendar);
             }
-            return new HomeRes(user.getUserIdx(), user.getNickname(), null, 0, null);
+            return new HomeRes(user.getUserIdx(), user.getNickname(), null, 0, null, null);
         }catch (Exception e){
             throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
         }
@@ -257,7 +257,7 @@ public class CalendarService {
     public HomeRes getHomeCalendarAndPostLogout() throws BaseException{
         try{
             return new HomeRes(null, null, null, 0,
-                    getPostByTag(this.calendarTagRepository.getPopularCalendarTag()));
+                    getPostByTag(this.calendarTagRepository.getPopularCalendarTag()),null);
         }catch (Exception e){
             throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
         }
@@ -266,11 +266,11 @@ public class CalendarService {
 
     // home api
     public HomeRes getHomeTagPost(HomeRes home) throws BaseException{
-        User user = this.findUserByUserIdx(home.getUserIdx());
         try{
-            List<PopularTagRes> tags = this.calendarTagRepository.getPopularCalendarTagByUser(user);
+            List<PopularTagRes> tags = this.calendarTagRepository.findByCalendarAndStatus(home.getCalendar(), ACTIVE_STATUS).stream()
+                    .map(cal -> new PopularTagRes(cal.getTag().getTagIdx(), cal.getTag().getTagName())).collect(Collectors.toList());
             // 기념일의 태그가 3개 미만이면 다 랜덤으로 불러오고
-            if(tags.size()< Constant.Home.HOME_RETURN_TAG_COUNT){
+            if(tags.size()==0){
                 home.setHomeTagResList(this.getPostByTag(this.calendarTagRepository.getPopularCalendarTag()));
             }else{ // 태그가 3개 이상이면 태그별로 랜덤하게 불러오기
                 home.setHomeTagResList(this.getPostByTag(tags));
