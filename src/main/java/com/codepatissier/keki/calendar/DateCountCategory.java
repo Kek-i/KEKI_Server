@@ -19,7 +19,7 @@ public enum DateCountCategory {
     THREE_YEAR(1095, "3주년"),
     FOUR_YEAR(1460, "4주년"),
     FIVE_YEAR(1825, "5주년"),
-    THO_THOUSAND(2000, "200일");
+    TWO_THOUSAND(2000, "2000일");
     private int count;
     private String date;
 
