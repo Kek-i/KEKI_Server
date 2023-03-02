@@ -216,9 +216,13 @@ public class CalendarService {
     public HomeRes getHomeCalendar(Long userIdx) throws BaseException{
         User user = this.findUserByUserIdx(userIdx);
         try{
-            Calendar calendar = this.calendarRepository.getRecentDateCalendar(user); // 현재 가장 가까운 캘린더 불러오기
-            List<Calendar> listEYCalendars = this.calendarRepository.findByUserAndCalendarCategoryAndStatus(user, CalendarCategory.EVERY_YEAR, ACTIVE_STATUS);
             int day = Integer.MAX_VALUE;
+            Calendar calendar = this.calendarRepository.getRecentDateCalendar(user); // 현재 가장 가까운 캘린더 불러오기
+            if(calendar != null){
+                day = this.calculateDate(calendar);
+            }
+            List<Calendar> listEYCalendars = this.calendarRepository.findByUserAndCalendarCategoryAndStatus(user, CalendarCategory.EVERY_YEAR, ACTIVE_STATUS);
+
 
             // 사용자의 매년 반복 캘린더 불러와서 하나씩 비교해보고, 값이 더 가까우면? 매년 반복으로 홈 화면 기념일 불러오기
             for(Calendar cal: listEYCalendars){
@@ -241,7 +245,6 @@ public class CalendarService {
             }
 
             if(calendar != null){
-                // 날짜 계산
                 return new HomeRes(user.getUserIdx(), user.getNickname(), calendar.getCalendarTitle(), Math.abs(day), null, calendar);
             }
             return new HomeRes(user.getUserIdx(), user.getNickname(), null, 0, null, null);
@@ -343,19 +346,6 @@ public class CalendarService {
     private Calendar findCalendarByCalendarIdx(Long calendarIdx) throws BaseException {
         return this.calendarRepository.findByCalendarIdxAndStatus(calendarIdx, Constant.ACTIVE_STATUS)
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.INVALID_CALENDAR_IDX));
-    }
-
-    // 태그 상태 변경
-    private void changeCalendarTagStatus(Calendar calendar, String status){
-        String getStatus = null;
-        if(status.equals(ACTIVE_STATUS)) getStatus = INACTIVE_STATUS;
-        else getStatus = ACTIVE_STATUS;
-
-        this.calendarTagRepository.findByCalendarAndStatus(calendar, getStatus).stream()
-                .forEach(tag -> {
-                    tag.setStatus(status);
-                    this.calendarTagRepository.save(tag);
-                });
     }
 
     // tag 별 게시물 찾기
