@@ -2,6 +2,7 @@ package com.codepatissier.keki.calendar.repository.CalendarTag;
 
 import com.codepatissier.keki.calendar.dto.PopularTagRes;
 import com.codepatissier.keki.calendar.dto.QPopularTagRes;
+import com.codepatissier.keki.calendar.entity.Calendar;
 import com.codepatissier.keki.common.Constant;
 import com.codepatissier.keki.user.entity.User;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -35,6 +36,7 @@ public class CalendarTagRepositoryImpl implements CalendarTagCustom {
 
     /**
      * 사용자 별 인기 Tag 3개
+     * 다음에 쓸수 있으니, 혹시 몰라서 지우지 않고 남겨둘게요!
      */
     @Override
     public List<PopularTagRes> getPopularCalendarTagByUser(User userEntity) {
@@ -51,4 +53,5 @@ public class CalendarTagRepositoryImpl implements CalendarTagCustom {
                 .limit(Constant.Home.HOME_RETURN_TAG_COUNT)
                 .fetch();
     }
+
 }
