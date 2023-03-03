@@ -21,7 +21,7 @@ public class GetDessertRes {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class Image {
-        private Long postIdx;
-        private String postImgUrl;
+        private Long imgIdx;
+        private String imgUrl;
     }
 }

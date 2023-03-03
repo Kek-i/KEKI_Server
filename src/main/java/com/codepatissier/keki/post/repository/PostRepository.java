@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -21,7 +22,7 @@ public interface PostRepository extends JpaRepository<Post, Long>, PostCustom {
 
     boolean existsByStoreAndStatusAndPostIdxLessThan(Store store, String status, Long postIdx);
     boolean existsByDessertDessertNameContainingAndStatusAndPostIdxLessThan(String word, String status, Long postIdx);
-    List<Post> findTop5ByDessertAndStatusOrderByPostIdxDesc(Dessert dessert, String activeStatus);
+    ArrayList<Post> findTop4ByDessertAndStatusOrderByPostIdxDesc(Dessert dessert, String activeStatus);
 
     void deleteByDessert(Dessert dessert);
 }
