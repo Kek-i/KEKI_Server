@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -80,9 +81,12 @@ public class DessertService {
         try {
             Dessert dessert = dessertRepository.findByDessertIdxAndStatus(dessertIdx, ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_DESSERT_IDX));
 
-            List<GetDessertRes.Image> imgList = getPostImgList(dessert);
+            ArrayList<GetDessertRes.Image> imgList = new ArrayList<>();
+            imgList.add(getDessertImg(dessert));
+            ArrayList<GetDessertRes.Image> postImgList = getPostImgList(dessert);
+            imgList.addAll(postImgList);
 
-            // nickname, dessertName, dessertPrice, dessertDescription, imgList
+            // nickname, dessertName, dessertPrice, dessertDescription, imgList(상품 상세 이미지 1장, 피드 이미지 4장)
             return new GetDessertRes(dessert.getStore().getUser().getNickname(), dessert.getDessertName(), dessert.getDessertPrice(), dessert.getDessertDescription(), imgList);
         } catch (BaseException e) {
             throw e;
@@ -91,9 +95,13 @@ public class DessertService {
         }
     }
 
-    // 특정 dessert가 들어간 post 5개를 가져와 postIdx와 대표 postImg를 반환
-    private List<GetDessertRes.Image> getPostImgList(Dessert dessert) {
-        return postRepository.findTop5ByDessertAndStatusOrderByPostIdxDesc(dessert, ACTIVE_STATUS).stream()
+    private GetDessertRes.Image getDessertImg(Dessert dessert) {
+        return new GetDessertRes.Image(dessert.getDessertIdx(), dessert.getDessertImg());
+    }
+
+    // 특정 dessert가 들어간 post 4개를 가져와 postIdx와 대표 postImg를 반환
+    private ArrayList<GetDessertRes.Image> getPostImgList(Dessert dessert) {
+        return (ArrayList<GetDessertRes.Image>) postRepository.findTop4ByDessertAndStatusOrderByPostIdxDesc(dessert, ACTIVE_STATUS).stream()
                 .map(posts -> new GetDessertRes.Image(posts.getPostIdx(),
                         representPostImgUrl(posts.getImages()))).collect(Collectors.toList());
     }
