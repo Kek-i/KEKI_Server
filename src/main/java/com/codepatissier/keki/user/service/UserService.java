@@ -64,7 +64,7 @@ public class UserService {
             String accessToken = authService.createAccessToken(userIdx);
             String refreshToken = authService.createRefreshToken(userIdx);
 
-            user.signup(postCustomerReq.getNickname(), refreshToken, Role.CUSTOMER, postCustomerReq.getProfileImg());
+            user.signup(postCustomerReq.getNickname(),Role.CUSTOMER, postCustomerReq.getProfileImg());
             userRepository.save(user);
 
             return new PostUserRes(accessToken, refreshToken, user.getRole());
