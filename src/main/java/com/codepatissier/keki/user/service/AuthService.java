@@ -144,4 +144,15 @@ public class AuthService {
     private void registerBlackList(String token, Long expiration) {
         redisTemplate.opsForValue().set(token, Constant.LOGOUT_STATUS, Duration.ofMillis(expiration));
     }
+
+    private void registerSignout(String token, Long expiration) {
+        redisTemplate.opsForValue().set(token, Constant.INACTIVE_STATUS, Duration.ofMillis(expiration));
+    }
+
+    public void signout(Long userIdx) throws BaseException {
+        deleteToken(userIdx);
+        String token = getToken();
+        Long expiration = getExpiration(token);
+        registerBlackList(token, expiration);
+    }
 }
