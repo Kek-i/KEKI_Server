@@ -79,6 +79,10 @@ public class AuthService {
                     .parseClaimsJws(token);
         } catch (ExpiredJwtException expiredJwtException) {
             throw new BaseException(EXPIRED_TOKEN);
+        } catch (MalformedJwtException malformedJwtException) {
+            throw new BaseException(MALFORMED_TOKEN);
+        } catch (UnsupportedJwtException unsupportedJwtException) {
+            throw new BaseException(UNSUPPORTED_TOKEN);
         } catch (Exception e) {
             throw new BaseException(INVALID_TOKEN);
         }

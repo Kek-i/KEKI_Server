@@ -20,6 +20,9 @@ public enum BaseResponseStatus {
     INVALID_PROVIDER(false, 2003, "잘못된 소셜 이름입니다."),
     ALREADY_WITHDRAW_USER(false, 2004, "이미 탈퇴한 회원입니다."),
     INVALID_TOKEN(false, 2005, "유효하지 않은 토큰 값입니다."),
+    UNSUPPORTED_TOKEN(false, 2006, "잘못된 형식의 토큰 값입니다."),
+    MALFORMED_TOKEN(false, 2007, "잘못된 구조의 토큰 값입니다."),
+
 
     // stores(2100~2199)
     NULL_ADDRESS(false, 2100, "주소를 입력해주세요."),
