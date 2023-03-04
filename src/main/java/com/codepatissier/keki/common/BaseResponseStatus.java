@@ -14,11 +14,12 @@ public enum BaseResponseStatus {
      *  2000: Request 오류
      */
     // users(2000~2099)
-     NULL_TOKEN(false, 2000, "토큰 값을 입력해주세요."),
+    NULL_TOKEN(false, 2000, "토큰 값을 입력해주세요."),
     NULL_EMAIL(false, 2001, "이메일을 입력해주세요."),
     NULL_PROVIDER(false, 2002, "소셜 이름을 입력해주세요."),
     INVALID_PROVIDER(false, 2003, "잘못된 소셜 이름입니다."),
-    ALREADY_WITHDRAW_USER(false, 2003, "이미 삭제된 회원입니다."),
+    ALREADY_WITHDRAW_USER(false, 2004, "이미 삭제된 회원입니다."),
+    INVALID_TOKEN(false, 2005, "유효하지 않은 토큰 값입니다."),
 
     // stores(2100~2199)
     NULL_ADDRESS(false, 2100, "주소를 입력해주세요."),
@@ -68,8 +69,7 @@ public enum BaseResponseStatus {
     INVALID_EMAIL(false, 3002, "존재하지 않는 이메일입니다."),
     NO_STORE_ROLE(false, 3003, "판매자가 아닙니다."),
     INVALID_USER_STATUS(false, 3004, "비활성화된 사용자입니다."),
-    INVALID_TOKEN(false, 3005, "잘못된 토큰 값입니다."),
-    EXPIRED_TOKEN(false, 3006, "만료된 토큰 값입니다."),
+    EXPIRED_TOKEN(false, 3005, "만료된 토큰 값입니다."),
 
     // stores(3100~3199)
     INVALID_STORE_IDX(false, 3100, "존재하지 않는 스토어입니다."),
