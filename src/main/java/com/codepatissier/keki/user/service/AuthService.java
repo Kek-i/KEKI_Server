@@ -79,6 +79,10 @@ public class AuthService {
                     .parseClaimsJws(token);
         } catch (ExpiredJwtException expiredJwtException) {
             throw new BaseException(EXPIRED_TOKEN);
+        } catch (MalformedJwtException malformedJwtException) {
+            throw new BaseException(MALFORMED_TOKEN);
+        } catch (UnsupportedJwtException unsupportedJwtException) {
+            throw new BaseException(UNSUPPORTED_TOKEN);
         } catch (Exception e) {
             throw new BaseException(INVALID_TOKEN);
         }
@@ -122,8 +126,14 @@ public class AuthService {
     public void logout(Long userIdx) throws BaseException {
         deleteToken(userIdx);
         String token = getToken();
-        Long expiration = getExpiration(token);
-        registerBlackList(token, expiration);
+        registerBlackList(token, Constant.LOGOUT_STATUS);
+    }
+
+    // 회원 탈퇴
+    public void signout(Long userIdx) throws BaseException {
+        deleteToken(userIdx);
+        String token = getToken();
+        registerBlackList(token, Constant.INACTIVE_STATUS);
     }
 
     // refreshToken 삭제
@@ -132,16 +142,14 @@ public class AuthService {
         if(redisTemplate.opsForValue().get(key)!=null) redisTemplate.delete(key);
     }
 
-    // 토큰 유효시간 구하기
-    public Long getExpiration(String token) {
+    // 유효한 토큰 blacklist로 등록
+    private void registerBlackList(String token, String status) {
         token = token.replaceAll(TOKEN_REGEX, TOKEN_REPLACEMENT);
-        Date expiration = Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody().getExpiration();
+        Date AccessTokenExpiration = Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody().getExpiration();
         long now = (new Date()).getTime();
-        return (expiration.getTime() - now);
+
+        Long expiration = AccessTokenExpiration.getTime() - now;
+        redisTemplate.opsForValue().set(token, status, Duration.ofMillis(expiration));
     }
 
-    // blacklist로 등록
-    private void registerBlackList(String token, Long expiration) {
-        redisTemplate.opsForValue().set(token, Constant.LOGOUT_STATUS, Duration.ofMillis(expiration));
-    }
 }

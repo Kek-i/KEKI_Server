@@ -4,7 +4,6 @@ import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.BaseResponseStatus;
 import com.codepatissier.keki.common.Constant;
 import com.codepatissier.keki.common.Role;
-import com.codepatissier.keki.store.repository.StoreRepository;
 import com.codepatissier.keki.user.dto.*;
 import com.codepatissier.keki.user.entity.Provider;
 import com.codepatissier.keki.user.entity.User;
@@ -102,12 +101,12 @@ public class UserService {
     }
 
     // 회원 탈퇴
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void signout(Long userIdx) throws BaseException {
         try{
             User user = userRepository.findByUserIdxAndStatusEquals(userIdx, ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
             userRepository.delete(user);
-            // TODO redis 사용해 토큰 관리
+            authService.signout(userIdx);
         } catch (BaseException e) {
             throw e;
         } catch (Exception e) {
