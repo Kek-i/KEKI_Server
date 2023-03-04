@@ -64,7 +64,7 @@ public class UserService {
             String accessToken = authService.createAccessToken(userIdx);
             String refreshToken = authService.createRefreshToken(userIdx);
 
-            user.signup(postCustomerReq.getNickname(), refreshToken, Role.CUSTOMER, postCustomerReq.getProfileImg());
+            user.signup(postCustomerReq.getNickname(), Role.CUSTOMER, postCustomerReq.getProfileImg());
             userRepository.save(user);
 
             return new PostUserRes(accessToken, refreshToken, user.getRole());
@@ -120,8 +120,8 @@ public class UserService {
     public void logout(Long userIdx) throws BaseException {
         try{
             User user = userRepository.findByUserIdxAndStatusEquals(userIdx, ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+            authService.logout(userIdx);
             user.logout();
-            // TODO redis 사용해 토큰 관리
         } catch (BaseException e) {
             throw e;
         } catch (Exception e) {

@@ -5,6 +5,7 @@ import java.util.Date;
 
 
 import com.codepatissier.keki.common.BaseException;
+import com.codepatissier.keki.common.Constant;
 import com.codepatissier.keki.user.dto.PostUserRes;
 import io.jsonwebtoken.*;
 
@@ -62,9 +63,10 @@ public class AuthService {
     }
 
     // 토큰 추출
-    private static String getToken() {
+    private String getToken() throws BaseException {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         String token = request.getHeader(REQUEST_HEADER_NAME);
+        if(redisTemplate.opsForValue().get(token)!=null) throw new BaseException(INVALID_TOKEN);
         return token;
     }
 
@@ -114,5 +116,32 @@ public class AuthService {
         String refreshToken = (String) redisTemplate.opsForValue().get(String.valueOf(userIdx));
         if(!refreshToken.equals(refreshTokenReq)) throw new BaseException(INVALID_TOKEN);
         return refreshToken;
+    }
+
+    // 회원 로그아웃
+    public void logout(Long userIdx) throws BaseException {
+        deleteToken(userIdx);
+        String token = getToken();
+        Long expiration = getExpiration(token);
+        registerBlackList(token, expiration);
+    }
+
+    // refreshToken 삭제
+    public void deleteToken(Long userIdx) {
+        String key = String.valueOf(userIdx);
+        if(redisTemplate.opsForValue().get(key)!=null) redisTemplate.delete(key);
+    }
+
+    // 토큰 유효시간 구하기
+    public Long getExpiration(String token) {
+        token = token.replaceAll(TOKEN_REGEX, TOKEN_REPLACEMENT);
+        Date expiration = Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody().getExpiration();
+        long now = (new Date()).getTime();
+        return (expiration.getTime() - now);
+    }
+
+    // blacklist로 등록
+    private void registerBlackList(String token, Long expiration) {
+        redisTemplate.opsForValue().set(token, Constant.LOGOUT_STATUS, Duration.ofMillis(expiration));
     }
 }

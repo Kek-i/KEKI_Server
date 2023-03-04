@@ -31,7 +31,7 @@ public class StoreService {
             String refreshToken = authService.createRefreshToken(userIdx);
 
             User user = userRepository.findByUserIdxAndStatusEquals(userIdx, Constant.ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
-            user.storeSignUp(postStoreReq.getNickname(), postStoreReq.getStoreImgUrl(), refreshToken, Role.STORE);
+            user.storeSignUp(postStoreReq.getNickname(), postStoreReq.getStoreImgUrl(), Role.STORE);
             userRepository.save(user);
 
             Store store = Store.builder()
