@@ -45,7 +45,7 @@ public class Order {
     private String customerPhone;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "varchar(20) default 'order_waiting'")
+    @Column(columnDefinition = "varchar(20) default 'ORDER_WAITING'")
     private OrderStatus orderStatus;
 
     @Column(nullable = false)
