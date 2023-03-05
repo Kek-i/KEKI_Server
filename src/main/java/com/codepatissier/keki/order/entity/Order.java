@@ -41,7 +41,7 @@ public class Order {
     @Column(nullable = false, length = 30)
     private String customerName;
 
-    @Column(nullable = false, length = 12)
+    @Column(nullable = false, length = 20)
     private String customerPhone;
 
     @Enumerated(EnumType.STRING)
