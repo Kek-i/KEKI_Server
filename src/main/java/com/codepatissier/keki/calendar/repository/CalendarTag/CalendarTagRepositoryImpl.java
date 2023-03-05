@@ -2,7 +2,6 @@ package com.codepatissier.keki.calendar.repository.CalendarTag;
 
 import com.codepatissier.keki.calendar.dto.PopularTagRes;
 import com.codepatissier.keki.calendar.dto.QPopularTagRes;
-import com.codepatissier.keki.calendar.entity.Calendar;
 import com.codepatissier.keki.common.Constant;
 import com.codepatissier.keki.user.entity.User;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -12,7 +11,7 @@ import java.util.List;
 
 import static com.codepatissier.keki.calendar.entity.QCalendar.calendar;
 import static com.codepatissier.keki.calendar.entity.QCalendarTag.calendarTag;
-import static com.codepatissier.keki.common.Tag.QTag.tag;
+import static com.codepatissier.keki.common.tag.QTag.tag;
 import static com.codepatissier.keki.user.entity.QUser.user;
 
 @RequiredArgsConstructor

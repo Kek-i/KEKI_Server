@@ -1,11 +1,10 @@
 package com.codepatissier.keki.post.service;
 
-import com.codepatissier.keki.calendar.dto.TagRes;
 import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.Constant;
 import com.codepatissier.keki.common.Role;
-import com.codepatissier.keki.common.Tag.Tag;
-import com.codepatissier.keki.common.Tag.TagRepository;
+import com.codepatissier.keki.common.tag.Tag;
+import com.codepatissier.keki.common.tag.TagRepository;
 import com.codepatissier.keki.dessert.entity.Dessert;
 import com.codepatissier.keki.dessert.repository.DessertRepository;
 import com.codepatissier.keki.history.entity.PostHistory;
