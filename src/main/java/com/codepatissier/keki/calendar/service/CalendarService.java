@@ -10,8 +10,8 @@ import com.codepatissier.keki.calendar.repository.CalendarTag.CalendarTagReposit
 import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.BaseResponseStatus;
 import com.codepatissier.keki.common.Constant;
-import com.codepatissier.keki.common.Tag.Tag;
-import com.codepatissier.keki.common.Tag.TagRepository;
+import com.codepatissier.keki.common.tag.Tag;
+import com.codepatissier.keki.common.tag.TagRepository;
 import com.codepatissier.keki.user.entity.User;
 import com.codepatissier.keki.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

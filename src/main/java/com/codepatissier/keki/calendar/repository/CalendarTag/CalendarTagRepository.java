@@ -3,7 +3,7 @@ package com.codepatissier.keki.calendar.repository.CalendarTag;
 import com.codepatissier.keki.calendar.entity.Calendar;
 import com.codepatissier.keki.calendar.entity.CalendarTag;
 import com.codepatissier.keki.user.entity.User;
-import com.codepatissier.keki.common.Tag.Tag;
+import com.codepatissier.keki.common.tag.Tag;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

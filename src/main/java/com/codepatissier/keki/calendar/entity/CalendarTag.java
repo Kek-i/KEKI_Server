@@ -1,7 +1,7 @@
 package com.codepatissier.keki.calendar.entity;
 
 import com.codepatissier.keki.common.BaseEntity;
-import com.codepatissier.keki.common.Tag.Tag;
+import com.codepatissier.keki.common.tag.Tag;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
