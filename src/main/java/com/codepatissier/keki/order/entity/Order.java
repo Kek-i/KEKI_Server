@@ -1,7 +1,6 @@
 package com.codepatissier.keki.order.entity;
 
 import com.codepatissier.keki.dessert.entity.Dessert;
-import com.codepatissier.keki.post.entity.OrderStatus;
 import com.codepatissier.keki.store.entity.Store;
 import com.codepatissier.keki.user.entity.User;
 import lombok.Builder;

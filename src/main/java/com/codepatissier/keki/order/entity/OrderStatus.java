@@ -1,4 +1,4 @@
-package com.codepatissier.keki.post.entity;
+package com.codepatissier.keki.order.entity;
 
 import lombok.Getter;
 
