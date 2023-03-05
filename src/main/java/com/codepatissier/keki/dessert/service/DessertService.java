@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 
 import static com.codepatissier.keki.common.BaseResponseStatus.*;
 import static com.codepatissier.keki.common.Constant.ACTIVE_STATUS;
-import static com.codepatissier.keki.common.Constant.INACTIVE_STATUS;
 
 @Service
 @RequiredArgsConstructor
@@ -142,7 +141,7 @@ public class DessertService {
     public void deleteDessert(Long userIdx, Long dessertIdx) throws BaseException {
         try {
             checkStore(userIdx);
-            dessertRepository.findByDessertIdxAndStatus(dessertIdx, INACTIVE_STATUS).orElseThrow(() -> new BaseException(DELETED_DESSERT));
+            dessertRepository.findByDessertIdxAndStatus(dessertIdx, ACTIVE_STATUS).orElseThrow(() -> new BaseException(DELETED_DESSERT));
             dessertRepository.deleteById(dessertIdx);
         } catch (BaseException e) {
             throw e;
