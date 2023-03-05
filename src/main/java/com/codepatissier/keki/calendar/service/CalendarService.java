@@ -269,14 +269,18 @@ public class CalendarService {
     // home api
     public HomeRes getHomeTagPost(HomeRes home) throws BaseException{
         try{
-            List<PopularTagRes> tags = this.calendarTagRepository.findByCalendarAndStatus(home.getCalendar(), ACTIVE_STATUS).stream()
-                    .map(cal -> new PopularTagRes(cal.getTag().getTagIdx(), cal.getTag().getTagName())).collect(Collectors.toList());
-            // 기념일의 태그가 3개 미만이면 다 랜덤으로 불러오고
-            if(tags.size()==0){
-                home.setHomeTagResList(this.getPostByTag(this.calendarTagRepository.getPopularCalendarTag()));
-            }else{ // 태그가 3개 이상이면 태그별로 랜덤하게 불러오기
-                home.setHomeTagResList(this.getPostByTag(tags));
+            if(home.getCalendar() == null) home.setHomeTagResList(this.getPostByTag(this.calendarTagRepository.getPopularCalendarTag()));
+            else{
+                List<PopularTagRes> tags = this.calendarTagRepository.findByCalendarAndStatus(home.getCalendar(), ACTIVE_STATUS).stream()
+                        .map(cal -> new PopularTagRes(cal.getTag().getTagIdx(), cal.getTag().getTagName())).collect(Collectors.toList());
+                // 기념일의 태그가 3개 미만이면 다 랜덤으로 불러오고
+                if(tags.size()==0){
+                    home.setHomeTagResList(this.getPostByTag(this.calendarTagRepository.getPopularCalendarTag()));
+                }else{ // 태그가 3개 이상이면 태그별로 랜덤하게 불러오기
+                    home.setHomeTagResList(this.getPostByTag(tags));
+                }
             }
+
             return home;
         }catch (Exception e){
             throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
