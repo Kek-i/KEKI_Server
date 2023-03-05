@@ -10,7 +10,7 @@ public enum OrderStatus {
     PROGRESSING(2, "제작중"),
     PICKUP_WAITING(3, "픽업대기"),
     COMPLETED(4, "픽업완료"),
-    CANCEL(5, "주문취소");
+    CANCELED(5, "주문취소");
 
     private int number;
     private String name;
