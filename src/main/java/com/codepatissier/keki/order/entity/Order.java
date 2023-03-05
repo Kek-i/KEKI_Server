@@ -1,6 +1,7 @@
 package com.codepatissier.keki.order.entity;
 
 import com.codepatissier.keki.dessert.entity.Dessert;
+import com.codepatissier.keki.post.entity.OrderStatus;
 import com.codepatissier.keki.store.entity.Store;
 import com.codepatissier.keki.user.entity.User;
 import lombok.Builder;
@@ -44,8 +45,9 @@ public class Order {
     @Column(nullable = false, length = 12)
     private String customerPhone;
 
-    @Column(columnDefinition = "varchar(20) default 'waiting'")
-    private String orderStatus;
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(20) default 'order_waiting'")
+    private OrderStatus orderStatus;
 
     @Column(nullable = false)
     private int extraPrice;
