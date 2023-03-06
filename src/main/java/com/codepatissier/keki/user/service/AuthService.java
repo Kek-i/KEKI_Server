@@ -66,6 +66,7 @@ public class AuthService {
     private String getToken() throws BaseException {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         String token = request.getHeader(REQUEST_HEADER_NAME);
+        if (token == null) return null;
         if(redisTemplate.opsForValue().get(token)!=null) throw new BaseException(INVALID_TOKEN);
         return token;
     }
