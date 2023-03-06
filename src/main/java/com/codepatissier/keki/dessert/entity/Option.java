@@ -1,5 +1,6 @@
 package com.codepatissier.keki.dessert.entity;
 
+import com.codepatissier.keki.common.BaseEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
@@ -11,7 +12,7 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor
 @DynamicInsert
-public class Option {
+public class Option extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long optionIdx;
@@ -24,5 +25,5 @@ public class Option {
     private String description;
 
     @Column(nullable = false)
-    private int price;
+    private Integer price;
 }

@@ -5,6 +5,7 @@ import com.codepatissier.keki.common.Role;
 import com.codepatissier.keki.dessert.dto.*;
 import com.codepatissier.keki.dessert.entity.Dessert;
 import com.codepatissier.keki.dessert.repository.DessertRepository;
+import com.codepatissier.keki.dessert.repository.OptionRepository;
 import com.codepatissier.keki.post.entity.PostImg;
 import com.codepatissier.keki.post.repository.PostRepository;
 import com.codepatissier.keki.store.entity.Store;
@@ -29,6 +30,7 @@ public class DessertService {
     private final StoreRepository storeRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final OptionRepository optionRepository;
 
     /**
      * 상품 전체 조회
@@ -85,8 +87,10 @@ public class DessertService {
             ArrayList<GetDessertRes.Image> postImgList = getPostImgList(dessert);
             imgList.addAll(postImgList);
 
-            // nickname, dessertName, dessertPrice, dessertDescription, imgList(상품 상세 이미지 1장, 피드 이미지 4장)
-            return new GetDessertRes(dessert.getStore().getUser().getNickname(), dessert.getDessertName(), dessert.getDessertPrice(), dessert.getDessertDescription(), imgList);
+            List<GetDessertRes.Option> optionList = getOptionList(dessert);
+
+            // nickname, dessertName, dessertPrice, dessertDescription, imgList(상품 상세 이미지 1장, 피드 이미지 4장), description, price
+            return new GetDessertRes(dessert.getStore().getUser().getNickname(), dessert.getDessertName(), dessert.getDessertPrice(), dessert.getDessertDescription(), imgList, optionList);
         } catch (BaseException e) {
             throw e;
         } catch (Exception e) {
@@ -107,6 +111,11 @@ public class DessertService {
 
     private String representPostImgUrl(List<PostImg> postImages){
         return postImages.isEmpty() ? null : postImages.get(0).getImgUrl();
+    }
+
+    private List<GetDessertRes.Option> getOptionList(Dessert dessert) {
+        return optionRepository.findByDessertAndStatusOrderByOptionIdx(dessert, ACTIVE_STATUS).stream()
+                .map(option -> new GetDessertRes.Option(option.getDescription(), option.getPrice())).collect(Collectors.toList());
     }
 
     /**
