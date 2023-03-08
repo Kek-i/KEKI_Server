@@ -4,7 +4,9 @@ import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.Role;
 import com.codepatissier.keki.dessert.dto.*;
 import com.codepatissier.keki.dessert.entity.Dessert;
+import com.codepatissier.keki.dessert.entity.Option;
 import com.codepatissier.keki.dessert.repository.DessertRepository;
+import com.codepatissier.keki.dessert.repository.OptionRepository;
 import com.codepatissier.keki.post.entity.PostImg;
 import com.codepatissier.keki.post.repository.PostRepository;
 import com.codepatissier.keki.store.entity.Store;
@@ -14,6 +16,7 @@ import com.codepatissier.keki.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +32,7 @@ public class DessertService {
     private final StoreRepository storeRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final OptionRepository optionRepository;
 
     /**
      * 상품 전체 조회
@@ -109,10 +113,16 @@ public class DessertService {
         return postImages.isEmpty() ? null : postImages.get(0).getImgUrl();
     }
 
+    private List<GetDessertRes.Option> getOptionList(Dessert dessert) {
+        return optionRepository.findByDessertAndStatusOrderByOptionIdx(dessert, ACTIVE_STATUS).stream()
+                .map(option -> new GetDessertRes.Option(option.getDescription(), option.getPrice())).collect(Collectors.toList());
+    }
+
     /**
      * [판매자] 상품 등록
      * 상품 이름, 가격, 소개, 이미지(1장)
      */
+    @Transactional(rollbackFor = Exception.class)
     public void addDessert(Long userIdx, PostDessertReq postDessertReq) throws BaseException {
         try {
             User user = userRepository.findByUserIdxAndStatusEquals(userIdx, ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
@@ -128,8 +138,24 @@ public class DessertService {
                     .dessertImg(postDessertReq.getDessertImg())
                     .build();
             dessertRepository.save(dessert);
+
+            for(PostDessertReq.Option option : postDessertReq.getOptions())
+                saveOption(option, dessert);
         } catch (BaseException e) {
             throw e;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    private void saveOption(PostDessertReq.Option optionDTO, Dessert dessert) throws BaseException {
+        try {
+            Option option = Option.builder()
+                    .dessert(dessert)
+                    .description(optionDTO.getOptionDescription())
+                    .price(optionDTO.getOptionPrice())
+                    .build();
+            optionRepository.save(option);
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }

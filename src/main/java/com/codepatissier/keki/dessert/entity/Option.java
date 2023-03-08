@@ -1,6 +1,8 @@
 package com.codepatissier.keki.dessert.entity;
 
 import com.codepatissier.keki.common.BaseEntity;
+
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
@@ -26,4 +28,11 @@ public class Option extends BaseEntity {
 
     @Column(nullable = false)
     private Integer price;
+
+    @Builder
+    public Option(Dessert dessert, String description, Integer price) {
+        this.dessert = dessert;
+        this.description = description;
+        this.price = price;
+    }
 }
