@@ -113,10 +113,10 @@ public class DessertService {
         return postImages.isEmpty() ? null : postImages.get(0).getImgUrl();
     }
 
-    private List<GetDessertRes.Option> getOptionList(Dessert dessert) {
-        return optionRepository.findByDessertAndStatusOrderByOptionIdx(dessert, ACTIVE_STATUS).stream()
-                .map(option -> new GetDessertRes.Option(option.getDescription(), option.getPrice())).collect(Collectors.toList());
-    }
+//    private List<GetDessertRes.Option> getOptionList(Dessert dessert) {
+//        return optionRepository.findByDessertAndStatusOrderByOptionIdx(dessert, ACTIVE_STATUS).stream()
+//                .map(option -> new GetDessertRes.Option(option.getDescription(), option.getPrice())).collect(Collectors.toList());
+//    }
 
     /**
      * [판매자] 상품 등록

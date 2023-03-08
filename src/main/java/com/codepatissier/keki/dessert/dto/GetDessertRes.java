@@ -16,7 +16,6 @@ public class GetDessertRes {
     private Integer dessertPrice;
     private String dessertDescription;
     private List<Image> images;
-    private List<Option> options;
 
     @Getter
     @AllArgsConstructor
@@ -24,13 +23,5 @@ public class GetDessertRes {
     public static class Image {
         private Long imgIdx;
         private String imgUrl;
-    }
-
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class Option {
-        private String optionDescription;
-        private Integer optionPrice;
     }
 }
