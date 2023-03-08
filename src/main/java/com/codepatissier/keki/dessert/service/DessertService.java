@@ -85,7 +85,7 @@ public class DessertService {
             ArrayList<GetDessertRes.Image> postImgList = getPostImgList(dessert);
             imgList.addAll(postImgList);
 
-            // nickname, dessertName, dessertPrice, dessertDescription, imgList(상품 상세 이미지 1장, 피드 이미지 4장)
+            // nickname, dessertName, dessertPrice, dessertDescription, imgList(상품 상세 이미지 1장+피드 이미지 4장)
             return new GetDessertRes(dessert.getStore().getUser().getNickname(), dessert.getDessertName(), dessert.getDessertPrice(), dessert.getDessertDescription(), imgList);
         } catch (BaseException e) {
             throw e;
