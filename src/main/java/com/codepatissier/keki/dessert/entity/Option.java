@@ -1,6 +1,7 @@
 package com.codepatissier.keki.dessert.entity;
 
 import com.codepatissier.keki.common.BaseEntity;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
