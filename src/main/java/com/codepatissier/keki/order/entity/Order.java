@@ -76,4 +76,7 @@ public class Order {
         this.request = request;
     }
 
+    public void cancelOrder() {
+        this.orderStatus = OrderStatus.CANCELED;
+    }
 }
