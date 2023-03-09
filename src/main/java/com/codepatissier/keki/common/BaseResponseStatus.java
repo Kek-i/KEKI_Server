@@ -61,6 +61,8 @@ public enum BaseResponseStatus {
     NULL_TAG(false, 2403, "태그를 입력해주세요"),
 
     // histories(2500~2599)
+    // cs(2600-2699)
+    // order(2700~2799)
 
 
     /**
@@ -99,6 +101,11 @@ public enum BaseResponseStatus {
     // cs(3600~3699)
     NO_NOTICE(false, 3600, "공지사항이 없습니다."),
     INVALID_NOTICE_IDX(false, 3601, "존재하지 않는 공지사항 입니다."),
+
+    // order(3700~3799)
+    INVALID_ORDER_IDX(false, 3700, "존재하지 않는 주문 입니다."),
+    NO_MATCH_ORDER_USER(false, 3701, "주문에 접근할 수 있는 사용자가 아닙니다."),
+    NO_MATCH_ORDER_STATUS(false, 3702, "가능한 주문 상태가 아닙니다."),
 
     /**
      * 4000: DB, Server 오류
