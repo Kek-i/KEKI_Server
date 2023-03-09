@@ -87,9 +87,9 @@ public class DessertService {
             ArrayList<GetDessertRes.Image> postImgList = getPostImgList(dessert);
             imgList.addAll(postImgList);
 
-            List<GetDessertRes.Option> optionList = getOptionList(dessert);
+            List<OptionDTO> optionList = getOptionList(dessert);
 
-            // nickname, dessertName, dessertPrice, dessertDescription, imgList(상품 상세 이미지 1장, 피드 이미지 4장), description, price
+            // nickname, dessertName, dessertPrice, dessertDescription, imgList(상품 상세 이미지 1장, 피드 이미지 4장), optionList(description, price)
             return new GetDessertRes(dessert.getStore().getUser().getNickname(), dessert.getDessertName(), dessert.getDessertPrice(), dessert.getDessertDescription(), imgList, optionList);
         } catch (BaseException e) {
             throw e;
@@ -113,9 +113,9 @@ public class DessertService {
         return postImages.isEmpty() ? null : postImages.get(0).getImgUrl();
     }
 
-    private List<GetDessertRes.Option> getOptionList(Dessert dessert) {
+    private List<OptionDTO> getOptionList(Dessert dessert) {
         return optionRepository.findByDessertAndStatusOrderByOptionIdx(dessert, ACTIVE_STATUS).stream()
-                .map(option -> new GetDessertRes.Option(option.getDescription(), option.getPrice())).collect(Collectors.toList());
+                .map(option -> new OptionDTO(option.getDescription(), option.getPrice())).collect(Collectors.toList());
     }
 
     /**
