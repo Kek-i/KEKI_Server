@@ -89,8 +89,10 @@ public class DessertService {
             ArrayList<GetDessertRes.Image> postImgList = getPostImgList(dessert);
             imgList.addAll(postImgList);
 
-            // nickname, dessertName, dessertPrice, dessertDescription, imgList(상품 상세 이미지 1장+피드 이미지 4장)
-            return new GetDessertRes(dessert.getStore().getUser().getNickname(), dessert.getDessertName(), dessert.getDessertPrice(), dessert.getDessertDescription(), imgList);
+            List<OptionDTO> optionList = getOptionList(dessert);
+
+            // nickname, dessertName, dessertPrice, dessertDescription, imgList(상품 상세 이미지 1장, 피드 이미지 4장), optionList(description, price)
+            return new GetDessertRes(dessert.getStore().getUser().getNickname(), dessert.getDessertName(), dessert.getDessertPrice(), dessert.getDessertDescription(), imgList, optionList);
         } catch (BaseException e) {
             throw e;
         } catch (Exception e) {
@@ -113,10 +115,10 @@ public class DessertService {
         return postImages.isEmpty() ? null : postImages.get(0).getImgUrl();
     }
 
-//    private List<GetDessertRes.Option> getOptionList(Dessert dessert) {
-//        return optionRepository.findByDessertAndStatusOrderByOptionIdx(dessert, ACTIVE_STATUS).stream()
-//                .map(option -> new GetDessertRes.Option(option.getDescription(), option.getPrice())).collect(Collectors.toList());
-//    }
+    private List<OptionDTO> getOptionList(Dessert dessert) {
+        return optionRepository.findByDessertAndStatusOrderByOptionIdx(dessert, ACTIVE_STATUS).stream()
+                .map(option -> new OptionDTO(option.getDescription(), option.getPrice())).collect(Collectors.toList());
+    }
 
     /**
      * [판매자] 상품 등록

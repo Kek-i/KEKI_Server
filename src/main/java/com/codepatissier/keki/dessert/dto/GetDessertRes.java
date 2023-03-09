@@ -16,6 +16,7 @@ public class GetDessertRes {
     private Integer dessertPrice;
     private String dessertDescription;
     private List<Image> images;
+    private List<OptionDTO> options;
 
     @Getter
     @AllArgsConstructor
