@@ -10,8 +10,6 @@ import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Table(name = "orders")
 @Getter
@@ -56,12 +54,6 @@ public class Order {
 
     @Column(nullable = false, length = 500)
     private String request;
-
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "order", orphanRemoval = true)
-    private List<OptionOrder> options = new ArrayList<>();
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", orphanRemoval = true)
-    private List<OrderImg> imgs = new ArrayList<>();
 
     @Builder
     public Order(User user, Store store, Dessert dessert, LocalDateTime pickupDate, String customerName, String customerPhone, int extraPrice, int totalPrice, String request) {
