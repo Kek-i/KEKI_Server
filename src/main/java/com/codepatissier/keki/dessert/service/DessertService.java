@@ -139,23 +139,8 @@ public class DessertService {
                     .build();
             dessertRepository.save(dessert);
 
-            for(PostDessertReq.Option option : postDessertReq.getOptions())
-                saveOption(option, dessert);
         } catch (BaseException e) {
             throw e;
-        } catch (Exception e) {
-            throw new BaseException(DATABASE_ERROR);
-        }
-    }
-
-    private void saveOption(PostDessertReq.Option optionDTO, Dessert dessert) throws BaseException {
-        try {
-            Option option = Option.builder()
-                    .dessert(dessert)
-                    .description(optionDTO.getOptionDescription())
-                    .price(optionDTO.getOptionPrice())
-                    .build();
-            optionRepository.save(option);
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
