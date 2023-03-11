@@ -141,7 +141,7 @@ public class DessertService {
                     .build();
             dessertRepository.save(dessert);
 
-            for(PostDessertReq.Option option : postDessertReq.getOptions())
+            for(OptionDTO option : postDessertReq.getOptions())
                 saveOption(option, dessert);
         } catch (BaseException e) {
             throw e;
@@ -150,7 +150,7 @@ public class DessertService {
         }
     }
 
-    private void saveOption(PostDessertReq.Option optionDTO, Dessert dessert) throws BaseException {
+    private void saveOption(OptionDTO optionDTO, Dessert dessert) throws BaseException {
         try {
             Option option = Option.builder()
                     .dessert(dessert)
