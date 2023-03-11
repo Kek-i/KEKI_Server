@@ -22,30 +22,6 @@ import static com.codepatissier.keki.common.BaseResponseStatus.*;
 public class UserController {
     private final UserService userService;
     private final AuthService authService;
-    private final NaverService naverService;
-    private final KakaoService kakaoService;
-    private final GoogleService googleService;
-
-    // 카카오 로그인 url 요청
-    @GetMapping("/login/kakao")
-    public BaseResponse<?> kakaoLogin(HttpSession session) {
-        String httpHeaders = kakaoService.getAuthorizationUrl(session);
-        return new BaseResponse<>(httpHeaders);
-    }
-
-    // 네이버 로그인 url 요청
-    @GetMapping("/login/naver")
-    public BaseResponse<?> naverLogin(HttpSession session) {
-        String httpHeaders = naverService.getAuthorizationUrl(session);
-        return new BaseResponse<>(httpHeaders);
-    }
-
-    // 구글 로그인 url 요청
-    @GetMapping("/login/google")
-    public BaseResponse<?> googleLogin(HttpSession session) {
-        String httpHeaders = googleService.getAuthorizationUrl(session);
-        return new BaseResponse<>(httpHeaders);
-    }
 
     // 소셜 로그인/회원가입
     @ResponseBody
