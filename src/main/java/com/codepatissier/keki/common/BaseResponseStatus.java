@@ -63,6 +63,8 @@ public enum BaseResponseStatus {
     // histories(2500~2599)
     // cs(2600-2699)
     // order(2700~2799)
+    NULL_ORDER_IDX(false, 2700, "주문 아이디를 입력해주세요."),
+    NULL_ORDER_STATUS(false, 2701, "주문 상태를 선택해주세요."),
 
 
     /**
@@ -106,6 +108,7 @@ public enum BaseResponseStatus {
     INVALID_ORDER_IDX(false, 3700, "존재하지 않는 주문 입니다."),
     NO_MATCH_ORDER_USER(false, 3701, "주문에 접근할 수 있는 사용자가 아닙니다."),
     NO_MATCH_ORDER_STATUS(false, 3702, "가능한 주문 상태가 아닙니다."),
+    INVALID_ORDER_STATUS(false, 3703, "존재하지 않는 주문 상태 입니다."),
 
     /**
      * 4000: DB, Server 오류
