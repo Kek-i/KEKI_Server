@@ -1,5 +1,6 @@
 package com.codepatissier.keki.order.entity;
 
+import com.codepatissier.keki.common.BaseEntity;
 import com.codepatissier.keki.dessert.entity.Option;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +12,7 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor
 @DynamicInsert
-public class OptionOrder {
+public class OptionOrder extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long optionOrderIdx;

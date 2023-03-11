@@ -1,5 +1,6 @@
 package com.codepatissier.keki.order.entity;
 
+import com.codepatissier.keki.common.BaseEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
@@ -10,7 +11,7 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor
 @DynamicInsert
-public class OrderImg {
+public class OrderImg extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long orderImgIdx;
