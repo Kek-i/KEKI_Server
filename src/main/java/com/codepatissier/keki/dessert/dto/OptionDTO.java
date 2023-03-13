@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OptionDTO {
+    private Long optionIdx;
     private String optionDescription;
     private Integer optionPrice;
 }
