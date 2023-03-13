@@ -2,11 +2,8 @@ package com.codepatissier.keki.order.service;
 
 import com.codepatissier.keki.common.BaseException;
 
-import com.codepatissier.keki.order.dto.PatchOrderStatusReq;
-
-import com.codepatissier.keki.order.dto.GetOptionOrder;
-import com.codepatissier.keki.order.dto.GetOrder;
-import com.codepatissier.keki.order.dto.GetOrderImg;
+import com.codepatissier.keki.common.Role;
+import com.codepatissier.keki.order.dto.*;
 
 import com.codepatissier.keki.order.entity.Order;
 import com.codepatissier.keki.order.entity.OrderStatus;
@@ -19,11 +16,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.codepatissier.keki.common.BaseResponseStatus.*;
 import static com.codepatissier.keki.common.Constant.ACTIVE_STATUS;
-import static com.codepatissier.keki.order.entity.OrderStatus.getOrderStatusByName;
+import static com.codepatissier.keki.common.Role.*;
+import static com.codepatissier.keki.order.entity.OrderStatus.*;
 
 @Service
 @RequiredArgsConstructor
@@ -72,5 +71,46 @@ public class OrderService {
         return new GetOrder(order.getOrderStatus().getName(), order.getDessert().getDessertName(),
                 order.getDessert().getDessertPrice(), order.getExtraPrice(), order.getTotalPrice(), order.getRequest(), order.getPickupDate(), order.getStore().getStoreIdx(), order.getStore().getUser().getNickname(), null, order.getStore().getAddress(), orderImgs, optionOrders);
 
+    }
+
+    // 주문 내역 조회
+    public GetOrderHistoryRes getOrderHistory(Long userIdx, GetOrderHistoryReq orderStatusReq) throws BaseException {
+        User user = userRepository.findByUserIdxAndStatusEquals(userIdx, ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+        Role role = getRoleByName(user.getRole());
+        OrderStatus orderStatus = getOrderStatusByName(orderStatusReq.getOrderStatus());
+        Optional<List<Order>> orders = null;
+        List<GetOrderHistory> orderHistories = null;
+        NumOfOrder numOfOrder = getCountByOrderStatus(user);
+
+        if (role == CUSTOMER) {
+            if (orderStatus == null) orders = orderRepository.findAllByUserOrderByPickupDateDesc(user);
+            else orders = orderRepository.findAllByUserAndOrderStatusEqualsOrderByPickupDateDesc(user, orderStatus);
+            orderHistories = orders.orElseThrow(null).stream().map(oH -> new GetOrderHistory(oH.getOrderIdx(), oH.getStore().getUser().getNickname(), oH.getStore().getUser().getProfileImg(),
+                    oH.getTotalPrice(), oH.getDessert().getDessertName(), oH.getPickupDate())).collect(Collectors.toList());
+        } else if (role == STORE) {
+            if (orderStatus == null) orders = orderRepository.findAllByStore_UserOrderByPickupDateDesc(user);
+            else orders = orderRepository.findAllByStore_UserAndOrderStatusEqualsOrderByPickupDateDesc(user, orderStatus);
+            orderHistories = orders.orElseThrow(null).stream().map(oH -> new GetOrderHistory(oH.getOrderIdx(), oH.getUser().getNickname(), oH.getUser().getProfileImg(),
+                    oH.getTotalPrice(), oH.getDessert().getDessertName(), oH.getPickupDate())).collect(Collectors.toList());
+        } else throw new BaseException(INVALID_USER_IDX);
+
+        return new GetOrderHistoryRes(numOfOrder.getOrderWaiting(), numOfOrder.getProgressing(), numOfOrder.getPickupWaiting(), numOfOrder.getAllOrderHistory(), orderHistories);
+    }
+
+    // 주문 상태 별 주문 수
+    private NumOfOrder getCountByOrderStatus(User user) throws BaseException{
+        NumOfOrder numOfOrder = new NumOfOrder();
+        if (getRoleByName(user.getRole()) == CUSTOMER) {
+            numOfOrder.setOrderWaiting(orderRepository.countByUserAndOrderStatusEquals(user, ORDER_WAITING));
+            numOfOrder.setProgressing(orderRepository.countByUserAndOrderStatusEquals(user, PROGRESSING));
+            numOfOrder.setPickupWaiting(orderRepository.countByUserAndOrderStatusEquals(user, PICKUP_WAITING));
+            numOfOrder.setAllOrderHistory(orderRepository.countAllByUser(user));
+        } else if (getRoleByName(user.getRole()) == STORE) {
+            numOfOrder.setOrderWaiting(orderRepository.countByStore_UserAndOrderStatusEquals(user, ORDER_WAITING));
+            numOfOrder.setProgressing(orderRepository.countByStore_UserAndOrderStatusEquals(user, PROGRESSING));
+            numOfOrder.setPickupWaiting(orderRepository.countByStore_UserAndOrderStatusEquals(user, PICKUP_WAITING));
+            numOfOrder.setAllOrderHistory(orderRepository.countAllByStore_User(user));
+        } else throw new BaseException(INVALID_USER_IDX);
+        return numOfOrder;
     }
 }
