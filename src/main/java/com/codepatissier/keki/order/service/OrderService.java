@@ -2,11 +2,10 @@ package com.codepatissier.keki.order.service;
 
 import com.codepatissier.keki.common.BaseException;
 
-import com.codepatissier.keki.order.dto.PatchOrderStatusReq;
-
-import com.codepatissier.keki.order.dto.GetOptionOrder;
-import com.codepatissier.keki.order.dto.GetOrder;
-import com.codepatissier.keki.order.dto.GetOrderImg;
+import com.codepatissier.keki.common.Role;
+import com.codepatissier.keki.dessert.entity.Dessert;
+import com.codepatissier.keki.dessert.repository.DessertRepository;
+import com.codepatissier.keki.order.dto.*;
 
 import com.codepatissier.keki.order.entity.Order;
 import com.codepatissier.keki.order.entity.OrderStatus;
@@ -33,6 +32,32 @@ public class OrderService {
     private final UserRepository userRepository;
     private final OrderImgRepository orderImgRepository;
     private final OptionOrderRepository optionOrderRepository;
+    private final DessertRepository dessertRepository;
+
+    /**
+     * 주문하기
+     */
+    public void makeOrder(Long userIdx, PostOrderReq postOrderReq) throws BaseException{
+        User user = this.userRepository.findByUserIdxAndStatusEquals(userIdx, ACTIVE_STATUS).orElseThrow(()-> new BaseException(INVALID_USER_AND_STATUS));
+        if (!Role.getRoleByName(user.getRole()).equals(Role.CUSTOMER))
+            throw new BaseException(NO_CUSTOMER_ROLE);
+
+        Dessert dessert = this.dessertRepository.findByDessertIdxAndStatus(postOrderReq.getDessertIdx(),ACTIVE_STATUS).orElseThrow(()-> new BaseException(INVALID_DESSERT_AND_STATUS));
+
+        Order order = Order.builder()
+                .user(user)
+                .store(dessert.getStore())
+                .dessert(dessert)
+                .request(postOrderReq.getRequest())
+                .pickupDate(postOrderReq.getPickupDate())
+                .customerName(postOrderReq.getCustomerName())
+                .customerPhone(postOrderReq.getCustomerPhone())
+                .extraPrice(postOrderReq.getExtraPrice())
+                .totalPrice(postOrderReq.getTotalPrice())
+                .build();
+
+        this.orderRepository.save(order);
+    }
 
     // 주문 취소
     public void cancelOrder(Long userIdx, Long orderIdx) throws BaseException{

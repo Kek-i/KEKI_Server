@@ -4,10 +4,10 @@ import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.BaseResponse;
 
 import com.codepatissier.keki.order.dto.PatchOrderStatusReq;
+import com.codepatissier.keki.order.dto.PostOrderReq;
 import com.codepatissier.keki.order.entity.OrderStatus;
 
 import com.codepatissier.keki.order.dto.GetOrder;
-import com.codepatissier.keki.order.entity.Order;
 
 import com.codepatissier.keki.order.service.OrderService;
 import com.codepatissier.keki.user.service.AuthService;
@@ -39,6 +39,20 @@ public class OrderController {
     private final AuthService authService;
     private final OrderService orderService;
 
+
+    /**
+     * 주문하기 API
+     * [POST] /orders
+     */
+    @PostMapping("")
+    public BaseResponse<String> makeOrder(@RequestBody PostOrderReq postOrderReq){
+        try {
+            orderService.makeOrder(authService.getUserIdx(), postOrderReq);
+            return new BaseResponse<>(SUCCESS);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
 
     /**
      * [구매자] 주문 상세 조회 API
