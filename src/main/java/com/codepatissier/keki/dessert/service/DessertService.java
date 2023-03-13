@@ -117,7 +117,7 @@ public class DessertService {
 
     private List<OptionDTO> getOptionList(Dessert dessert) {
         return optionRepository.findByDessertAndStatusOrderByOptionIdx(dessert, ACTIVE_STATUS).stream()
-                .map(option -> new OptionDTO(option.getDescription(), option.getPrice())).collect(Collectors.toList());
+                .map(option -> new OptionDTO(option.getOptionIdx(), option.getDescription(), option.getPrice())).collect(Collectors.toList());
     }
 
     /**
