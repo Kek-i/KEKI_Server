@@ -3,13 +3,14 @@ package com.codepatissier.keki.order.controller;
 import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.BaseResponse;
 
+import com.codepatissier.keki.order.dto.GetOrderStore;
+import com.codepatissier.keki.order.dto.GetStoreDessertAndOptions;
 import com.codepatissier.keki.order.dto.GetOrderHistoryReq;
 import com.codepatissier.keki.order.dto.GetOrderHistoryRes;
 import com.codepatissier.keki.order.dto.PatchOrderStatusReq;
 import com.codepatissier.keki.order.entity.OrderStatus;
 
 import com.codepatissier.keki.order.dto.GetOrder;
-import com.codepatissier.keki.order.entity.Order;
 
 import com.codepatissier.keki.order.service.OrderService;
 import com.codepatissier.keki.user.service.AuthService;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.util.List;
 import java.util.Objects;
 
 import static com.codepatissier.keki.common.BaseResponseStatus.*;
@@ -96,6 +98,18 @@ public class OrderController {
             if(Objects.isNull(getOrderStatusByName(orderStatus)) || getOrderStatusByName(orderStatus) == OrderStatus.CANCELED) throw new BaseException(INVALID_ORDER_STATUS);
             orderService.changeOrderStatus(authService.getUserIdx(), patchOrderStatusReq);
             return new BaseResponse<>(SUCCESS);
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
+     * 주문 화면 조회
+     */
+    @GetMapping("/view/{storeIdx}")
+    public BaseResponse<GetOrderStore> getStoreDessertsAndOptions(@PathVariable("storeIdx") Long storeIdx){
+        try{
+            return new BaseResponse<>(this.orderService.getStoreDessertsAndOptions(storeIdx));
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
         }
