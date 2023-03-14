@@ -90,7 +90,7 @@ public class OrderController {
     /**
      * 주문 화면 조회
      */
-    @GetMapping("/orders/view/{storeIdx}")
+    @GetMapping("/view/{storeIdx}")
     public BaseResponse<List<GetStoreDessertsAndOptions>> getStoreDessertsAndOptions(@PathVariable("storeIdx") Long storeIdx){
         try{
             return new BaseResponse<>(this.orderService.getStoreDessertsAndOptions(storeIdx));
