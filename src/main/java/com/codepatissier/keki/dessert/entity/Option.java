@@ -35,4 +35,12 @@ public class Option extends BaseEntity {
         this.description = description;
         this.price = price;
     }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setPrice(Integer price) {
+        this.price = price;
+    }
 }

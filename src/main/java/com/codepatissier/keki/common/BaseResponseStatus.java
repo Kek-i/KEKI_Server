@@ -53,6 +53,10 @@ public enum BaseResponseStatus {
     INVALID_DESERT_PRICE(false, 3303, "디저트 가격은 0원 이상이어야 합니다."),
     NULL_DESSERT_DESCRIPTION(false, 3304, "디저트 설명을 입력해주세요."),
     DELETED_DESSERT(false, 3305, "이미 삭제된 디저트입니다."),
+    NULL_OPTION(false, 3306, "옵션을 입력해주세요."),
+    NULL_OPTION_IDX(false, 3307, "optionIdx를 입력해주세요."),
+    NULL_OPTION_DESCRIPTION(false, 3308, "옵션명을 입력해주세요."),
+    NULL_OPTION_PRICE(false, 3309, "옵션 가격을 입력해주세요."),
 
     // calendars(2400~2499)
     NULL_TITLE(false, 2400, "캘린더 제목을 입력해주세요."),
@@ -87,6 +91,7 @@ public enum BaseResponseStatus {
 
     // desserts(3300~3399)
     INVALID_DESSERT_IDX(false, 3300, "존재하지 않는 디저트입니다."),
+    INVALID_OPTION_IDX(false, 3301, "존재하지 않는 옵션입니다."),
 
     // calendars(3400~3499)
     INVALID_CALENDAR_TAG(false, 3400, "캘린더 TAG를 찾을 수 없습니다."),
