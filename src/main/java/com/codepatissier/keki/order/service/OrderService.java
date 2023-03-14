@@ -74,26 +74,26 @@ public class OrderService {
         List<GetOptionOrder> optionOrders = optionOrderRepository.findByOrderAndStatusEquals(order, ACTIVE_STATUS).stream()
                 .map(getOptionOrder -> new GetOptionOrder(getOptionOrder.getOption().getOptionIdx(), getOptionOrder.getOption().getDescription(), getOptionOrder.getOption().getPrice())).collect(Collectors.toList());
 
-        // TODO: 아직 판매자 계좌 번호는 DB에 없는 건가요?
+        // TODO: 아직 판매자 계좌 번호 저장 이전
         return new GetOrder(order.getOrderStatus().getName(), order.getDessert().getDessertName(),
                 order.getDessert().getDessertPrice(), order.getExtraPrice(), order.getTotalPrice(), order.getRequest(), order.getPickupDate(), order.getStore().getStoreIdx(), order.getStore().getUser().getNickname(), null, order.getStore().getAddress(), orderImgs, optionOrders);
 
     }
 
     // 주문 조회
-    public List<GetStoreDessertsAndOptions> getStoreDessertsAndOptions(Long storeIdx) throws BaseException{
+    public GetOrderStore getStoreDessertsAndOptions(Long storeIdx) throws BaseException{
         Store store = this.storeRepository.findByStoreIdxAndStatus(storeIdx, ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_STORE_IDX));
         List<Dessert> desserts = this.dessertRepository.findByStoreAndStatusOrderByDessertIdx(store, ACTIVE_STATUS);
-        List<GetStoreDessertsAndOptions> dessertsAndOptions = new ArrayList<>();
+        List<GetStoreDessertAndOptions> dessertsAndOptions = new ArrayList<>();
         // 디저트 별의 option 들을 찾아서 한번에 저장하는 것이 필요함.
         for (Dessert dessert: desserts){
-            dessertsAndOptions.add(new GetStoreDessertsAndOptions(dessert.getStore().getStoreIdx(), dessert.getStore().getUser().getNickname(),
-                    null, dessert.getStore().getAddress(), dessert.getDessertIdx(), dessert.getDessertName(), dessert.getDessertPrice(),
+            dessertsAndOptions.add(new GetStoreDessertAndOptions(dessert.getDessertIdx(), dessert.getDessertName(), dessert.getDessertPrice(),
                     this.optionRepository.findByDessertAndStatusOrderByOptionIdx(dessert, ACTIVE_STATUS).stream()
                             .map(option -> new OptionDTO(option.getOptionIdx(), option.getDescription(), option.getPrice())).collect(Collectors.toList())));
         }
 
-        return dessertsAndOptions;
-
+        // TODO: 아직 판매자 계좌 번호 저장 이전
+        return new GetOrderStore(store.getStoreIdx(), store.getUser().getNickname(),
+                null, store.getAddress(),dessertsAndOptions);
     }
 }

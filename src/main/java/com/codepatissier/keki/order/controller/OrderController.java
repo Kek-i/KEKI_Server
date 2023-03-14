@@ -3,7 +3,8 @@ package com.codepatissier.keki.order.controller;
 import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.BaseResponse;
 
-import com.codepatissier.keki.order.dto.GetStoreDessertsAndOptions;
+import com.codepatissier.keki.order.dto.GetOrderStore;
+import com.codepatissier.keki.order.dto.GetStoreDessertAndOptions;
 import com.codepatissier.keki.order.dto.PatchOrderStatusReq;
 import com.codepatissier.keki.order.entity.OrderStatus;
 
@@ -91,7 +92,7 @@ public class OrderController {
      * 주문 화면 조회
      */
     @GetMapping("/view/{storeIdx}")
-    public BaseResponse<List<GetStoreDessertsAndOptions>> getStoreDessertsAndOptions(@PathVariable("storeIdx") Long storeIdx){
+    public BaseResponse<GetOrderStore> getStoreDessertsAndOptions(@PathVariable("storeIdx") Long storeIdx){
         try{
             return new BaseResponse<>(this.orderService.getStoreDessertsAndOptions(storeIdx));
         }catch (BaseException e){
