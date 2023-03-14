@@ -5,6 +5,8 @@ import com.codepatissier.keki.common.BaseResponse;
 
 import com.codepatissier.keki.order.dto.GetOrderStore;
 import com.codepatissier.keki.order.dto.GetStoreDessertAndOptions;
+import com.codepatissier.keki.order.dto.GetOrderHistoryReq;
+import com.codepatissier.keki.order.dto.GetOrderHistoryRes;
 import com.codepatissier.keki.order.dto.PatchOrderStatusReq;
 import com.codepatissier.keki.order.entity.OrderStatus;
 
@@ -51,6 +53,19 @@ public class OrderController {
     public BaseResponse<GetOrder> getOrder(@PathVariable("orderIdx") Long orderIdx){
         try {
             return new BaseResponse<>(orderService.getOrder(authService.getUserIdx(), orderIdx));
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
+     * 주문 내역 조회 API
+     * @param getOrderHistoryReq(orderStatus)
+     */
+    @GetMapping("/history")
+    public BaseResponse<GetOrderHistoryRes> getOrderHistory(GetOrderHistoryReq getOrderHistoryReq){
+        try {
+            return new BaseResponse<>(orderService.getOrderHistory(authService.getUserIdx(), getOrderHistoryReq));
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
