@@ -42,7 +42,7 @@ public class OrderService {
 
     // 주문 취소
     public void cancelOrder(Long userIdx, Long orderIdx) throws BaseException{
-        User user = userRepository.findByUserIdxAndStatusEquals(userIdx, ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_AND_STATUS));
+        User user = userRepository.findByUserIdxAndStatusEquals(userIdx, ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
         Order order = orderRepository.findById(orderIdx).orElseThrow(() -> new BaseException(INVALID_ORDER_IDX));
 
         if(!order.getUser().equals(user)) throw new BaseException(NO_MATCH_ORDER_USER);
@@ -54,7 +54,7 @@ public class OrderService {
 
     // [판매자] 주문 상태 변경
     public void changeOrderStatus(Long userIdx, PatchOrderStatusReq patchOrderStatusReq) throws BaseException{
-        User user = userRepository.findByUserIdxAndStatusEquals(userIdx, ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_AND_STATUS));
+        User user = userRepository.findByUserIdxAndStatusEquals(userIdx, ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
         Order order = orderRepository.findById(patchOrderStatusReq.getOrderIdx()).orElseThrow(() -> new BaseException(INVALID_ORDER_IDX));
 
         if(!order.getStore().getUser().equals(user)) throw new BaseException(NO_MATCH_ORDER_USER);
