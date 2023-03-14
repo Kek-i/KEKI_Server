@@ -87,7 +87,8 @@ public class OrderService {
         List<GetStoreDessertsAndOptions> dessertsAndOptions = new ArrayList<>();
         // 디저트 별의 option 들을 찾아서 한번에 저장하는 것이 필요함.
         for (Dessert dessert: desserts){
-            dessertsAndOptions.add(new GetStoreDessertsAndOptions(dessert.getDessertIdx(), dessert.getDessertName(), dessert.getDessertPrice(),
+            dessertsAndOptions.add(new GetStoreDessertsAndOptions(dessert.getStore().getStoreIdx(), dessert.getStore().getUser().getNickname(),
+                    null, dessert.getStore().getAddress(), dessert.getDessertIdx(), dessert.getDessertName(), dessert.getDessertPrice(),
                     this.optionRepository.findByDessertAndStatusOrderByOptionIdx(dessert, ACTIVE_STATUS).stream()
                             .map(option -> new OptionDTO(option.getOptionIdx(), option.getDescription(), option.getPrice())).collect(Collectors.toList())));
         }

@@ -13,6 +13,10 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetStoreDessertsAndOptions {
+    Long storeIdx;
+    String storeName;
+    String accountName;
+    String storeAccount;
     Long dessertIdx;
     String dessertName;
     Integer dessertPrice;
