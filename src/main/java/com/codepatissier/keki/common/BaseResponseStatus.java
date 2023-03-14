@@ -53,6 +53,10 @@ public enum BaseResponseStatus {
     INVALID_DESERT_PRICE(false, 3303, "디저트 가격은 0원 이상이어야 합니다."),
     NULL_DESSERT_DESCRIPTION(false, 3304, "디저트 설명을 입력해주세요."),
     DELETED_DESSERT(false, 3305, "이미 삭제된 디저트입니다."),
+    NULL_OPTION(false, 3306, "옵션을 입력해주세요."),
+    NULL_OPTION_IDX(false, 3307, "optionIdx를 입력해주세요."),
+    NULL_OPTION_DESCRIPTION(false, 3308, "옵션명을 입력해주세요."),
+    NULL_OPTION_PRICE(false, 3309, "옵션 가격을 입력해주세요."),
 
     // calendars(2400~2499)
     NULL_TITLE(false, 2400, "캘린더 제목을 입력해주세요."),
@@ -65,6 +69,8 @@ public enum BaseResponseStatus {
     // order(2700~2799)
     NULL_ORDER_IDX(false, 2700, "주문 아이디를 입력해주세요."),
     NULL_ORDER_STATUS(false, 2701, "주문 상태를 선택해주세요."),
+
+    // option(2800~2899)
 
 
     /**
@@ -109,6 +115,9 @@ public enum BaseResponseStatus {
     NO_MATCH_ORDER_USER(false, 3701, "주문에 접근할 수 있는 사용자가 아닙니다."),
     NO_MATCH_ORDER_STATUS(false, 3702, "가능한 주문 상태가 아닙니다."),
     INVALID_ORDER_STATUS(false, 3703, "존재하지 않는 주문 상태 입니다."),
+
+    // option(3800~3899)
+    INVALID_OPTION_IDX(false, 3800, "존재하지 않는 옵션입니다."),
 
     /**
      * 4000: DB, Server 오류
