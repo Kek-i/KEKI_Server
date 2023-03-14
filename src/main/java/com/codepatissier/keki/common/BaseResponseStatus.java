@@ -70,8 +70,6 @@ public enum BaseResponseStatus {
     NULL_ORDER_IDX(false, 2700, "주문 아이디를 입력해주세요."),
     NULL_ORDER_STATUS(false, 2701, "주문 상태를 선택해주세요."),
 
-    // option(2800~2899)
-
 
     /**
      *  3000: Response 오류
@@ -93,6 +91,7 @@ public enum BaseResponseStatus {
 
     // desserts(3300~3399)
     INVALID_DESSERT_IDX(false, 3300, "존재하지 않는 디저트입니다."),
+    INVALID_OPTION_IDX(false, 3301, "존재하지 않는 옵션입니다."),
 
     // calendars(3400~3499)
     INVALID_CALENDAR_TAG(false, 3400, "캘린더 TAG를 찾을 수 없습니다."),
@@ -115,9 +114,6 @@ public enum BaseResponseStatus {
     NO_MATCH_ORDER_USER(false, 3701, "주문에 접근할 수 있는 사용자가 아닙니다."),
     NO_MATCH_ORDER_STATUS(false, 3702, "가능한 주문 상태가 아닙니다."),
     INVALID_ORDER_STATUS(false, 3703, "존재하지 않는 주문 상태 입니다."),
-
-    // option(3800~3899)
-    INVALID_OPTION_IDX(false, 3800, "존재하지 않는 옵션입니다."),
 
     /**
      * 4000: DB, Server 오류
