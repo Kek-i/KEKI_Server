@@ -65,6 +65,7 @@ public class OrderService {
         orderRepository.save(order);
     }
 
+    // 주문 상세 return 값
     public GetOrder getOrderReturn(Long userIdx, Long orderIdx) throws BaseException{
         // TODO: 겹치는 부분이 3줄 이상인데 extract method 는 어떠신지?
         User user = userRepository.findByUserIdxAndStatusEquals(userIdx, ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
@@ -75,6 +76,7 @@ public class OrderService {
 
     }
 
+    // 주문 상세 조회
     private GetOrder getOrder(Order order) {
         List<GetOrderImg> orderImgs = orderImgRepository.findByOrderAndStatusEquals(order, ACTIVE_STATUS).stream()
                 .map(getOrder -> new GetOrderImg(getOrder.getOrderImgIdx(), getOrder.getImgUrl())).collect(Collectors.toList());
