@@ -10,7 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GetUserInfo {
-    // 판매자 정보
+    // 구매자 정보
     Long userIdx;
     String userName;
     String phone;

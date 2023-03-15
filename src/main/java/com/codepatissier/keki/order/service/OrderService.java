@@ -80,11 +80,8 @@ public class OrderService {
 
     // 판매자 주문 상세 조회
     private GetOrder getOrderByStore(Order order) throws BaseException{
-        // TODO: 이 부분이 겹치는데 일단 그냥 둘까유?
-        List<GetOrderImg> orderImgs = orderImgRepository.findByOrderAndStatusEquals(order, ACTIVE_STATUS).stream()
-                .map(getOrder -> new GetOrderImg(getOrder.getOrderImgIdx(), getOrder.getImgUrl())).collect(Collectors.toList());
-        List<GetOptionOrder> optionOrders = optionOrderRepository.findByOrderAndStatusEquals(order, ACTIVE_STATUS).stream()
-                .map(getOptionOrder -> new GetOptionOrder(getOptionOrder.getOption().getOptionIdx(), getOptionOrder.getOption().getDescription(), getOptionOrder.getOption().getPrice())).collect(Collectors.toList());
+        List<GetOrderImg> orderImgs = getOrderImgs(order);
+        List<GetOptionOrder> optionOrders = getOptionOrders(order);
 
         // TODO: 아직 판매자 계좌 번호 저장 이전
         return new GetOrder(order.getOrderIdx(), order.getOrderStatus().getName(), order.getDessert().getDessertIdx(), order.getDessert().getDessertName(),
@@ -94,15 +91,27 @@ public class OrderService {
 
     // 구매자 주문 상세 조회
     private GetOrder getOrderByUser(Order order) {
-        List<GetOrderImg> orderImgs = orderImgRepository.findByOrderAndStatusEquals(order, ACTIVE_STATUS).stream()
-                .map(getOrder -> new GetOrderImg(getOrder.getOrderImgIdx(), getOrder.getImgUrl())).collect(Collectors.toList());
-        List<GetOptionOrder> optionOrders = optionOrderRepository.findByOrderAndStatusEquals(order, ACTIVE_STATUS).stream()
-                .map(getOptionOrder -> new GetOptionOrder(getOptionOrder.getOption().getOptionIdx(), getOptionOrder.getOption().getDescription(), getOptionOrder.getOption().getPrice())).collect(Collectors.toList());
+        List<GetOrderImg> orderImgs = getOrderImgs(order);
+        List<GetOptionOrder> optionOrders = getOptionOrders(order);
 
         // TODO: 아직 판매자 계좌 번호 저장 이전
         return new GetOrder(order.getOrderIdx(), order.getOrderStatus().getName(), order.getDessert().getDessertIdx(), order.getDessert().getDessertName(),
                 order.getDessert().getDessertPrice(), order.getExtraPrice(), order.getTotalPrice(), order.getRequest(), order.getPickupDate(),
                 new GetStoreInfo(order.getStore().getStoreIdx(), order.getStore().getUser().getNickname(), null, order.getStore().getAddress()), null, orderImgs, optionOrders);
+    }
+
+    // 주문 이미지 불러오기
+    private List<GetOrderImg> getOrderImgs(Order order) {
+        List<GetOrderImg> orderImgs = orderImgRepository.findByOrderAndStatusEquals(order, ACTIVE_STATUS).stream()
+                .map(getOrder -> new GetOrderImg(getOrder.getOrderImgIdx(), getOrder.getImgUrl())).collect(Collectors.toList());
+        return orderImgs;
+    }
+
+    // 주문 옵션 불러오기
+    private List<GetOptionOrder> getOptionOrders(Order order) {
+        List<GetOptionOrder> optionOrders = optionOrderRepository.findByOrderAndStatusEquals(order, ACTIVE_STATUS).stream()
+                .map(getOptionOrder -> new GetOptionOrder(getOptionOrder.getOption().getOptionIdx(), getOptionOrder.getOption().getDescription(), getOptionOrder.getOption().getPrice())).collect(Collectors.toList());
+        return optionOrders;
     }
 
     // 주문 조회
