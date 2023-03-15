@@ -4,6 +4,8 @@ import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.BaseResponseStatus;
 import com.codepatissier.keki.common.Constant;
 import com.codepatissier.keki.common.Role;
+import com.codepatissier.keki.order.dto.NumOfOrder;
+import com.codepatissier.keki.order.service.OrderService;
 import com.codepatissier.keki.user.dto.*;
 import com.codepatissier.keki.user.entity.Provider;
 import com.codepatissier.keki.user.entity.User;
@@ -22,6 +24,7 @@ import static com.codepatissier.keki.common.Constant.ACTIVE_STATUS;
 public class UserService {
     private final UserRepository userRepository;
     private final AuthService authService;
+    private final OrderService orderService;
 
     // 로그인
     public PostUserRes login(String email, String provider) throws BaseException{
@@ -84,7 +87,9 @@ public class UserService {
     public GetProfileRes getProfile() throws BaseException {
         Long userIdx = authService.getUserIdx();
         User user = userRepository.findByUserIdxAndStatusEquals(userIdx, ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
-        return new GetProfileRes(user.getEmail(), user.getNickname(), user.getProfileImg());}
+        NumOfOrder numOfOrder = orderService.getCountByOrderStatus(user);
+        return new GetProfileRes(user, numOfOrder);
+    }
 
     // 구매자 프로필 수정
     @Transactional
