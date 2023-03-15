@@ -3,14 +3,8 @@ package com.codepatissier.keki.order.controller;
 import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.BaseResponse;
 
-import com.codepatissier.keki.order.dto.GetOrderStore;
-import com.codepatissier.keki.order.dto.GetStoreDessertAndOptions;
-import com.codepatissier.keki.order.dto.GetOrderHistoryReq;
-import com.codepatissier.keki.order.dto.GetOrderHistoryRes;
-import com.codepatissier.keki.order.dto.PatchOrderStatusReq;
+import com.codepatissier.keki.order.dto.*;
 import com.codepatissier.keki.order.entity.OrderStatus;
-
-import com.codepatissier.keki.order.dto.GetOrder;
 
 import com.codepatissier.keki.order.service.OrderService;
 import com.codepatissier.keki.user.service.AuthService;
@@ -27,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
 
 
-import java.util.List;
 import java.util.Objects;
 
 import static com.codepatissier.keki.common.BaseResponseStatus.*;
@@ -52,7 +45,7 @@ public class OrderController {
     @GetMapping("{orderIdx}")
     public BaseResponse<GetOrder> getOrder(@PathVariable("orderIdx") Long orderIdx){
         try {
-            return new BaseResponse<>(orderService.getOrder(authService.getUserIdx(), orderIdx));
+            return new BaseResponse<>(orderService.getOrderReturn(authService.getUserIdx(), orderIdx));
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
@@ -111,6 +104,18 @@ public class OrderController {
         try{
             return new BaseResponse<>(this.orderService.getStoreDessertsAndOptions(storeIdx));
         }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
+     * 주문 수정 화면 조회
+     */
+    @GetMapping("/{orderIdx}/editView")
+    public BaseResponse<GetEditOrder> getEditOrderView(@PathVariable("orderIdx") Long orderIdx){
+        try {
+            return new BaseResponse<>(this.orderService.getEditOrderView(orderIdx, authService.getUserIdx()));
+        } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
     }
