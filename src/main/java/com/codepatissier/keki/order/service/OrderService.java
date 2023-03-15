@@ -65,27 +65,39 @@ public class OrderService {
         orderRepository.save(order);
     }
 
-    public GetOrder getOrder(Long userIdx, Long orderIdx) throws BaseException{
+    // 주문 상세 return 값
+    public GetOrder getOrderReturn(Long userIdx, Long orderIdx) throws BaseException{
         // TODO: 겹치는 부분이 3줄 이상인데 extract method 는 어떠신지?
         User user = userRepository.findByUserIdxAndStatusEquals(userIdx, ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
         Order order = orderRepository.findById(orderIdx).orElseThrow(() -> new BaseException(INVALID_ORDER_IDX));
 
         if(!order.getUser().equals(user)) throw new BaseException(NO_MATCH_ORDER_USER);
+        return getOrder(order);
 
+    }
+
+    // 주문 상세 조회
+    private GetOrder getOrder(Order order) {
         List<GetOrderImg> orderImgs = orderImgRepository.findByOrderAndStatusEquals(order, ACTIVE_STATUS).stream()
                 .map(getOrder -> new GetOrderImg(getOrder.getOrderImgIdx(), getOrder.getImgUrl())).collect(Collectors.toList());
         List<GetOptionOrder> optionOrders = optionOrderRepository.findByOrderAndStatusEquals(order, ACTIVE_STATUS).stream()
                 .map(getOptionOrder -> new GetOptionOrder(getOptionOrder.getOption().getOptionIdx(), getOptionOrder.getOption().getDescription(), getOptionOrder.getOption().getPrice())).collect(Collectors.toList());
 
         // TODO: 아직 판매자 계좌 번호 저장 이전
-        return new GetOrder(order.getOrderStatus().getName(), order.getDessert().getDessertName(),
+        return new GetOrder(order.getOrderIdx(), order.getOrderStatus().getName(), order.getDessert().getDessertIdx(), order.getDessert().getDessertName(),
                 order.getDessert().getDessertPrice(), order.getExtraPrice(), order.getTotalPrice(), order.getRequest(), order.getPickupDate(), order.getStore().getStoreIdx(), order.getStore().getUser().getNickname(), null, order.getStore().getAddress(), orderImgs, optionOrders);
-
     }
 
     // 주문 조회
     public GetOrderStore getStoreDessertsAndOptions(Long storeIdx) throws BaseException{
         Store store = this.storeRepository.findByStoreIdxAndStatus(storeIdx, ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_STORE_IDX));
+        // TODO: 아직 판매자 계좌 번호 저장 이전
+        return new GetOrderStore(store.getStoreIdx(), store.getUser().getNickname(),
+                null, store.getAddress(),getStoreDessertAndOptionList(store));
+     }
+
+     // 판매자 디저트 + 옵션 불러오기
+    private List<GetStoreDessertAndOptions> getStoreDessertAndOptionList(Store store) throws BaseException{
         List<Dessert> desserts = this.dessertRepository.findByStoreAndStatusOrderByDessertIdx(store, ACTIVE_STATUS);
         List<GetStoreDessertAndOptions> dessertsAndOptions = new ArrayList<>();
         // 디저트 별의 option 들을 찾아서 한번에 저장하는 것이 필요함.
@@ -94,11 +106,8 @@ public class OrderService {
                     this.optionRepository.findByDessertAndStatusOrderByOptionIdx(dessert, ACTIVE_STATUS).stream()
                             .map(option -> new OptionDTO(option.getOptionIdx(), option.getDescription(), option.getPrice())).collect(Collectors.toList())));
         }
-
-        // TODO: 아직 판매자 계좌 번호 저장 이전
-        return new GetOrderStore(store.getStoreIdx(), store.getUser().getNickname(),
-                null, store.getAddress(),dessertsAndOptions);
-     }
+        return dessertsAndOptions;
+    }
 
     // 주문 내역 조회
     public GetOrderHistoryRes getOrderHistory(Long userIdx, GetOrderHistoryReq orderStatusReq) throws BaseException {
@@ -139,5 +148,15 @@ public class OrderService {
             numOfOrder.setAllOrderHistory(orderRepository.countAllByStore_User(user));
         } else throw new BaseException(INVALID_USER_IDX);
         return numOfOrder;
+    }
+
+    // 주문 수정 조회
+    public GetEditOrder getEditOrderView(Long orderIdx, Long userIdx) throws BaseException{
+        User user = userRepository.findByUserIdxAndStatusEquals(userIdx, ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+        Order order = orderRepository.findById(orderIdx).orElseThrow(() -> new BaseException(INVALID_ORDER_IDX));
+        if(!order.getUser().equals(user)) throw new BaseException(NO_MATCH_ORDER_USER);
+        if(!order.getOrderStatus().equals(ORDER_WAITING)) throw new BaseException(NO_MATCH_ORDER_STATUS);
+
+        return new GetEditOrder(this.getOrder(order), this.getStoreDessertAndOptionList(order.getStore()));
     }
 }

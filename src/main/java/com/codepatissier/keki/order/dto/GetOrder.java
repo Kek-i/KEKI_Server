@@ -14,7 +14,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GetOrder {
+    Long orderIdx;
     String orderStatus;
+    Long dessertIdx;
     String dessertName;
 
     // 주문 금액
