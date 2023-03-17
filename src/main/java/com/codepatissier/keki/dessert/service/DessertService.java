@@ -247,14 +247,15 @@ public class DessertService {
 
     /**
      * [판매자] 상품 상세 조회
-     * 상품 이미지, 이름, 가격, 소개
+     * 가게 이름, 상품 이미지, 상품명, 상품 가격, 상품 설명, 옵션(optionIdx, 옵션명, 옵션 가격)
      */
     public GetStoreDessertRes getStoreDessert(Long userIdx, Long dessertIdx) throws BaseException {
         try {
             checkStore(userIdx);
             Dessert dessert = dessertRepository.findByDessertIdxAndStatus(dessertIdx, ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_DESSERT_IDX));
 
-            return new GetStoreDessertRes(dessert.getStore().getUser().getNickname(), dessert.getDessertImg(), dessert.getDessertName(), dessert.getDessertPrice(), dessert.getDessertDescription());
+            List<OptionDTO> optionList = getOptionList(dessert);
+            return new GetStoreDessertRes(dessert.getStore().getUser().getNickname(), dessert.getDessertImg(), dessert.getDessertName(), dessert.getDessertPrice(), dessert.getDessertDescription(), optionList);
         } catch (BaseException e) {
             throw e;
         } catch (Exception e) {
