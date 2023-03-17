@@ -134,7 +134,7 @@ public class OrderService {
     }
 
     // 주문 상태 별 주문 수
-    private NumOfOrder getCountByOrderStatus(User user) throws BaseException{
+    public NumOfOrder getCountByOrderStatus(User user) throws BaseException{
         NumOfOrder numOfOrder = new NumOfOrder();
         if (getRoleByName(user.getRole()) == CUSTOMER) {
             numOfOrder.setOrderWaiting(orderRepository.countByUserAndOrderStatusEquals(user, ORDER_WAITING));
