@@ -38,7 +38,7 @@ public class OrderController {
 
 
     /**
-     * [구매자] 주문 상세 조회 API
+     * [구매자/판매자] 주문 상세 조회 API
      * @param orderIdx
      * @return GetOrder
      */

@@ -67,25 +67,51 @@ public class OrderService {
 
     // 주문 상세 return 값
     public GetOrder getOrderReturn(Long userIdx, Long orderIdx) throws BaseException{
-        // TODO: 겹치는 부분이 3줄 이상인데 extract method 는 어떠신지?
         User user = userRepository.findByUserIdxAndStatusEquals(userIdx, ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
         Order order = orderRepository.findById(orderIdx).orElseThrow(() -> new BaseException(INVALID_ORDER_IDX));
-
-        if(!order.getUser().equals(user)) throw new BaseException(NO_MATCH_ORDER_USER);
-        return getOrder(order);
-
+        if(user.getRole().equals(CUSTOMER.getName())){
+            if(!order.getUser().equals(user)) throw new BaseException(NO_MATCH_ORDER_USER);
+            return getOrderByUser(order);
+        }else if (user.getRole().equals(STORE.getName())){
+            if(!order.getStore().getUser().equals(user)) throw new BaseException(NO_MATCH_ORDER_USER);
+            return getOrderByStore(order);
+        }else throw new BaseException(INVALID_USER_IDX);
     }
 
-    // 주문 상세 조회
-    private GetOrder getOrder(Order order) {
-        List<GetOrderImg> orderImgs = orderImgRepository.findByOrderAndStatusEquals(order, ACTIVE_STATUS).stream()
-                .map(getOrder -> new GetOrderImg(getOrder.getOrderImgIdx(), getOrder.getImgUrl())).collect(Collectors.toList());
-        List<GetOptionOrder> optionOrders = optionOrderRepository.findByOrderAndStatusEquals(order, ACTIVE_STATUS).stream()
-                .map(getOptionOrder -> new GetOptionOrder(getOptionOrder.getOption().getOptionIdx(), getOptionOrder.getOption().getDescription(), getOptionOrder.getOption().getPrice())).collect(Collectors.toList());
+    // 판매자 주문 상세 조회
+    private GetOrder getOrderByStore(Order order) throws BaseException{
+        List<GetOrderImg> orderImgs = getOrderImgs(order);
+        List<GetOptionOrder> optionOrders = getOptionOrders(order);
 
         // TODO: 아직 판매자 계좌 번호 저장 이전
         return new GetOrder(order.getOrderIdx(), order.getOrderStatus().getName(), order.getDessert().getDessertIdx(), order.getDessert().getDessertName(),
-                order.getDessert().getDessertPrice(), order.getExtraPrice(), order.getTotalPrice(), order.getRequest(), order.getPickupDate(), order.getStore().getStoreIdx(), order.getStore().getUser().getNickname(), null, order.getStore().getAddress(), orderImgs, optionOrders);
+                order.getDessert().getDessertPrice(), order.getExtraPrice(), order.getTotalPrice(), order.getRequest(), order.getPickupDate(),
+                null, new GetUserInfo(order.getUser().getUserIdx(), order.getCustomerName(), order.getCustomerPhone()), orderImgs, optionOrders);
+    }
+
+    // 구매자 주문 상세 조회
+    private GetOrder getOrderByUser(Order order) {
+        List<GetOrderImg> orderImgs = getOrderImgs(order);
+        List<GetOptionOrder> optionOrders = getOptionOrders(order);
+
+        // TODO: 아직 판매자 계좌 번호 저장 이전
+        return new GetOrder(order.getOrderIdx(), order.getOrderStatus().getName(), order.getDessert().getDessertIdx(), order.getDessert().getDessertName(),
+                order.getDessert().getDessertPrice(), order.getExtraPrice(), order.getTotalPrice(), order.getRequest(), order.getPickupDate(),
+                new GetStoreInfo(order.getStore().getStoreIdx(), order.getStore().getUser().getNickname(), null, order.getStore().getAddress()), null, orderImgs, optionOrders);
+    }
+
+    // 주문 이미지 불러오기
+    private List<GetOrderImg> getOrderImgs(Order order) {
+        List<GetOrderImg> orderImgs = orderImgRepository.findByOrderAndStatusEquals(order, ACTIVE_STATUS).stream()
+                .map(getOrder -> new GetOrderImg(getOrder.getOrderImgIdx(), getOrder.getImgUrl())).collect(Collectors.toList());
+        return orderImgs;
+    }
+
+    // 주문 옵션 불러오기
+    private List<GetOptionOrder> getOptionOrders(Order order) {
+        List<GetOptionOrder> optionOrders = optionOrderRepository.findByOrderAndStatusEquals(order, ACTIVE_STATUS).stream()
+                .map(getOptionOrder -> new GetOptionOrder(getOptionOrder.getOption().getOptionIdx(), getOptionOrder.getOption().getDescription(), getOptionOrder.getOption().getPrice())).collect(Collectors.toList());
+        return optionOrders;
     }
 
     // 주문 조회
@@ -157,6 +183,6 @@ public class OrderService {
         if(!order.getUser().equals(user)) throw new BaseException(NO_MATCH_ORDER_USER);
         if(!order.getOrderStatus().equals(ORDER_WAITING)) throw new BaseException(NO_MATCH_ORDER_STATUS);
 
-        return new GetEditOrder(this.getOrder(order), this.getStoreDessertAndOptionList(order.getStore()));
+        return new GetEditOrder(this.getOrderByUser(order), this.getStoreDessertAndOptionList(order.getStore()));
     }
 }
