@@ -52,6 +52,7 @@ public class OrderService {
     /**
      * 주문하기
      */
+    @Transactional(rollbackFor= Exception.class)
     public void makeOrder(Long userIdx, OrderReq orderReq) throws BaseException{
         User user = this.userRepository.findByUserIdxAndStatusEquals(userIdx, ACTIVE_STATUS).orElseThrow(()-> new BaseException(INVALID_USER_AND_STATUS));
         if (!Role.getRoleByName(user.getRole()).equals(Role.CUSTOMER))
@@ -59,6 +60,34 @@ public class OrderService {
 
         Dessert dessert = this.dessertRepository.findByDessertIdxAndStatus(orderReq.getDessertIdx(),ACTIVE_STATUS).orElseThrow(()-> new BaseException(INVALID_DESSERT_IDX));
 
+        Order order = saveOrder(orderReq, user, dessert);
+        saveOrderImgs(orderReq, order);
+        saveOptionOrders(orderReq, order);
+    }
+
+    private void saveOptionOrders(OrderReq orderReq, Order order) throws BaseException {
+        List<OptionOrder> optionOrders = new ArrayList<>();
+        for(Long optionIdx : orderReq.getOptions()) {
+            optionOrders.add(OptionOrder.builder()
+                    .order(order)
+                    .option(this.optionRepository.findById(optionIdx)
+                            .orElseThrow(()->new BaseException(INVALID_OPTION_IDX)))
+                    .build());
+        }
+        this.optionOrderRepository.saveAll(optionOrders);
+    }
+
+    private void saveOrderImgs(OrderReq orderReq, Order order) {
+        List<OrderImg> orderImgs = orderReq.getImgUrls().stream()
+                .map(url -> OrderImg.builder()
+                        .order(order)
+                        .imgUrl(url)
+                        .build())
+                .collect(Collectors.toList());
+        this.orderImgRepository.saveAll(orderImgs);
+    }
+
+    private Order saveOrder(OrderReq orderReq, User user, Dessert dessert) {
         Order order = Order.builder()
                 .user(user)
                 .store(dessert.getStore())
@@ -70,9 +99,8 @@ public class OrderService {
                 .extraPrice(orderReq.getExtraPrice())
                 .totalPrice(orderReq.getTotalPrice())
                 .build();
-
-        // TODO: option & img save & Transactional
         this.orderRepository.save(order);
+        return order;
     }
 
     /**
