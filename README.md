@@ -27,6 +27,10 @@
 <br>
 
 ## Project Structure
+
+<details>
+<summary>Details</summary>
+
 ```jsx
 .
 │  .gitignore
@@ -271,6 +275,8 @@
                          KekiApplicationTests.java
 ```
 <br>
+</details>
+<br><br>
 
 ## DB 
 ![keki-erd](https://user-images.githubusercontent.com/80838501/218660483-b06e9835-7dd5-4292-aa94-073ae466c235.png)
@@ -318,7 +324,7 @@ feature/7-desserts-patchDessert
 <br>
 
 ## Member
-|[박소정](https://github.com/sojungpp)|[장채은](https://github.com/JoongHyun-Kim)|[김중현](https://github.com/JoongHyun-Kim)|[박서연](https://github.com/psyeon1120)|
+|[박소정](https://github.com/sojungpp)|[장채은](https://github.com/chaerlo127)|[김중현](https://github.com/JoongHyun-Kim)|[박서연](https://github.com/psyeon1120)|
 |:---:|:---:|:---:|:---:|
 |<img src="https://github.com/sojungpp.png" width="180" height="180" >|<img src="https://github.com/chaerlo127.png" width="180" height="180" >|<img src="https://github.com/JoongHyun-Kim.png" width="180" height="180" >|<img src="https://github.com/psyeon1120.png" width="180" height="180">|
 | **PM & Backend Developer** | **Backend Developer**| **Backend Developer** | **Backend Developer** |
