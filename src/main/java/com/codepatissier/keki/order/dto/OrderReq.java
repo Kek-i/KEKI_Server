@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PostOrderReq {
+public class OrderReq {
     private String customerName;
     private String customerPhone;
     private Long dessertIdx;
@@ -20,6 +20,6 @@ public class PostOrderReq {
     private LocalDateTime pickupDate;
     private String request;
     private List<String> imgUrls;
-    private int extraPrice;
-    private int totalPrice;
+    private Integer extraPrice;
+    private Integer totalPrice;
 }

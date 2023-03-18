@@ -4,6 +4,8 @@ import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.BaseResponse;
 
 import com.codepatissier.keki.order.dto.*;
+import com.codepatissier.keki.order.dto.PatchOrderStatusReq;
+import com.codepatissier.keki.order.dto.OrderReq;
 import com.codepatissier.keki.order.entity.OrderStatus;
 
 import com.codepatissier.keki.order.service.OrderService;
@@ -42,9 +44,23 @@ public class OrderController {
      * [POST] /orders
      */
     @PostMapping("")
-    public BaseResponse<String> makeOrder(@RequestBody PostOrderReq postOrderReq){
+    public BaseResponse<String> makeOrder(@RequestBody OrderReq orderReq){
         try {
-            orderService.makeOrder(authService.getUserIdx(), postOrderReq);
+            orderService.makeOrder(authService.getUserIdx(), orderReq);
+            return new BaseResponse<>(SUCCESS);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
+     * 주문수정 API
+     * [PATCH] /orders/:orderIdx
+     */
+    @PatchMapping("{orderIdx}")
+    public BaseResponse<String> editOrder(@PathVariable("orderIdx") Long orderIdx, @RequestBody OrderReq orderReq){
+        try {
+            orderService.editOrder(authService.getUserIdx(), orderIdx, orderReq);
             return new BaseResponse<>(SUCCESS);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
