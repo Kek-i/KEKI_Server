@@ -3,11 +3,8 @@ package com.codepatissier.keki.order.controller;
 import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.BaseResponse;
 
-import com.codepatissier.keki.order.dto.PatchOrderStatusReq;
-import com.codepatissier.keki.order.dto.PostOrderReq;
+import com.codepatissier.keki.order.dto.*;
 import com.codepatissier.keki.order.entity.OrderStatus;
-
-import com.codepatissier.keki.order.dto.GetOrder;
 
 import com.codepatissier.keki.order.service.OrderService;
 import com.codepatissier.keki.user.service.AuthService;
@@ -55,14 +52,27 @@ public class OrderController {
     }
 
     /**
-     * [구매자] 주문 상세 조회 API
+     * [구매자/판매자] 주문 상세 조회 API
      * @param orderIdx
      * @return GetOrder
      */
     @GetMapping("{orderIdx}")
     public BaseResponse<GetOrder> getOrder(@PathVariable("orderIdx") Long orderIdx){
         try {
-            return new BaseResponse<>(orderService.getOrder(authService.getUserIdx(), orderIdx));
+            return new BaseResponse<>(orderService.getOrderReturn(authService.getUserIdx(), orderIdx));
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
+     * 주문 내역 조회 API
+     * @param getOrderHistoryReq(orderStatus)
+     */
+    @GetMapping("/history")
+    public BaseResponse<GetOrderHistoryRes> getOrderHistory(GetOrderHistoryReq getOrderHistoryReq){
+        try {
+            return new BaseResponse<>(orderService.getOrderHistory(authService.getUserIdx(), getOrderHistoryReq));
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
@@ -96,6 +106,30 @@ public class OrderController {
             orderService.changeOrderStatus(authService.getUserIdx(), patchOrderStatusReq);
             return new BaseResponse<>(SUCCESS);
         }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
+     * 주문 화면 조회
+     */
+    @GetMapping("/view/{storeIdx}")
+    public BaseResponse<GetOrderStore> getStoreDessertsAndOptions(@PathVariable("storeIdx") Long storeIdx){
+        try{
+            return new BaseResponse<>(this.orderService.getStoreDessertsAndOptions(storeIdx));
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
+     * 주문 수정 화면 조회
+     */
+    @GetMapping("/{orderIdx}/editView")
+    public BaseResponse<GetEditOrder> getEditOrderView(@PathVariable("orderIdx") Long orderIdx){
+        try {
+            return new BaseResponse<>(this.orderService.getEditOrderView(orderIdx, authService.getUserIdx()));
+        } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
     }

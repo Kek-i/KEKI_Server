@@ -1,6 +1,6 @@
 package com.codepatissier.keki.order.dto;
 
-import com.codepatissier.keki.order.entity.OrderStatus;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +14,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GetOrder {
+    Long orderIdx;
     String orderStatus;
+    Long dessertIdx;
     String dessertName;
 
     // 주문 금액
@@ -26,11 +28,10 @@ public class GetOrder {
     String request;
     LocalDateTime pickupDate;
 
-    // 판매자 정보
-    Long storeIdx;
-    String storeName;
-    String accountName;
-    String storeAccount;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    GetStoreInfo storeInfo;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    GetUserInfo userInfo;
 
     // 이미지, 옵션 추가
     List<GetOrderImg> orderImgs;
