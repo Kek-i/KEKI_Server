@@ -2,6 +2,7 @@ package com.codepatissier.keki.order.entity;
 
 import com.codepatissier.keki.common.BaseEntity;
 import com.codepatissier.keki.dessert.entity.Option;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
@@ -24,4 +25,10 @@ public class OptionOrder extends BaseEntity {
     @ManyToOne
     @JoinColumn(nullable = false, name = "optionIdx")
     private Option option;
+
+    @Builder
+    public OptionOrder(Order order, Option option){
+        this.order = order;
+        this.option = option;
+    }
 }

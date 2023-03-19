@@ -10,4 +10,6 @@ import java.util.List;
 @Repository
 public interface OrderImgRepository extends JpaRepository<OrderImg, Long> {
     List<OrderImg> findByOrderAndStatusEquals(Order order, String activeStatus);
+
+    OrderImg findByOrderAndImgUrl(Order order, String url);
 }

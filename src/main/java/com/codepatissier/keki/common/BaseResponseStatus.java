@@ -79,8 +79,9 @@ public enum BaseResponseStatus {
     EXIST_NICKNAME(false, 3001, "이미 사용 중인 닉네임입니다."),
     INVALID_EMAIL(false, 3002, "존재하지 않는 이메일입니다."),
     NO_STORE_ROLE(false, 3003, "판매자가 아닙니다."),
-    INVALID_USER_STATUS(false, 3004, "비활성화된 사용자입니다."),
-    EXPIRED_TOKEN(false, 3005, "만료된 토큰 값입니다."),
+    NO_CUSTOMER_ROLE(false, 3004, "구매자가 아닙니다."),
+    INVALID_USER_STATUS(false, 3005, "비활성화된 사용자입니다."),
+    EXPIRED_TOKEN(false, 3006, "만료된 토큰 값입니다."),
 
     // stores(3100~3199)
     INVALID_STORE_IDX(false, 3100, "존재하지 않는 스토어입니다."),

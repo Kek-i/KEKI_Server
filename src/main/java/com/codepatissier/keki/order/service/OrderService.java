@@ -2,14 +2,17 @@ package com.codepatissier.keki.order.service;
 
 import com.codepatissier.keki.common.BaseException;
 
-import com.codepatissier.keki.dessert.dto.OptionDTO;
+import com.codepatissier.keki.common.Role;
 import com.codepatissier.keki.dessert.entity.Dessert;
+import com.codepatissier.keki.dessert.entity.Option;
 import com.codepatissier.keki.dessert.repository.DessertRepository;
 import com.codepatissier.keki.dessert.repository.OptionRepository;
-import com.codepatissier.keki.common.Role;
 import com.codepatissier.keki.order.dto.*;
+import com.codepatissier.keki.dessert.dto.OptionDTO;
 
+import com.codepatissier.keki.order.entity.OptionOrder;
 import com.codepatissier.keki.order.entity.Order;
+import com.codepatissier.keki.order.entity.OrderImg;
 import com.codepatissier.keki.order.entity.OrderStatus;
 import com.codepatissier.keki.order.repository.OptionOrderRepository;
 import com.codepatissier.keki.order.repository.OrderImgRepository;
@@ -20,6 +23,7 @@ import com.codepatissier.keki.user.entity.User;
 import com.codepatissier.keki.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +32,8 @@ import java.util.stream.Collectors;
 
 import static com.codepatissier.keki.common.BaseResponseStatus.*;
 import static com.codepatissier.keki.common.Constant.ACTIVE_STATUS;
+import static com.codepatissier.keki.common.Constant.INACTIVE_STATUS;
+import static com.codepatissier.keki.order.entity.OrderStatus.getOrderStatusByName;
 import static com.codepatissier.keki.common.Role.*;
 import static com.codepatissier.keki.order.entity.OrderStatus.*;
 
@@ -42,6 +48,105 @@ public class OrderService {
     private final DessertRepository dessertRepository;
     private final StoreRepository storeRepository;
     private final OptionRepository optionRepository;
+
+    /**
+     * 주문하기
+     */
+    @Transactional(rollbackFor= Exception.class)
+    public void makeOrder(Long userIdx, OrderReq orderReq) throws BaseException{
+        User user = this.userRepository.findByUserIdxAndStatusEquals(userIdx, ACTIVE_STATUS).orElseThrow(()-> new BaseException(INVALID_USER_AND_STATUS));
+        if (!Role.getRoleByName(user.getRole()).equals(Role.CUSTOMER))
+            throw new BaseException(NO_CUSTOMER_ROLE);
+
+        Dessert dessert = this.dessertRepository.findByDessertIdxAndStatus(orderReq.getDessertIdx(),ACTIVE_STATUS).orElseThrow(()-> new BaseException(INVALID_DESSERT_IDX));
+
+        Order order = saveOrder(orderReq, user, dessert);
+        saveOrderImgs(orderReq, order);
+        saveOptionOrders(orderReq, order);
+    }
+
+    private void saveOptionOrders(OrderReq orderReq, Order order) throws BaseException {
+        List<OptionOrder> optionOrders = new ArrayList<>();
+        for(Long optionIdx : orderReq.getOptions()) {
+            optionOrders.add(OptionOrder.builder()
+                    .order(order)
+                    .option(this.optionRepository.findById(optionIdx)
+                            .orElseThrow(()->new BaseException(INVALID_OPTION_IDX)))
+                    .build());
+        }
+        this.optionOrderRepository.saveAll(optionOrders);
+    }
+
+    private void saveOrderImgs(OrderReq orderReq, Order order) {
+        List<OrderImg> orderImgs = orderReq.getImgUrls().stream()
+                .map(url -> OrderImg.builder()
+                        .order(order)
+                        .imgUrl(url)
+                        .build())
+                .collect(Collectors.toList());
+        this.orderImgRepository.saveAll(orderImgs);
+    }
+
+    private Order saveOrder(OrderReq orderReq, User user, Dessert dessert) {
+        Order order = Order.builder()
+                .user(user)
+                .store(dessert.getStore())
+                .dessert(dessert)
+                .request(orderReq.getRequest())
+                .pickupDate(orderReq.getPickupDate())
+                .customerName(orderReq.getCustomerName())
+                .customerPhone(orderReq.getCustomerPhone())
+                .extraPrice(orderReq.getExtraPrice())
+                .totalPrice(orderReq.getTotalPrice())
+                .build();
+        this.orderRepository.save(order);
+        return order;
+    }
+
+    /**
+     * 주문수정
+     */
+    @Transactional(rollbackFor= Exception.class)
+    public void editOrder(Long userIdx, Long orderIdx, OrderReq orderReq) throws BaseException{
+        User user = this.userRepository.findByUserIdxAndStatusEquals(userIdx, ACTIVE_STATUS).orElseThrow(()-> new BaseException(INVALID_USER_AND_STATUS));
+        if (!Role.getRoleByName(user.getRole()).equals(Role.CUSTOMER))
+            throw new BaseException(NO_CUSTOMER_ROLE);
+        Order order = orderRepository.findById(orderIdx).orElseThrow(() -> new BaseException(INVALID_ORDER_IDX));
+
+        Dessert dessert = this.dessertRepository.findByDessertIdxAndStatus(orderReq.getDessertIdx(),ACTIVE_STATUS)
+                .orElseThrow(()-> new BaseException(INVALID_DESSERT_IDX));
+        if(!dessert.getStore().equals(order.getStore())) throw new BaseException(INVALID_ORDER_IDX);
+
+        order.editOrder(dessert, orderReq);
+
+        order.getOptions().forEach(option -> option.setStatus(INACTIVE_STATUS));
+        List<OptionOrder> optionOrders = new ArrayList<>();
+        for(Long optionIdx : orderReq.getOptions()){
+            Option option = this.optionRepository.findById(optionIdx)
+                    .orElseThrow(()->new BaseException(INVALID_OPTION_IDX));
+            OptionOrder optionOrder = this.optionOrderRepository.findByOrderAndOption(order, option);
+            if(optionOrder != null) optionOrder.setStatus(ACTIVE_STATUS);
+            else optionOrders.add(OptionOrder.builder()
+                    .order(order)
+                    .option(option)
+                    .build());
+        }
+        this.optionOrderRepository.saveAll(optionOrders);
+
+        order.getImages().forEach(img -> img.setStatus(INACTIVE_STATUS));
+        List<OrderImg> orderImgs = new ArrayList<>();
+        for(String imgUrl : orderReq.getImgUrls()){
+            OrderImg orderImg = this.orderImgRepository.findByOrderAndImgUrl(order, imgUrl);
+            if(orderImg != null) orderImg.setStatus(ACTIVE_STATUS);
+            else orderImgs.add(OrderImg.builder()
+                    .order(order)
+                    .imgUrl(imgUrl)
+                    .build());
+        }
+        this.orderImgRepository.saveAll(orderImgs);
+
+        this.orderRepository.save(order);
+    }
 
     // 주문 취소
     public void cancelOrder(Long userIdx, Long orderIdx) throws BaseException{
