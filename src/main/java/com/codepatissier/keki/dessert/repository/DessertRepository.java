@@ -17,5 +17,6 @@ public interface DessertRepository extends JpaRepository<Dessert, Long> {
     Page<Dessert> findByStoreAndStatusAndDessertIdxLessThanOrderByDessertIdxDesc(Store store, String activeStatus, Long cursorIdx, Pageable page);
     boolean existsByStatusAndDessertIdxLessThan(String activeStatus, Long dessertIdx);
     Optional<Dessert> findByDessertIdxAndStatus(Long dessertIdx, String activeStatus);
+    void deleteByStore(Store store);
 }
 

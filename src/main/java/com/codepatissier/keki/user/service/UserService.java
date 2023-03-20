@@ -13,8 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
-
 import static com.codepatissier.keki.common.BaseResponseStatus.*;
+import static com.codepatissier.keki.common.Constant.ACTIVE_STATUS;
 
 
 @Service
@@ -56,14 +56,14 @@ public class UserService {
     }
 
     // 구매자 회원가입
-    @Transactional // TODO @Transactional(rollbackFor = Exception.class) 수정
+    @Transactional(rollbackFor = Exception.class)
     public PostUserRes signupCustomer(Long userIdx, PostCustomerReq postCustomerReq) throws BaseException{
         try {
-            User user = userRepository.findByUserIdxAndStatusEquals(userIdx, Constant.ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+            User user = userRepository.findByUserIdxAndStatusEquals(userIdx, ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
             String accessToken = authService.createAccessToken(userIdx);
             String refreshToken = authService.createRefreshToken(userIdx);
 
-            user.signup(postCustomerReq.getNickname(), refreshToken, Role.CUSTOMER, postCustomerReq.getProfileImg());
+            user.signup(postCustomerReq.getNickname(), Role.CUSTOMER, postCustomerReq.getProfileImg());
             userRepository.save(user);
 
             return new PostUserRes(accessToken, refreshToken, user.getRole());
@@ -83,14 +83,14 @@ public class UserService {
     // 구매자 마이페이지 조회
     public GetProfileRes getProfile() throws BaseException {
         Long userIdx = authService.getUserIdx();
-        User user = userRepository.findByUserIdxAndStatusEquals(userIdx, Constant.ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+        User user = userRepository.findByUserIdxAndStatusEquals(userIdx, ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
         return new GetProfileRes(user.getEmail(), user.getNickname(), user.getProfileImg());}
 
     // 구매자 프로필 수정
     @Transactional
     public void modifyProfile(Long userIdx, PatchProfileReq patchProfileReq) throws BaseException{
         try {
-            User user = userRepository.findByUserIdxAndStatusEquals(userIdx, Constant.ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+            User user = userRepository.findByUserIdxAndStatusEquals(userIdx, ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
             if (patchProfileReq.getNickname() != null) user.modifyNickname(patchProfileReq.getNickname());
             if (patchProfileReq.getProfileImg() != null) user.modifyProfileImg(patchProfileReq.getProfileImg());
         } catch (BaseException e) {
@@ -101,12 +101,12 @@ public class UserService {
     }
 
     // 회원 탈퇴
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void signout(Long userIdx) throws BaseException {
         try{
-            User user = userRepository.findByUserIdxAndStatusEquals(userIdx, Constant.ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
-            user.signout();
-            // TODO redis 사용해 토큰 관리
+            User user = userRepository.findByUserIdxAndStatusEquals(userIdx, ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+            userRepository.delete(user);
+            authService.signout(userIdx);
         } catch (BaseException e) {
             throw e;
         } catch (Exception e) {
@@ -118,9 +118,9 @@ public class UserService {
     @Transactional
     public void logout(Long userIdx) throws BaseException {
         try{
-            User user = userRepository.findByUserIdxAndStatusEquals(userIdx, Constant.ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+            User user = userRepository.findByUserIdxAndStatusEquals(userIdx, ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+            authService.logout(userIdx);
             user.logout();
-            // TODO redis 사용해 토큰 관리
         } catch (BaseException e) {
             throw e;
         } catch (Exception e) {
@@ -128,4 +128,12 @@ public class UserService {
         }
     }
 
+    // AccessToken 재발급
+    @Transactional
+    public PostUserRes reissueToken(PostTokenReq postTokenReq) throws BaseException{
+        User user = userRepository.findByEmailAndProviderAndStatusEquals(postTokenReq.getEmail(), Provider.getProviderByName(postTokenReq.getProvider()), ACTIVE_STATUS)
+                .orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+        authService.validateRefreshToken(user.getUserIdx(), postTokenReq.getRefreshToken());
+        return authService.createToken(user);
+    }
 }

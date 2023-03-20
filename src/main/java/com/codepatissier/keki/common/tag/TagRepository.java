@@ -1,4 +1,4 @@
-package com.codepatissier.keki.common.Tag;
+package com.codepatissier.keki.common.tag;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -1,6 +1,6 @@
 package com.codepatissier.keki.post.repository;
 
-import com.codepatissier.keki.common.Tag.Tag;
+import com.codepatissier.keki.common.tag.Tag;
 import com.codepatissier.keki.post.entity.Post;
 import org.springframework.data.domain.Pageable;
 

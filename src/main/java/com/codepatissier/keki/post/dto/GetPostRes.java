@@ -16,6 +16,7 @@ import static com.codepatissier.keki.common.Constant.ACTIVE_STATUS;
 @NoArgsConstructor
 public class GetPostRes {
     private Long postIdx;
+    private Long dessertIdx;
     private String dessertName;
     private int dessertPrice;
     private String description;
@@ -28,6 +29,7 @@ public class GetPostRes {
 
     public GetPostRes(Post post, boolean like){
         this.postIdx = post.getPostIdx();
+        this.dessertIdx = post.getDessert().getDessertIdx();
         this.dessertName = post.getDessert().getDessertName();
         this.dessertPrice = post.getDessert().getDessertPrice();
         this.description = post.getPostDescription();

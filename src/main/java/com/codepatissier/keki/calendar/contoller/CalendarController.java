@@ -10,11 +10,10 @@ import com.codepatissier.keki.user.service.AuthService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
-// TODO STATUS 처리를 해줘야 함.
 
 @SecurityRequirement(name = "Bearer")
 @Tag(name = "calendars", description = "기념일 API")
@@ -30,9 +29,9 @@ public class CalendarController {
     @PostMapping("")
     public BaseResponse<String> createCalendar(@RequestBody CalendarReq calendarReq){
         try{
-            if(calendarReq.getTitle().equals("") || calendarReq.getTitle() == null) return new BaseResponse<>(BaseResponseStatus.NULL_TITLE);
-            if(calendarReq.getDate() == null || calendarReq.getDate().toString().equals("")) return new BaseResponse<>(BaseResponseStatus.NULL_DATE);
-            if(calendarReq.getKindOfCalendar() == null) return new BaseResponse<>(BaseResponseStatus.NULL_KIND_OF_CALENDARS);
+            if(!StringUtils.hasText(calendarReq.getTitle())) return new BaseResponse<>(BaseResponseStatus.NULL_TITLE);
+            if(!StringUtils.hasText(calendarReq.getDate().toString())) return new BaseResponse<>(BaseResponseStatus.NULL_DATE);
+            if(!StringUtils.hasText(calendarReq.getKindOfCalendar())) return new BaseResponse<>(BaseResponseStatus.NULL_KIND_OF_CALENDARS);
 
             this.calendarService.createCalendar(this.authService.getUserIdx(), calendarReq);
             return new BaseResponse<>(BaseResponseStatus.SUCCESS);
@@ -43,7 +42,7 @@ public class CalendarController {
 
     // 캘린더 수정
     @ResponseBody
-    @PatchMapping("/{calendarIdx}/edit")
+    @PatchMapping("/{calendarIdx}")
     public BaseResponse<String> modifyCalendar(@RequestBody CalendarReq calendarReq, @PathVariable("calendarIdx") Long calendarIdx){
         try{
             this.calendarService.modifyCalendar(this.authService.getUserIdx(), calendarReq, calendarIdx);
@@ -56,7 +55,7 @@ public class CalendarController {
     // 캘린더 수정 조회
     @ResponseBody
     @GetMapping("/{calendarIdx}/edit")
-    public BaseResponse<CalendarRes> getEditCalendar(@PathVariable("calendarIdx") Long calendarIdx){
+    public BaseResponse<CalendarEditRes> getEditCalendar(@PathVariable("calendarIdx") Long calendarIdx){
         try{
             return new BaseResponse<>(this.calendarService.getEditCalendar(this.authService.getUserIdx(), calendarIdx));
         }catch (BaseException e){
@@ -66,7 +65,7 @@ public class CalendarController {
 
     // 캘린더 삭제
     @ResponseBody
-    @PatchMapping("/{calendarIdx}")
+    @DeleteMapping("/{calendarIdx}")
     public BaseResponse<String> deleteCalendar(@PathVariable("calendarIdx") Long calendarIdx){
         try{
             this.calendarService.deleteCalendar(calendarIdx, this.authService.getUserIdx());
@@ -119,8 +118,8 @@ public class CalendarController {
             }
             // 아닌 경우에는 가장 가까운 기념일을 불러오고
             HomeRes home = this.calendarService.getHomeCalendar(this.authService.getUserIdx());
-            // 기념일의 태그가 3개 미만이면 다 랜덤으로 불러오고
-            // 태그가 3개 이상이면 태그별로 랜덤하게 불러오기
+            // 기념일의 태그가 없으면 랜덤으로
+            // 아니면 기념일 태그의 게시물만
             return new BaseResponse<>(this.calendarService.getHomeTagPost(home));
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
@@ -132,7 +131,7 @@ public class CalendarController {
     @PostMapping("/categories")
     public BaseResponse<String> createTag(@RequestBody CalendarHashTag tag){
         try{
-            if(tag.getCalendarHashTag() == null) return new BaseResponse<>(BaseResponseStatus.NULL_TAG);
+            if(!StringUtils.hasText(tag.getCalendarHashTag())) return new BaseResponse<>(BaseResponseStatus.NULL_TAG);
             this.calendarService.createTag(tag);
             return new BaseResponse<>(BaseResponseStatus.SUCCESS);
         }catch (BaseException e){
@@ -145,7 +144,7 @@ public class CalendarController {
     @PatchMapping("/categories")
     public BaseResponse<String> patchTag(@RequestBody TagStatus tag){
         try{
-            if(tag.getCalendarHashTag() == null) return new BaseResponse<>(BaseResponseStatus.NULL_TAG);
+            if(!StringUtils.hasText(tag.getCalendarHashTag())) return new BaseResponse<>(BaseResponseStatus.NULL_TAG);
             this.calendarService.patchTag(tag);
 
             return new BaseResponse<>(BaseResponseStatus.SUCCESS);

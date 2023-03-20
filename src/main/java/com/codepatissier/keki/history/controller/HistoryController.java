@@ -15,7 +15,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Constraint;
 import java.util.List;
 
 @SecurityRequirement(name = "Bearer")
@@ -53,7 +52,7 @@ public class HistoryController {
 
     // 최근 검색어 삭제
     @ResponseBody
-    @PatchMapping("")
+    @DeleteMapping("")
     public BaseResponse<String> deleteRecentHistories(){
         try{
             this.searchHistoryService.deleteRecentHistories(this.authService.getUserIdx());

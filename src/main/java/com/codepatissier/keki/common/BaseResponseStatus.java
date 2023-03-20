@@ -14,14 +14,24 @@ public enum BaseResponseStatus {
      *  2000: Request 오류
      */
     // users(2000~2099)
-     NULL_TOKEN(false, 2000, "토큰 값을 입력해주세요."),
+    NULL_TOKEN(false, 2000, "토큰 값을 입력해주세요."),
     NULL_EMAIL(false, 2001, "이메일을 입력해주세요."),
     NULL_PROVIDER(false, 2002, "소셜 이름을 입력해주세요."),
     INVALID_PROVIDER(false, 2003, "잘못된 소셜 이름입니다."),
-    ALREADY_WITHDRAW_USER(false, 2003, "이미 삭제된 회원입니다."),
+    ALREADY_WITHDRAW_USER(false, 2004, "이미 탈퇴한 회원입니다."),
+    INVALID_TOKEN(false, 2005, "유효하지 않은 토큰 값입니다."),
+    UNSUPPORTED_TOKEN(false, 2006, "잘못된 형식의 토큰 값입니다."),
+    MALFORMED_TOKEN(false, 2007, "잘못된 구조의 토큰 값입니다."),
+
 
     // stores(2100~2199)
-
+    NULL_ADDRESS(false, 2100, "주소를 입력해주세요."),
+    NULL_ORDER_URL(false, 2101, "주문 링크를 입력해주세요."),
+    NULL_BUSINESS_NAME(false, 2102, "대표자명을 입력해주세요."),
+    NULL_BRAND_NAME(false, 2103, "상호명을 입력해주세요."),
+    NULL_BUSINESS_ADDRESS(false, 2104, "사업자 주소를 입력해주세요."),
+    NULL_BUSINESS_NUMBER(false, 2105, "사업자 번호를 입력해주세요."),
+    NULL_NICKNAME(false, 2106, "가게 이름을 입력해주세요."),
 
     // posts(2200~2299)
     INVALID_POSTS_SIZE(false, 2200, "리스트 사이즈는 1 이상이어야 합니다."),
@@ -38,7 +48,11 @@ public enum BaseResponseStatus {
     INVALID_TAG_NUM(false, 2210, "태그는 1개~3개로 등록해주세요."),
 
     // desserts(2300~2399)
-
+    NULL_DESSERT_IMG(false, 3301, "디저트 이미지를 추가해주세요."),
+    NULL_DESSERT_NAME(false, 3302, "디저트 이름을 입력해주세요."),
+    INVALID_DESERT_PRICE(false, 3303, "디저트 가격은 0원 이상이어야 합니다."),
+    NULL_DESSERT_DESCRIPTION(false, 3304, "디저트 설명을 입력해주세요."),
+    DELETED_DESSERT(false, 3305, "이미 삭제된 디저트입니다."),
 
     // calendars(2400~2499)
     NULL_TITLE(false, 2400, "캘린더 제목을 입력해주세요."),
@@ -58,18 +72,10 @@ public enum BaseResponseStatus {
     INVALID_EMAIL(false, 3002, "존재하지 않는 이메일입니다."),
     NO_STORE_ROLE(false, 3003, "판매자가 아닙니다."),
     INVALID_USER_STATUS(false, 3004, "비활성화된 사용자입니다."),
-    INVALID_TOKEN(false, 3005, "잘못된 토큰 값입니다."),
-    EXPIRED_TOKEN(false, 3006, "만료된 토큰 값입니다."),
+    EXPIRED_TOKEN(false, 3005, "만료된 토큰 값입니다."),
 
     // stores(3100~3199)
     INVALID_STORE_IDX(false, 3100, "존재하지 않는 스토어입니다."),
-    NULL_ADDRESS(false, 3101, "주소를 입력해주세요."),
-    NULL_ORDER_URL(false, 3102, "주문 링크를 입력해주세요."),
-    NULL_BUSINESS_NAME(false, 3103, "대표자명을 입력해주세요."),
-    NULL_BRAND_NAME(false, 3104, "상호명을 입력해주세요."),
-    NULL_BUSINESS_ADDRESS(false, 3105, "사업자 주소를 입력해주세요."),
-    NULL_BUSINESS_NUMBER(false, 3106, "사업자 번호를 입력해주세요."),
-    NULL_NICKNAME(false, 3107, "가게 이름을 입력해주세요."),
 
     // posts(3200~3299)
     INVALID_POST_IDX(false, 3200, "존재하지 않는 피드입니다."),
@@ -77,10 +83,6 @@ public enum BaseResponseStatus {
 
     // desserts(3300~3399)
     INVALID_DESSERT_IDX(false, 3300, "존재하지 않는 디저트입니다."),
-    NULL_DESSERT_IMG(false, 3301, "디저트 이미지를 추가해주세요."),
-    NULL_DESSERT_NAME(false, 3302, "디저트 이름을 입력해주세요."),
-    INVALID_DESERT_PRICE(false, 3303, "디저트 가격은 0원 이상이어야 합니다."),
-    NULL_DESSERT_DESCRIPTION(false, 3304, "디저트 설명을 입력해주세요."),
 
     // calendars(3400~3499)
     INVALID_CALENDAR_TAG(false, 3400, "캘린더 TAG를 찾을 수 없습니다."),
