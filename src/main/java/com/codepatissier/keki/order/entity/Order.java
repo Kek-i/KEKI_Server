@@ -1,5 +1,6 @@
 package com.codepatissier.keki.order.entity;
 
+import com.codepatissier.keki.common.BaseEntity;
 import com.codepatissier.keki.dessert.entity.Dessert;
 import com.codepatissier.keki.order.dto.OrderReq;
 import com.codepatissier.keki.store.entity.Store;
@@ -19,7 +20,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @DynamicInsert
-public class Order {
+public class Order extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long orderIdx;
@@ -61,7 +62,7 @@ public class Order {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "order", orphanRemoval = true)
     private List<OrderImg> images = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "order", orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", orphanRemoval = true)
     private List<OptionOrder> options = new ArrayList<>();
 
     @Builder
