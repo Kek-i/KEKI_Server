@@ -53,6 +53,10 @@ public enum BaseResponseStatus {
     INVALID_DESERT_PRICE(false, 3303, "디저트 가격은 0원 이상이어야 합니다."),
     NULL_DESSERT_DESCRIPTION(false, 3304, "디저트 설명을 입력해주세요."),
     DELETED_DESSERT(false, 3305, "이미 삭제된 디저트입니다."),
+    NULL_OPTION(false, 3306, "옵션을 입력해주세요."),
+    NULL_OPTION_IDX(false, 3307, "optionIdx를 입력해주세요."),
+    NULL_OPTION_DESCRIPTION(false, 3308, "옵션명을 입력해주세요."),
+    NULL_OPTION_PRICE(false, 3309, "옵션 가격을 입력해주세요."),
 
     // calendars(2400~2499)
     NULL_TITLE(false, 2400, "캘린더 제목을 입력해주세요."),
@@ -61,6 +65,10 @@ public enum BaseResponseStatus {
     NULL_TAG(false, 2403, "태그를 입력해주세요"),
 
     // histories(2500~2599)
+    // cs(2600-2699)
+    // order(2700~2799)
+    NULL_ORDER_IDX(false, 2700, "주문 아이디를 입력해주세요."),
+    NULL_ORDER_STATUS(false, 2701, "주문 상태를 선택해주세요."),
 
 
     /**
@@ -71,8 +79,9 @@ public enum BaseResponseStatus {
     EXIST_NICKNAME(false, 3001, "이미 사용 중인 닉네임입니다."),
     INVALID_EMAIL(false, 3002, "존재하지 않는 이메일입니다."),
     NO_STORE_ROLE(false, 3003, "판매자가 아닙니다."),
-    INVALID_USER_STATUS(false, 3004, "비활성화된 사용자입니다."),
-    EXPIRED_TOKEN(false, 3005, "만료된 토큰 값입니다."),
+    NO_CUSTOMER_ROLE(false, 3004, "구매자가 아닙니다."),
+    INVALID_USER_STATUS(false, 3005, "비활성화된 사용자입니다."),
+    EXPIRED_TOKEN(false, 3006, "만료된 토큰 값입니다."),
 
     // stores(3100~3199)
     INVALID_STORE_IDX(false, 3100, "존재하지 않는 스토어입니다."),
@@ -83,6 +92,7 @@ public enum BaseResponseStatus {
 
     // desserts(3300~3399)
     INVALID_DESSERT_IDX(false, 3300, "존재하지 않는 디저트입니다."),
+    INVALID_OPTION_IDX(false, 3301, "존재하지 않는 옵션입니다."),
 
     // calendars(3400~3499)
     INVALID_CALENDAR_TAG(false, 3400, "캘린더 TAG를 찾을 수 없습니다."),
@@ -99,6 +109,12 @@ public enum BaseResponseStatus {
     // cs(3600~3699)
     NO_NOTICE(false, 3600, "공지사항이 없습니다."),
     INVALID_NOTICE_IDX(false, 3601, "존재하지 않는 공지사항 입니다."),
+
+    // order(3700~3799)
+    INVALID_ORDER_IDX(false, 3700, "존재하지 않는 주문 입니다."),
+    NO_MATCH_ORDER_USER(false, 3701, "주문에 접근할 수 있는 사용자가 아닙니다."),
+    NO_MATCH_ORDER_STATUS(false, 3702, "가능한 주문 상태가 아닙니다."),
+    INVALID_ORDER_STATUS(false, 3703, "존재하지 않는 주문 상태 입니다."),
 
     /**
      * 4000: DB, Server 오류

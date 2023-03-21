@@ -1,6 +1,7 @@
 package com.codepatissier.keki.order.entity;
 
 import com.codepatissier.keki.dessert.entity.Dessert;
+import com.codepatissier.keki.order.dto.OrderReq;
 import com.codepatissier.keki.store.entity.Store;
 import com.codepatissier.keki.user.entity.User;
 import lombok.Builder;
@@ -58,10 +59,10 @@ public class Order {
     private String request;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "order", orphanRemoval = true)
-    private List<OptionOrder> options = new ArrayList<>();
+    private List<OrderImg> images = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", orphanRemoval = true)
-    private List<OrderImg> imgs = new ArrayList<>();
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "order", orphanRemoval = true)
+    private List<OptionOrder> options = new ArrayList<>();
 
     @Builder
     public Order(User user, Store store, Dessert dessert, LocalDateTime pickupDate, String customerName, String customerPhone, int extraPrice, int totalPrice, String request) {
@@ -76,4 +77,49 @@ public class Order {
         this.request = request;
     }
 
+    public void cancelOrder() {
+        this.orderStatus = OrderStatus.CANCELED;
+    }
+
+    public void changeOrderStatus(OrderStatus orderStatus) {
+        this.orderStatus = orderStatus;
+    }
+
+    public void editOrder(Dessert dessert, OrderReq orderReq){
+        this.setDessert(dessert);
+        this.setCustomerName(orderReq.getCustomerName());
+        this.setCustomerPhone(orderReq.getCustomerPhone());
+        this.setRequest(orderReq.getRequest());
+        this.setPickupDate(orderReq.getPickupDate());
+        this.setExtraPrice(orderReq.getExtraPrice());
+        this.setTotalPrice(orderReq.getTotalPrice());
+    }
+
+    public void setDessert(Dessert dessert) {
+        this.dessert = dessert;
+    }
+
+    public void setPickupDate(LocalDateTime pickupDate) {
+        this.pickupDate = pickupDate;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
+    public void setCustomerPhone(String customerPhone) {
+        this.customerPhone = customerPhone;
+    }
+
+    public void setExtraPrice(int extraPrice) {
+        this.extraPrice = extraPrice;
+    }
+
+    public void setTotalPrice(int totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public void setRequest(String request) {
+        this.request = request;
+    }
 }

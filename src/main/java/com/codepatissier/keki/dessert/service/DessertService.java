@@ -89,8 +89,10 @@ public class DessertService {
             ArrayList<GetDessertRes.Image> postImgList = getPostImgList(dessert);
             imgList.addAll(postImgList);
 
-            // nickname, dessertName, dessertPrice, dessertDescription, imgList(상품 상세 이미지 1장+피드 이미지 4장)
-            return new GetDessertRes(dessert.getStore().getUser().getNickname(), dessert.getDessertName(), dessert.getDessertPrice(), dessert.getDessertDescription(), imgList);
+            List<OptionDTO> optionList = getOptionList(dessert);
+
+            // nickname, dessertName, dessertPrice, dessertDescription, imgList(상품 상세 이미지 1장, 피드 이미지 4장), optionList(description, price)
+            return new GetDessertRes(dessert.getStore().getUser().getNickname(), dessert.getDessertName(), dessert.getDessertPrice(), dessert.getDessertDescription(), imgList, optionList);
         } catch (BaseException e) {
             throw e;
         } catch (Exception e) {
@@ -113,10 +115,10 @@ public class DessertService {
         return postImages.isEmpty() ? null : postImages.get(0).getImgUrl();
     }
 
-//    private List<GetDessertRes.Option> getOptionList(Dessert dessert) {
-//        return optionRepository.findByDessertAndStatusOrderByOptionIdx(dessert, ACTIVE_STATUS).stream()
-//                .map(option -> new GetDessertRes.Option(option.getDescription(), option.getPrice())).collect(Collectors.toList());
-//    }
+    private List<OptionDTO> getOptionList(Dessert dessert) {
+        return optionRepository.findByDessertAndStatusOrderByOptionIdx(dessert, ACTIVE_STATUS).stream()
+                .map(option -> new OptionDTO(option.getOptionIdx(), option.getDescription(), option.getPrice())).collect(Collectors.toList());
+    }
 
     /**
      * [판매자] 상품 등록
@@ -165,10 +167,11 @@ public class DessertService {
      * [판매자] 상품 수정
      * 상품 이미지, 이름, 가격, 소개
      */
+    @Transactional(rollbackFor = Exception.class)
     public void modifyDessert(PatchDessertReq patchDessertReq, Long dessertIdx, Long userIdx) throws BaseException {
         try {
             checkStore(userIdx);
-            Dessert dessert = dessertRepository.findByDessertIdxAndStatus(dessertIdx, ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_DESSERT_IDX));
+            Dessert dessert = dessertRepository.findByDessertIdxAndStatus(dessertIdx,ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_DESSERT_IDX));
 
             if (patchDessertReq.getDessertImg() != null) {
                 if (!patchDessertReq.getDessertImg().equals("") && !patchDessertReq.getDessertImg().equals(" "))
@@ -193,6 +196,32 @@ public class DessertService {
                     dessert.setDessertDescription(patchDessertReq.getDessertDescription());
                 else throw new BaseException(NULL_DESSERT_DESCRIPTION);
             }
+
+            if (!patchDessertReq.getOptions().isEmpty() && !(patchDessertReq.getOptions() == null)) {
+                for (OptionDTO optionDTO : patchDessertReq.getOptions()) {
+                    if(optionDTO.getOptionIdx() == null)
+                        throw new BaseException(NULL_OPTION_IDX);
+                    if(optionDTO.getOptionDescription() == null)
+                        throw new BaseException(NULL_OPTION_DESCRIPTION);
+                    if(optionDTO.getOptionPrice() == null)
+                        throw new BaseException(NULL_OPTION_PRICE);
+                }
+
+                List<Long> optionIdxList = new ArrayList<>();
+                for (OptionDTO optionDTO : patchDessertReq.getOptions()) {
+                    optionIdxList.add(optionDTO.getOptionIdx());
+                }
+
+                for (Long optionIdx : optionIdxList) {
+                    Option option = optionRepository.findByOptionIdxAndStatus(optionIdx, ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_OPTION_IDX));
+
+                    for(OptionDTO modifiedOption : patchDessertReq.getOptions()) {
+                        option.setDescription(modifiedOption.getOptionDescription());
+                        option.setPrice(modifiedOption.getOptionPrice());
+                    }
+                    optionRepository.save(option);
+                }
+            }
             dessertRepository.save(dessert);
         } catch (BaseException e) {
             throw e;
@@ -203,14 +232,15 @@ public class DessertService {
 
     /**
      * [판매자] 상품 상세 조회
-     * 상품 이미지, 이름, 가격, 소개
+     * 가게 이름, 상품 이미지, 상품명, 상품 가격, 상품 설명, 옵션(optionIdx, 옵션명, 옵션 가격)
      */
     public GetStoreDessertRes getStoreDessert(Long userIdx, Long dessertIdx) throws BaseException {
         try {
             checkStore(userIdx);
             Dessert dessert = dessertRepository.findByDessertIdxAndStatus(dessertIdx, ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_DESSERT_IDX));
 
-            return new GetStoreDessertRes(dessert.getStore().getUser().getNickname(), dessert.getDessertImg(), dessert.getDessertName(), dessert.getDessertPrice(), dessert.getDessertDescription());
+            List<OptionDTO> optionList = getOptionList(dessert);
+            return new GetStoreDessertRes(dessert.getStore().getUser().getNickname(), dessert.getDessertImg(), dessert.getDessertName(), dessert.getDessertPrice(), dessert.getDessertDescription(), optionList);
         } catch (BaseException e) {
             throw e;
         } catch (Exception e) {
