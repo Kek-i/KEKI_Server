@@ -38,7 +38,8 @@ public class StoreService {
                     .user(user)
                     .address(postStoreReq.getAddress())
                     .introduction(postStoreReq.getIntroduction())
-                    .orderUrl(postStoreReq.getOrderUrl())
+                    .accountHolder(postStoreReq.getAccountHolder())
+                    .accountNumber(postStoreReq.getAccountNumber())
                     .businessName(postStoreReq.getBusinessName())
                     .brandName(postStoreReq.getBrandName())
                     .businessAddress(postStoreReq.getBusinessAddress())
@@ -73,7 +74,7 @@ public class StoreService {
         try {
             Store store = storeRepository.findByStoreIdxAndStatus(storeIdx, Constant.ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_STORE_IDX));
 
-            return new GetStoreProfileRes(store.getUser().getNickname(), store.getUser().getProfileImg(), store.getIntroduction(), store.getOrderUrl());
+            return new GetStoreProfileRes(store.getUser().getNickname(), store.getUser().getProfileImg(), store.getIntroduction());
         } catch (BaseException e) {
             throw e;
         } catch (Exception e) {
@@ -88,7 +89,7 @@ public class StoreService {
             User user = userRepository.findByUserIdxAndStatusEquals(userIdx, Constant.ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
             Store store = storeRepository.findByUserAndStatus(user, Constant.ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_STORE_IDX));
 
-            return new GetMyPageStoreProfileRes(store.getStoreIdx(), store.getUser().getProfileImg(), store.getUser().getEmail(), store.getUser().getNickname(), store.getAddress(), store.getIntroduction(), store.getOrderUrl(),
+            return new GetMyPageStoreProfileRes(store.getStoreIdx(), store.getUser().getProfileImg(), store.getUser().getEmail(), store.getUser().getNickname(), store.getAddress(), store.getIntroduction(),
                     store.getBusinessName(), store.getBrandName(), store.getBusinessAddress(), store.getBusinessNumber());
         } catch (BaseException e) {
             throw e;
@@ -124,12 +125,6 @@ public class StoreService {
             }
 
             if (patchProfileReq.getIntroduction() != null) store.setIntroduction(patchProfileReq.getIntroduction());
-
-            if (patchProfileReq.getOrderUrl() != null) {
-                if (!patchProfileReq.getOrderUrl().equals("") && !patchProfileReq.getOrderUrl().equals(" "))
-                    store.setOrderUrl(patchProfileReq.getOrderUrl());
-                else throw new BaseException(NULL_ORDER_URL);
-            }
 
             if (patchProfileReq.getBusinessName() != null) {
                 if (!patchProfileReq.getBusinessName().equals("") && !patchProfileReq.getBusinessName().equals(" "))

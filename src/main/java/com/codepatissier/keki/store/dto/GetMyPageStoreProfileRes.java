@@ -14,7 +14,6 @@ public class GetMyPageStoreProfileRes {
     private String nickname;
     private String address;
     private String introduction;
-    private String orderUrl;
     private String businessName;
     private String brandName;
     private String businessAddress;

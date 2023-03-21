@@ -32,8 +32,11 @@ public class Store extends BaseEntity {
     @Column(length = 200)
     private String introduction;
 
-    @Column
-    private String orderUrl;
+    @Column(length = 50)
+    private String accountHolder;
+
+    @Column(length = 100)
+    private String accountNumber;
 
     /**
      * 사업자 정보
@@ -55,11 +58,12 @@ public class Store extends BaseEntity {
     private String businessNumber;
 
     @Builder
-    public Store(User user, String address, String introduction, String orderUrl, String businessName, String brandName, String businessAddress, String businessNumber) {
+    public Store(User user, String address, String introduction, String accountHolder, String accountNumber, String businessName, String brandName, String businessAddress, String businessNumber) {
         this.user = user;
         this.address = address;
         this.introduction = introduction;
-        this.orderUrl = orderUrl;
+        this.accountHolder = accountHolder;
+        this.accountNumber = accountNumber;
         this.businessName = businessName;
         this.brandName = brandName;
         this.businessAddress = businessAddress;
@@ -72,10 +76,6 @@ public class Store extends BaseEntity {
 
     public void setIntroduction(String introduction) {
         this.introduction = introduction;
-    }
-
-    public void setOrderUrl(String orderUrl) {
-        this.orderUrl = orderUrl;
     }
 
     public void setUser(User user) {
