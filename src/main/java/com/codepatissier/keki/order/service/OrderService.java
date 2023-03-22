@@ -206,16 +206,14 @@ public class OrderService {
 
     // 주문 이미지 불러오기
     private List<GetOrderImg> getOrderImgs(Order order) {
-        List<GetOrderImg> orderImgs = orderImgRepository.findByOrderAndStatusEquals(order, ACTIVE_STATUS).stream()
+        return order.getImages().stream().filter(orderImg -> orderImg.getStatus().equals(ACTIVE_STATUS))
                 .map(getOrder -> new GetOrderImg(getOrder.getOrderImgIdx(), getOrder.getImgUrl())).collect(Collectors.toList());
-        return orderImgs;
     }
 
     // 주문 옵션 불러오기
     private List<GetOptionOrder> getOptionOrders(Order order) {
-        List<GetOptionOrder> optionOrders = optionOrderRepository.findByOrderAndStatusEquals(order, ACTIVE_STATUS).stream()
-                .map(getOptionOrder -> new GetOptionOrder(getOptionOrder.getOption().getOptionIdx(), getOptionOrder.getOption().getDescription(), getOptionOrder.getOption().getPrice())).collect(Collectors.toList());
-        return optionOrders;
+        return order.getOptions().stream().filter(optionOrder -> optionOrder.getStatus().equals(ACTIVE_STATUS))
+                .map(getOption -> new GetOptionOrder(getOption.getOption().getOptionIdx(), getOption.getOption().getDescription(), getOption.getOption().getPrice())).collect(Collectors.toList());
     }
 
     // 주문 조회
