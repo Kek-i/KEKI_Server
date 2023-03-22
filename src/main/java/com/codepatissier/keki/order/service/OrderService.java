@@ -2,6 +2,7 @@ package com.codepatissier.keki.order.service;
 
 import com.codepatissier.keki.common.BaseException;
 
+import com.codepatissier.keki.common.BaseResponseStatus;
 import com.codepatissier.keki.common.Role;
 import com.codepatissier.keki.dessert.entity.Dessert;
 import com.codepatissier.keki.dessert.entity.Option;
@@ -283,11 +284,18 @@ public class OrderService {
 
     // 주문 수정 조회
     public GetEditOrder getEditOrderView(Long orderIdx, Long userIdx) throws BaseException{
-        User user = userRepository.findByUserIdxAndStatusEquals(userIdx, ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
-        Order order = orderRepository.findById(orderIdx).orElseThrow(() -> new BaseException(INVALID_ORDER_IDX));
-        if(!order.getUser().equals(user)) throw new BaseException(NO_MATCH_ORDER_USER);
-        if(!order.getOrderStatus().equals(ORDER_WAITING)) throw new BaseException(NO_MATCH_ORDER_STATUS);
+        try{
 
-        return new GetEditOrder(this.getOrderByUser(order), this.getStoreDessertAndOptionList(order.getStore()));
+            User user = userRepository.findByUserIdxAndStatusEquals(userIdx, ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+            Order order = orderRepository.findById(orderIdx).orElseThrow(() -> new BaseException(INVALID_ORDER_IDX));
+            if(!order.getUser().equals(user)) throw new BaseException(NO_MATCH_ORDER_USER);
+            if(!order.getOrderStatus().equals(ORDER_WAITING)) throw new BaseException(NO_MATCH_ORDER_STATUS);
+
+            return new GetEditOrder(this.getOrderByUser(order), this.getStoreDessertAndOptionList(order.getStore()));
+        }catch (BaseException e) {
+            throw e;
+        }catch (Exception e){
+            throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
+        }
     }
 }
