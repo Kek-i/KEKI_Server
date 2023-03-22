@@ -70,6 +70,23 @@ public class StoreController {
     }
 
     /**
+     * [판매자] 판매자 마이페이지 조회
+     * [GET] /stores/mypage
+     * 마이페이지-판매자
+     * @return 가게 사진, 가게 이름, 이메일, '주문대기'수, '제작중'수, '픽업대기'수
+     */
+    @ResponseBody
+    @GetMapping("/mypage")
+    public BaseResponse<GetStoreMyPageRes> getStoreMyPage() {
+        try {
+            GetStoreMyPageRes getStoreMyPageRes = storeService.getStoreMyPage(authService.getUserIdx());
+            return new BaseResponse<>(getStoreMyPageRes);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
      * [판매자] 판매자 프로필 편집 화면 조회
      * [GET] /stores/profile
      * 마이페이지 판매자 프로필 편집 화면

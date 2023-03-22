@@ -3,6 +3,8 @@ package com.codepatissier.keki.store.service;
 import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.Constant;
 import com.codepatissier.keki.common.Role;
+import com.codepatissier.keki.order.dto.NumOfOrder;
+import com.codepatissier.keki.order.service.OrderService;
 import com.codepatissier.keki.store.dto.*;
 import com.codepatissier.keki.store.entity.Store;
 import com.codepatissier.keki.store.repository.StoreRepository;
@@ -21,6 +23,7 @@ public class StoreService {
     private final StoreRepository storeRepository;
     private final UserRepository userRepository;
     private final AuthService authService;
+    private final OrderService orderService;
 
     // 판매자 회원가입
     // user Role=ANONYMOUS로 만들어진 상태
@@ -75,6 +78,22 @@ public class StoreService {
             Store store = storeRepository.findByStoreIdxAndStatus(storeIdx, Constant.ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_STORE_IDX));
 
             return new GetStoreProfileRes(store.getUser().getNickname(), store.getUser().getProfileImg(), store.getIntroduction());
+        } catch (BaseException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // [판매자] 판매자 마이페이지 조회
+    // 가게 사진, 가게 이름, 이메일, 주문상태별 주문수
+    public GetStoreMyPageRes getStoreMyPage(Long userIdx) throws BaseException {
+        try {
+            User user = userRepository.findByUserIdxAndStatusEquals(userIdx, Constant.ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+            storeRepository.findByUserAndStatus(user, Constant.ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_STORE_IDX));
+
+            NumOfOrder numOfOrder = orderService.getCountByOrderStatus(user);
+            return new GetStoreMyPageRes(user, numOfOrder);
         } catch (BaseException e) {
             throw e;
         } catch (Exception e) {
