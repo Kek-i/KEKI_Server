@@ -57,7 +57,7 @@ public class StoreController {
      * 판매자 프로필 조회
      * [GET] /stores/profile/:storeIdx
      * 가게 메인 화면
-     * @return 가게 사진, 이름, 소개, 주문 링크
+     * @return 가게 사진, 이름, 소개
      */
     @ResponseBody
     @GetMapping("/profile/{storeIdx}")
@@ -70,10 +70,10 @@ public class StoreController {
     }
 
     /**
-     * [판매자] 프로필 조회
+     * [판매자] 판매자 프로필 편집 화면 조회
      * [GET] /stores/profile
-     * 마이페이지 판매자 프로필 편집
-     * @return 가게 사진, 이름, 주소, 소개, 주문 링크, 사업자 정보, 이메일, 가게 Idx
+     * 마이페이지 판매자 프로필 편집 화면
+     * @return 가게 사진, 이름, 주소, 소개, 사업자 정보, 이메일, 가게 Idx, 예금주, 계좌번호
      */
     @ResponseBody
     @GetMapping("/profile")
