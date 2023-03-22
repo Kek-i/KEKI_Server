@@ -13,6 +13,6 @@ public class GetStoreInfo {
     // 판매자 정보
     Long storeIdx;
     String storeName;
-    String accountName;
-    String storeAccount;
+    String accountHolder;
+    String accountNumber;
 }

@@ -189,7 +189,6 @@ public class OrderService {
         List<GetOrderImg> orderImgs = getOrderImgs(order);
         List<GetOptionOrder> optionOrders = getOptionOrders(order);
 
-        // TODO: 아직 판매자 계좌 번호 저장 이전
         return new GetOrder(order.getOrderIdx(), order.getOrderStatus().getName(), order.getDessert().getDessertIdx(), order.getDessert().getDessertName(),
                 order.getDessert().getDessertPrice(), order.getExtraPrice(), order.getTotalPrice(), order.getRequest(), order.getPickupDate(),
                 null, new GetUserInfo(order.getUser().getUserIdx(), order.getCustomerName(), order.getCustomerPhone()), orderImgs, optionOrders);
@@ -200,10 +199,9 @@ public class OrderService {
         List<GetOrderImg> orderImgs = getOrderImgs(order);
         List<GetOptionOrder> optionOrders = getOptionOrders(order);
 
-        // TODO: 아직 판매자 계좌 번호 저장 이전
         return new GetOrder(order.getOrderIdx(), order.getOrderStatus().getName(), order.getDessert().getDessertIdx(), order.getDessert().getDessertName(),
                 order.getDessert().getDessertPrice(), order.getExtraPrice(), order.getTotalPrice(), order.getRequest(), order.getPickupDate(),
-                new GetStoreInfo(order.getStore().getStoreIdx(), order.getStore().getUser().getNickname(), null, order.getStore().getAddress()), null, orderImgs, optionOrders);
+                new GetStoreInfo(order.getStore().getStoreIdx(), order.getStore().getUser().getNickname(), order.getStore().getAccountHolder(), order.getStore().getAccountNumber()), null, orderImgs, optionOrders);
     }
 
     // 주문 이미지 불러오기
@@ -223,9 +221,9 @@ public class OrderService {
     // 주문 조회
     public GetOrderStore getStoreDessertsAndOptions(Long storeIdx) throws BaseException{
         Store store = this.storeRepository.findByStoreIdxAndStatus(storeIdx, ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_STORE_IDX));
-        // TODO: 아직 판매자 계좌 번호 저장 이전
+
         return new GetOrderStore(store.getStoreIdx(), store.getUser().getNickname(),
-                null, store.getAddress(),getStoreDessertAndOptionList(store));
+                store.getAccountHolder(), store.getAccountNumber(),getStoreDessertAndOptionList(store));
      }
 
      // 판매자 디저트 + 옵션 불러오기
