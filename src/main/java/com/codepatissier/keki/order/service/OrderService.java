@@ -2,6 +2,7 @@ package com.codepatissier.keki.order.service;
 
 import com.codepatissier.keki.common.BaseException;
 
+import com.codepatissier.keki.common.BaseResponseStatus;
 import com.codepatissier.keki.common.Role;
 import com.codepatissier.keki.dessert.entity.Dessert;
 import com.codepatissier.keki.dessert.entity.Option;
@@ -188,7 +189,6 @@ public class OrderService {
         List<GetOrderImg> orderImgs = getOrderImgs(order);
         List<GetOptionOrder> optionOrders = getOptionOrders(order);
 
-        // TODO: 아직 판매자 계좌 번호 저장 이전
         return new GetOrder(order.getOrderIdx(), order.getOrderStatus().getName(), order.getDessert().getDessertIdx(), order.getDessert().getDessertName(),
                 order.getDessert().getDessertPrice(), order.getExtraPrice(), order.getTotalPrice(), order.getRequest(), order.getPickupDate(),
                 null, new GetUserInfo(order.getUser().getUserIdx(), order.getCustomerName(), order.getCustomerPhone()), orderImgs, optionOrders);
@@ -199,32 +199,29 @@ public class OrderService {
         List<GetOrderImg> orderImgs = getOrderImgs(order);
         List<GetOptionOrder> optionOrders = getOptionOrders(order);
 
-        // TODO: 아직 판매자 계좌 번호 저장 이전
         return new GetOrder(order.getOrderIdx(), order.getOrderStatus().getName(), order.getDessert().getDessertIdx(), order.getDessert().getDessertName(),
                 order.getDessert().getDessertPrice(), order.getExtraPrice(), order.getTotalPrice(), order.getRequest(), order.getPickupDate(),
-                new GetStoreInfo(order.getStore().getStoreIdx(), order.getStore().getUser().getNickname(), null, order.getStore().getAddress()), null, orderImgs, optionOrders);
+                new GetStoreInfo(order.getStore().getStoreIdx(), order.getStore().getUser().getNickname(), order.getStore().getAccountHolder(), order.getStore().getAccountNumber()), null, orderImgs, optionOrders);
     }
 
     // 주문 이미지 불러오기
     private List<GetOrderImg> getOrderImgs(Order order) {
-        List<GetOrderImg> orderImgs = orderImgRepository.findByOrderAndStatusEquals(order, ACTIVE_STATUS).stream()
+        return order.getImages().stream().filter(orderImg -> orderImg.getStatus().equals(ACTIVE_STATUS))
                 .map(getOrder -> new GetOrderImg(getOrder.getOrderImgIdx(), getOrder.getImgUrl())).collect(Collectors.toList());
-        return orderImgs;
     }
 
     // 주문 옵션 불러오기
     private List<GetOptionOrder> getOptionOrders(Order order) {
-        List<GetOptionOrder> optionOrders = optionOrderRepository.findByOrderAndStatusEquals(order, ACTIVE_STATUS).stream()
-                .map(getOptionOrder -> new GetOptionOrder(getOptionOrder.getOption().getOptionIdx(), getOptionOrder.getOption().getDescription(), getOptionOrder.getOption().getPrice())).collect(Collectors.toList());
-        return optionOrders;
+        return order.getOptions().stream().filter(optionOrder -> optionOrder.getStatus().equals(ACTIVE_STATUS))
+                .map(getOption -> new GetOptionOrder(getOption.getOption().getOptionIdx(), getOption.getOption().getDescription(), getOption.getOption().getPrice())).collect(Collectors.toList());
     }
 
     // 주문 조회
     public GetOrderStore getStoreDessertsAndOptions(Long storeIdx) throws BaseException{
         Store store = this.storeRepository.findByStoreIdxAndStatus(storeIdx, ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_STORE_IDX));
-        // TODO: 아직 판매자 계좌 번호 저장 이전
+
         return new GetOrderStore(store.getStoreIdx(), store.getUser().getNickname(),
-                null, store.getAddress(),getStoreDessertAndOptionList(store));
+                store.getAccountHolder(), store.getAccountNumber(),getStoreDessertAndOptionList(store));
      }
 
      // 판매자 디저트 + 옵션 불러오기
@@ -283,11 +280,18 @@ public class OrderService {
 
     // 주문 수정 조회
     public GetEditOrder getEditOrderView(Long orderIdx, Long userIdx) throws BaseException{
-        User user = userRepository.findByUserIdxAndStatusEquals(userIdx, ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
-        Order order = orderRepository.findById(orderIdx).orElseThrow(() -> new BaseException(INVALID_ORDER_IDX));
-        if(!order.getUser().equals(user)) throw new BaseException(NO_MATCH_ORDER_USER);
-        if(!order.getOrderStatus().equals(ORDER_WAITING)) throw new BaseException(NO_MATCH_ORDER_STATUS);
+        try{
 
-        return new GetEditOrder(this.getOrderByUser(order), this.getStoreDessertAndOptionList(order.getStore()));
+            User user = userRepository.findByUserIdxAndStatusEquals(userIdx, ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+            Order order = orderRepository.findById(orderIdx).orElseThrow(() -> new BaseException(INVALID_ORDER_IDX));
+            if(!order.getUser().equals(user)) throw new BaseException(NO_MATCH_ORDER_USER);
+            if(!order.getOrderStatus().equals(ORDER_WAITING)) throw new BaseException(NO_MATCH_ORDER_STATUS);
+
+            return new GetEditOrder(this.getOrderByUser(order), this.getStoreDessertAndOptionList(order.getStore()));
+        }catch (BaseException e) {
+            throw e;
+        }catch (Exception e){
+            throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
+        }
     }
 }
