@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import com.codepatissier.keki.user.service.AuthService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 
@@ -21,30 +22,6 @@ import static com.codepatissier.keki.common.BaseResponseStatus.*;
 public class UserController {
     private final UserService userService;
     private final AuthService authService;
-    private final NaverService naverService;
-    private final KakaoService kakaoService;
-    private final GoogleService googleService;
-
-    // 카카오 로그인 url 요청
-    @GetMapping("/login/kakao")
-    public BaseResponse<?> kakaoLogin(HttpSession session) {
-        String httpHeaders = kakaoService.getAuthorizationUrl(session);
-        return new BaseResponse<>(httpHeaders);
-    }
-
-    // 네이버 로그인 url 요청
-    @GetMapping("/login/naver")
-    public BaseResponse<?> naverLogin(HttpSession session) {
-        String httpHeaders = naverService.getAuthorizationUrl(session);
-        return new BaseResponse<>(httpHeaders);
-    }
-
-    // 구글 로그인 url 요청
-    @GetMapping("/login/google")
-    public BaseResponse<?> googleLogin(HttpSession session) {
-        String httpHeaders = googleService.getAuthorizationUrl(session);
-        return new BaseResponse<>(httpHeaders);
-    }
 
     // 소셜 로그인/회원가입
     @ResponseBody
@@ -107,7 +84,7 @@ public class UserController {
     }
 
     // 회원 탈퇴
-    @PatchMapping("/signout")
+    @DeleteMapping("/signout")
     public BaseResponse<?> signout() {
         try{
             Long userIdx = authService.getUserIdx();
@@ -125,6 +102,17 @@ public class UserController {
             Long userIdx = authService.getUserIdx();
             userService.logout(userIdx);
             return new BaseResponse<>(SUCCESS);
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    // AccessToken 재발급
+    @ResponseBody
+    @PostMapping("/reissue")
+    public BaseResponse<?> reissueToken(@RequestBody PostTokenReq postTokenReq) {
+        try{
+            return new BaseResponse<>(userService.reissueToken(postTokenReq));
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
         }

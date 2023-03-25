@@ -3,6 +3,8 @@ package com.codepatissier.keki.store.service;
 import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.Constant;
 import com.codepatissier.keki.common.Role;
+import com.codepatissier.keki.order.dto.NumOfOrder;
+import com.codepatissier.keki.order.service.OrderService;
 import com.codepatissier.keki.store.dto.*;
 import com.codepatissier.keki.store.entity.Store;
 import com.codepatissier.keki.store.repository.StoreRepository;
@@ -21,6 +23,7 @@ public class StoreService {
     private final StoreRepository storeRepository;
     private final UserRepository userRepository;
     private final AuthService authService;
+    private final OrderService orderService;
 
     // 판매자 회원가입
     // user Role=ANONYMOUS로 만들어진 상태
@@ -31,14 +34,15 @@ public class StoreService {
             String refreshToken = authService.createRefreshToken(userIdx);
 
             User user = userRepository.findByUserIdxAndStatusEquals(userIdx, Constant.ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
-            user.storeSignUp(postStoreReq.getNickname(), postStoreReq.getStoreImgUrl(), refreshToken, Role.STORE);
+            user.storeSignUp(postStoreReq.getNickname(), postStoreReq.getStoreImgUrl(), Role.STORE);
             userRepository.save(user);
 
             Store store = Store.builder()
                     .user(user)
                     .address(postStoreReq.getAddress())
                     .introduction(postStoreReq.getIntroduction())
-                    .orderUrl(postStoreReq.getOrderUrl())
+                    .accountHolder(postStoreReq.getAccountHolder())
+                    .accountNumber(postStoreReq.getAccountNumber())
                     .businessName(postStoreReq.getBusinessName())
                     .brandName(postStoreReq.getBrandName())
                     .businessAddress(postStoreReq.getBusinessAddress())
@@ -73,7 +77,7 @@ public class StoreService {
         try {
             Store store = storeRepository.findByStoreIdxAndStatus(storeIdx, Constant.ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_STORE_IDX));
 
-            return new GetStoreProfileRes(store.getUser().getNickname(), store.getUser().getProfileImg(), store.getIntroduction(), store.getOrderUrl());
+            return new GetStoreProfileRes(store.getUser().getNickname(), store.getUser().getProfileImg(), store.getIntroduction());
         } catch (BaseException e) {
             throw e;
         } catch (Exception e) {
@@ -81,15 +85,31 @@ public class StoreService {
         }
     }
 
-    // [판매자] 판매자 프로필 조회
-    // 가게 사진, 이름, 주소, 소개, 주문 링크, 사업자 정보, 이메일, 가게 Idx
+    // [판매자] 판매자 마이페이지 조회
+    // 가게 사진, 가게 이름, 이메일, 주문상태별 주문수
+    public GetStoreMyPageRes getStoreMyPage(Long userIdx) throws BaseException {
+        try {
+            User user = userRepository.findByUserIdxAndStatusEquals(userIdx, Constant.ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+            storeRepository.findByUserAndStatus(user, Constant.ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_STORE_IDX));
+
+            NumOfOrder numOfOrder = orderService.getCountByOrderStatus(user);
+            return new GetStoreMyPageRes(user, numOfOrder);
+        } catch (BaseException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // [판매자] 판매자 프로필 편집 화면 조회
+    // 가게 사진, 이름, 주소, 소개, 사업자 정보, 이메일, 가게 Idx, 예금주, 계좌번호
     public GetMyPageStoreProfileRes getStoreProfileMyPage(Long userIdx) throws BaseException {
         try {
             User user = userRepository.findByUserIdxAndStatusEquals(userIdx, Constant.ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
             Store store = storeRepository.findByUserAndStatus(user, Constant.ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_STORE_IDX));
 
-            return new GetMyPageStoreProfileRes(store.getStoreIdx(), store.getUser().getProfileImg(), store.getUser().getEmail(), store.getUser().getNickname(), store.getAddress(), store.getIntroduction(), store.getOrderUrl(),
-                    store.getBusinessName(), store.getBrandName(), store.getBusinessAddress(), store.getBusinessNumber());
+            return new GetMyPageStoreProfileRes(store.getStoreIdx(), store.getUser().getProfileImg(), store.getUser().getEmail(), store.getUser().getNickname(), store.getAddress(), store.getIntroduction(),
+                    store.getAccountHolder(), store.getAccountNumber(), store.getBusinessName(), store.getBrandName(), store.getBusinessAddress(), store.getBusinessNumber());
         } catch (BaseException e) {
             throw e;
         } catch (Exception e) {
@@ -124,12 +144,6 @@ public class StoreService {
             }
 
             if (patchProfileReq.getIntroduction() != null) store.setIntroduction(patchProfileReq.getIntroduction());
-
-            if (patchProfileReq.getOrderUrl() != null) {
-                if (!patchProfileReq.getOrderUrl().equals("") && !patchProfileReq.getOrderUrl().equals(" "))
-                    store.setOrderUrl(patchProfileReq.getOrderUrl());
-                else throw new BaseException(NULL_ORDER_URL);
-            }
 
             if (patchProfileReq.getBusinessName() != null) {
                 if (!patchProfileReq.getBusinessName().equals("") && !patchProfileReq.getBusinessName().equals(" "))

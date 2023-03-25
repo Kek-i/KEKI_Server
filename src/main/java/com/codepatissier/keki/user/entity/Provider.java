@@ -9,7 +9,9 @@ public enum Provider {
     KAKAO(1, "카카오"),
     NAVER(2, "네이버"),
     GOOGLE(3, "구글"),
-    ANONYMOUS(4,"비회원");
+
+    APPLE(4, "애플"),
+    ANONYMOUS(5,"비회원");
 
     private int number;
     private String name;

@@ -16,8 +16,10 @@ public class PostStoreReq {
     private String address;
     @Convert(converter = EmptyStringToNullConverter.class)
     private String introduction;
-    @NotBlank(message = "주문 링크는 필수 항목입니다.")
-    private String orderUrl;
+    @NotBlank
+    private String accountHolder;
+    @NotBlank
+    private String accountNumber;
     @NotBlank(message = "대표자명은 필수 항목입니다.")
     private String businessName;
     @NotBlank(message = "상호명은 필수 항목입니다.")

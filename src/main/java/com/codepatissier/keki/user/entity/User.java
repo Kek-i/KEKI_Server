@@ -3,10 +3,12 @@ package com.codepatissier.keki.user.entity;
 import com.codepatissier.keki.common.BaseEntity;
 import com.codepatissier.keki.common.Constant;
 import com.codepatissier.keki.common.Role;
+import com.codepatissier.keki.common.entityListener.UserEntityListener;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.*;
 
@@ -14,6 +16,8 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor
 @DynamicInsert
+@SQLDelete(sql = "UPDATE user SET status = 'inactive', last_modified_date = current_timestamp WHERE user_idx = ?")
+@EntityListeners(UserEntityListener.class)
 public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,8 +36,6 @@ public class User extends BaseEntity {
     @Column(length = 300)
     private String profileImg;
 
-    private String refreshToken;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
@@ -45,9 +47,8 @@ public class User extends BaseEntity {
         this.role = role;
     }
 
-    public void signup(String nickname, String refreshToken, Role role, String profileImg) {
+    public void signup(String nickname, Role role, String profileImg) {
         this.nickname = nickname;
-        this.refreshToken = refreshToken;
         this.role = role;
         this.profileImg = profileImg;
     }
@@ -56,10 +57,9 @@ public class User extends BaseEntity {
         return this.role.getName();
     }
 
-    public void storeSignUp(String nickname, String profileImg, String refreshToken, Role role) {
+    public void storeSignUp(String nickname, String profileImg, Role role) {
         this.nickname = nickname;
         this.profileImg = profileImg;
-        this.refreshToken = refreshToken;
         this.role = role;
     }
     
@@ -78,22 +78,18 @@ public class User extends BaseEntity {
     public void setNickname(String nickname) {
         this.nickname = nickname;
     }
+    public void setRole(Role role) {this.role = role;}
 
     // 회원 탈퇴
     public void signout() {
-        this.nickname = "알 수 없음";
-        this.email = "anonymous@keki.store";
-        this.provider = Provider.ANONYMOUS;
-        this.profileImg = null;
-        this.refreshToken = null;
-        this.role = Role.ANONYMOUS;
+        this.setNickname("알 수 없음");
+        this.setProfileImg(null);
+        this.setRole(Role.ANONYMOUS);
         this.setStatus(Constant.INACTIVE_STATUS);
-        // TODO status enum으로 변경
     }
 
     // 회원 로그아웃
     public void logout() {
-        this.refreshToken = null;
         this.setStatus(Constant.LOGOUT_STATUS);
     }
 

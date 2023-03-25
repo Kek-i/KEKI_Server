@@ -1,11 +1,12 @@
 package com.codepatissier.keki.calendar.entity;
 
 import com.codepatissier.keki.common.BaseEntity;
-import com.codepatissier.keki.common.Tag.Tag;
+import com.codepatissier.keki.common.tag.Tag;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.*;
 
@@ -13,6 +14,7 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor
 @DynamicInsert
+@SQLDelete(sql = "UPDATE calendar_tag SET status = 'inactive', last_modified_date = current_timestamp WHERE calendar_tag_idx = ?")
 public class CalendarTag extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

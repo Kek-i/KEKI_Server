@@ -205,10 +205,10 @@ public class PostController {
 
     /**
      * 게시물 수정
-     * [PATCH] /posts/:postIdx/edit
+     * [PATCH] /posts/:postIdx
      */
     @ResponseBody
-    @PatchMapping("/{postIdx}/edit")
+    @PatchMapping("/{postIdx}")
     public BaseResponse<String> modifyPost(@RequestBody PatchPostReq patchPostReq, @PathVariable Long postIdx){
         try{
             if (patchPostReq.getPostImgUrls() != null && (patchPostReq.getPostImgUrls().size() > 5 || patchPostReq.getPostImgUrls().size() < 1))
@@ -224,10 +224,10 @@ public class PostController {
 
     /**
      * 게시물 삭제
-     * [PATCH] /posts/:postIdx
+     * [DELETE] /posts/:postIdx
      */
     @ResponseBody
-    @PatchMapping("/{postIdx}")
+    @DeleteMapping("/{postIdx}")
     public BaseResponse<String> deletePost(@PathVariable Long postIdx){
         try{
             this.postService.deletePost(authService.getUserIdx(), postIdx);

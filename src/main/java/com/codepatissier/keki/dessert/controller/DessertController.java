@@ -45,7 +45,6 @@ public class DessertController {
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
-
     }
 
     /**
@@ -79,10 +78,10 @@ public class DessertController {
 
     /**
      * [판매자] 상품 삭제
-     * [PATCH] /desserts/:dessertIdx
+     * [DELETE] /desserts/:dessertIdx
      */
     @ResponseBody
-    @PatchMapping("/{dessertIdx}")
+    @DeleteMapping("/{dessertIdx}")
     public BaseResponse<String> deleteDessert(@PathVariable("dessertIdx") Long dessertIdx) {
         try {
             dessertService.deleteDessert(authService.getUserIdx(), dessertIdx);
@@ -94,10 +93,10 @@ public class DessertController {
 
     /**
      * [판매자] 상품 수정
-     * [PATCH] /desserts/:dessertIdx/editDessert
+     * [PATCH] /desserts/:dessertIdx
      */
     @ResponseBody
-    @PatchMapping("/{dessertIdx}/editDessert")
+    @PatchMapping("/{dessertIdx}")
     public BaseResponse<String> editDessert(@RequestBody PatchDessertReq patchDessertReq, @PathVariable("dessertIdx") Long dessertIdx) {
         try {
             dessertService.modifyDessert(patchDessertReq, dessertIdx, authService.getUserIdx());

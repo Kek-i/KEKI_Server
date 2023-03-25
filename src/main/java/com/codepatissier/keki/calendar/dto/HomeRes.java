@@ -1,5 +1,7 @@
 package com.codepatissier.keki.calendar.dto;
 
+import com.codepatissier.keki.calendar.entity.Calendar;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,4 +19,6 @@ public class HomeRes {
     private String calendarTitle;
     private int calendarDate;
     private List<HomeTagRes> homeTagResList;
+    @JsonIgnore
+    private Calendar calendar;
 }

@@ -1,6 +1,7 @@
 package com.codepatissier.keki.calendar.service;
 
 import com.codepatissier.keki.calendar.CalendarCategory;
+import com.codepatissier.keki.calendar.DateCountCategory;
 import com.codepatissier.keki.calendar.dto.*;
 import com.codepatissier.keki.calendar.entity.Calendar;
 import com.codepatissier.keki.calendar.entity.CalendarTag;
@@ -9,11 +10,12 @@ import com.codepatissier.keki.calendar.repository.CalendarTag.CalendarTagReposit
 import com.codepatissier.keki.common.BaseException;
 import com.codepatissier.keki.common.BaseResponseStatus;
 import com.codepatissier.keki.common.Constant;
-import com.codepatissier.keki.common.Tag.Tag;
-import com.codepatissier.keki.common.Tag.TagRepository;
+import com.codepatissier.keki.common.tag.Tag;
+import com.codepatissier.keki.common.tag.TagRepository;
 import com.codepatissier.keki.user.entity.User;
 import com.codepatissier.keki.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +30,7 @@ import static com.codepatissier.keki.common.Constant.INACTIVE_STATUS;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CalendarService {
     private final CalendarRepository calendarRepository;
     private final CalendarTagRepository calendarTagRepository;
@@ -90,8 +93,7 @@ public class CalendarService {
             if(!calendar.getUser().equals(user) || user.getStatus().equals(INACTIVE_STATUS)){
                 throw new BaseException(BaseResponseStatus.INVALID_USER_AND_STATUS);
             }
-            changeCalendarStatus(calendar, INACTIVE_STATUS);
-            changeCalendarTagStatus(calendar, INACTIVE_STATUS);
+            this.calendarRepository.delete(calendar);
         }catch (Exception e){
             throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
         }
@@ -138,6 +140,16 @@ public class CalendarService {
             else returnCalendar = day;
         }
         return returnCalendar;
+    }
+
+    // 날짜 수 기념일 계산 (100일, 200일, 300일 등등)
+    // 현재 2000일 미만으로 불러오도록 생성
+    private CalendarDateReturn calculateDateForDateCount(Calendar cal) {
+        int day = this.calculateDate(cal) - 1; // 날짜수를 구함 -> 기존에 +1 을 해서 return 하기 때문에 +1을 해줌
+        for(DateCountCategory count: DateCountCategory.values()){
+            if(day <= count.getCount()) return new CalendarDateReturn(count.getCount()-day, count);
+        }
+        return new CalendarDateReturn(day, null);
     }
 
     // 기념일 계산 return String
@@ -200,36 +212,54 @@ public class CalendarService {
         }
     }
 
-    // TODO: 날짜수의 경우에는 100일, 200일, 일년 주기로 꾸며지게 되는데 일단 그 기능을 구현하지는 못함
+    // 홈 기념일 조회
     public HomeRes getHomeCalendar(Long userIdx) throws BaseException{
         User user = this.findUserByUserIdx(userIdx);
         try{
+            int day = Integer.MAX_VALUE;
             Calendar calendar = this.calendarRepository.getRecentDateCalendar(user); // 현재 가장 가까운 캘린더 불러오기
             if(calendar != null){
-                int day = 0;
-                day = calculateDate(calendar);
-                // 사용자의 매년 반복 캘린더 불러와서 하나씩 비교해보고, 값이 더 가까우면? 매년 반복으로 홈 화면 기념일 불러오기
-                List<Calendar> listCalendars = this.calendarRepository.findByUserAndCalendarCategoryAndStatus(user, CalendarCategory.EVERY_YEAR, ACTIVE_STATUS);
-                for(Calendar cal: listCalendars){
-                    if(this.calculateDate(cal) > day){
-                        calendar = cal;
-                    }
-                }
                 day = this.calculateDate(calendar);
-                if(calendar.getCalendarCategory().equals(CalendarCategory.DATE_COUNT)) day--; // 값을 하나 빼줌
-                return new HomeRes(user.getUserIdx(), user.getNickname(), calendar.getCalendarTitle(), Math.abs(day), null);
             }
-            return new HomeRes(user.getUserIdx(), user.getNickname(), null, 0, null);
+            List<Calendar> listEYCalendars = this.calendarRepository.findByUserAndCalendarCategoryAndStatus(user, CalendarCategory.EVERY_YEAR, ACTIVE_STATUS);
+
+
+            // 사용자의 매년 반복 캘린더 불러와서 하나씩 비교해보고, 값이 더 가까우면? 매년 반복으로 홈 화면 기념일 불러오기
+            for(Calendar cal: listEYCalendars){
+                int calDay = this.calculateDate(cal);
+                if(calDay < Math.abs(day)){
+                    calendar = cal;
+                    day = calDay;
+                }
+            }
+
+            // 날짜 수인 경우 100일, 200일 불러오기
+            List<Calendar> listDCCalendars = this.calendarRepository.findByUserAndCalendarCategoryAndStatus(user, CalendarCategory.DATE_COUNT, ACTIVE_STATUS);
+            for (Calendar cal : listDCCalendars) {
+                CalendarDateReturn calDateReturn = this.calculateDateForDateCount(cal);
+                if (calDateReturn.getCalDate()<Math.abs(day) && calDateReturn.getDateCountCategory() != null) {
+                    calendar = cal;
+                    calendar.setCalendarTitle(calendar.getCalendarTitle()+"의 " + calDateReturn.getDateCountCategory().getDate());
+                    day = calDateReturn.getCalDate();
+                }
+            }
+
+            if(calendar != null){
+                return new HomeRes(user.getUserIdx(), user.getNickname(), calendar.getCalendarTitle(), Math.abs(day), null, calendar);
+            }
+            return new HomeRes(user.getUserIdx(), user.getNickname(), null, 0, null, null);
         }catch (Exception e){
             throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
         }
     }
 
+
+
     // 로그 아웃 된 상태에서 홈 정보 불러오기
     public HomeRes getHomeCalendarAndPostLogout() throws BaseException{
         try{
             return new HomeRes(null, null, null, 0,
-                    getPostByTag(this.calendarTagRepository.getPopularCalendarTag()));
+                    getPostByTag(this.calendarTagRepository.getPopularCalendarTag()),null);
         }catch (Exception e){
             throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
         }
@@ -238,15 +268,19 @@ public class CalendarService {
 
     // home api
     public HomeRes getHomeTagPost(HomeRes home) throws BaseException{
-        User user = this.findUserByUserIdx(home.getUserIdx());
         try{
-            List<PopularTagRes> tags = this.calendarTagRepository.getPopularCalendarTagByUser(user);
-            // 기념일의 태그가 3개 미만이면 다 랜덤으로 불러오고
-            if(tags.size()< Constant.Home.HOME_RETURN_TAG_COUNT){
-                home.setHomeTagResList(this.getPostByTag(this.calendarTagRepository.getPopularCalendarTag()));
-            }else{ // 태그가 3개 이상이면 태그별로 랜덤하게 불러오기
-                home.setHomeTagResList(this.getPostByTag(tags));
+            if(home.getCalendar() == null) home.setHomeTagResList(this.getPostByTag(this.calendarTagRepository.getPopularCalendarTag()));
+            else{
+                List<PopularTagRes> tags = this.calendarTagRepository.findByCalendarAndStatus(home.getCalendar(), ACTIVE_STATUS).stream()
+                        .map(cal -> new PopularTagRes(cal.getTag().getTagIdx(), cal.getTag().getTagName())).collect(Collectors.toList());
+                // 기념일의 태그가 3개 미만이면 다 랜덤으로 불러오고
+                if(tags.size()==0){
+                    home.setHomeTagResList(this.getPostByTag(this.calendarTagRepository.getPopularCalendarTag()));
+                }else{ // 태그가 3개 이상이면 태그별로 랜덤하게 불러오기
+                    home.setHomeTagResList(this.getPostByTag(tags));
+                }
             }
+
             return home;
         }catch (Exception e){
             throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
@@ -276,7 +310,7 @@ public class CalendarService {
                     throw new BaseException(BaseResponseStatus.NULL_CALENDAR_CATEGORY);
                 calendar.setCalendarCategory(CalendarCategory.getCalendarCategoryByName(calendarReq.getKindOfCalendar()));
             }
-            this.changeCalendarTagStatus(calendar, INACTIVE_STATUS);
+            this.calendarTagRepository.deleteByCalendar(calendar);
             if (calendarReq.getHashTags() != null && calendarReq.getHashTags().size() != 0) {
                 for (CalendarHashTag hashTag : calendarReq.getHashTags()) {
                     CalendarTag calendarTag =  this.calendarTagRepository.findByCalendarAndTag(calendar, this.findByTagName(hashTag));
@@ -318,31 +352,12 @@ public class CalendarService {
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.INVALID_CALENDAR_IDX));
     }
 
-    // 태그 상태 변경
-    private void changeCalendarTagStatus(Calendar calendar, String status){
-        String getStatus = null;
-        if(status.equals(ACTIVE_STATUS)) getStatus = INACTIVE_STATUS;
-        else getStatus = ACTIVE_STATUS;
-
-        this.calendarTagRepository.findByCalendarAndStatus(calendar, getStatus).stream()
-                .forEach(tag -> {
-                    tag.setStatus(status);
-                    this.calendarTagRepository.save(tag);
-                });
-    }
-
     // tag 별 게시물 찾기
     private List<HomeTagRes> getPostByTag(List<PopularTagRes> popularTagRes) {
         return popularTagRes.stream()
                 .map(tag -> new HomeTagRes(tag.getTagIdx(), tag.getTagName(),
                         this.calendarRepository.getTagByPostLimit5(tag.getTagIdx())))
                 .collect(Collectors.toList());
-    }
-
-    // 캘린더 상태 변경 [삭제 시]
-    private void changeCalendarStatus(Calendar calendar, String status) {
-        calendar.setStatus(status);
-        this.calendarRepository.save(calendar);
     }
 
     // tag 저장
