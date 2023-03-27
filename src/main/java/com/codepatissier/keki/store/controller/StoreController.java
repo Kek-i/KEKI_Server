@@ -105,7 +105,7 @@ public class StoreController {
 
     /**
      * [판매자] 프로필 정보 수정
-     * PATCH /stores/profile
+     * [PATCH] /stores/profile
      */
     @ResponseBody
     @PatchMapping("/profile")
