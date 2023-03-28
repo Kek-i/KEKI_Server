@@ -145,6 +145,18 @@ public class StoreService {
 
             if (patchProfileReq.getIntroduction() != null) store.setIntroduction(patchProfileReq.getIntroduction());
 
+            if (patchProfileReq.getAccountHolder() != null) {
+                if (!patchProfileReq.getAccountHolder().equals("") && !patchProfileReq.getAccountHolder().equals(" "))
+                    store.setAccountHolder(patchProfileReq.getAccountHolder());
+                else throw new BaseException(NULL_ACCOUNT_HOLDER);
+            }
+
+            if (patchProfileReq.getAccountNumber() != null) {
+                if (!patchProfileReq.getAccountNumber().equals("") && !patchProfileReq.getAccountNumber().equals(" "))
+                    store.setAccountNumber(patchProfileReq.getAccountNumber());
+                else throw new BaseException(NULL_ACCOUNT_NUMBER);
+            }
+
             if (patchProfileReq.getBusinessName() != null) {
                 if (!patchProfileReq.getBusinessName().equals("") && !patchProfileReq.getBusinessName().equals(" "))
                     store.setBusinessName(patchProfileReq.getBusinessName());

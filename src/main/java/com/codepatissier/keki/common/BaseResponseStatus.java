@@ -32,6 +32,8 @@ public enum BaseResponseStatus {
     NULL_BUSINESS_ADDRESS(false, 2104, "사업자 주소를 입력해주세요."),
     NULL_BUSINESS_NUMBER(false, 2105, "사업자 번호를 입력해주세요."),
     NULL_NICKNAME(false, 2106, "가게 이름을 입력해주세요."),
+    NULL_ACCOUNT_HOLDER(false, 2107, "예금주명을 입력해주세요."),
+    NULL_ACCOUNT_NUMBER(false, 2108, "계좌번호를 입력해주세요."),
 
     // posts(2200~2299)
     INVALID_POSTS_SIZE(false, 2200, "리스트 사이즈는 1 이상이어야 합니다."),

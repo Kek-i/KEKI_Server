@@ -13,7 +13,8 @@ public class PatchProfileReq {
     private String address;
     @Convert(converter = EmptyStringToNullConverter.class)
     private String introduction;
-    private String orderUrl;
+    private String accountHolder;
+    private String accountNumber;
     private String businessName;
     private String brandName;
     private String businessAddress;
