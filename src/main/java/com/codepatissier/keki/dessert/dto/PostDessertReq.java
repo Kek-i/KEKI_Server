@@ -21,5 +21,13 @@ public class PostDessertReq {
     private String dessertDescription;
     @NotBlank(message = "디저트 이미지는 필수 항목입니다.")
     private String dessertImg;
+    private List<Option> options;
 
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Option {
+        private String optionDescription;
+        private Integer optionPrice;
+    }
 }
