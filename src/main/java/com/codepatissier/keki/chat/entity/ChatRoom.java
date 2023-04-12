@@ -1,6 +1,5 @@
 package com.codepatissier.keki.chat.entity;
 
-
 import com.codepatissier.keki.common.BaseEntity;
 import com.codepatissier.keki.user.entity.User;
 import lombok.Getter;
