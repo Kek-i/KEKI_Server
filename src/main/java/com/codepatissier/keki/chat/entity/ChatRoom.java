@@ -14,7 +14,6 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor
 @DynamicInsert
-@EntityListeners(DessertEntityListener.class)
 public class ChatRoom extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

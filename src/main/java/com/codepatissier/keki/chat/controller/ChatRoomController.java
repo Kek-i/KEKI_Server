@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @SecurityRequirement(name = "Bearer")
-@Tag(name = "chats", description = "상품 API")
+@Tag(name = "chats", description = "채팅 API")
 @RestController
 @RequestMapping(value = "/chats")
 @RequiredArgsConstructor
