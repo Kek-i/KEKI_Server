@@ -5,11 +5,8 @@ import com.codepatissier.keki.user.entity.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
-import org.springframework.web.socket.WebSocketSession;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -29,12 +26,8 @@ public class ChatRoom extends BaseEntity {
     @JoinColumn(nullable = false, name = "userIdx")
     private User user;
 
-    @Transient
-    private Set<WebSocketSession> sessions = new HashSet<>();
-
     public static ChatRoom create(User store, User user){
         ChatRoom room = new ChatRoom();
-
         room.chatRoomId = UUID.randomUUID().toString();
         room.store = store;
         room.user = user;
