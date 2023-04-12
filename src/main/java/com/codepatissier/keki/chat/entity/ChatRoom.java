@@ -29,6 +29,7 @@ public class ChatRoom extends BaseEntity {
     @JoinColumn(nullable = false, name = "userIdx")
     private User user;
 
+    @Transient
     private Set<WebSocketSession> sessions = new HashSet<>();
 
     public static ChatRoom create(User store, User user){
