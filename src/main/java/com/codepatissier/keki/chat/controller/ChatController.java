@@ -26,6 +26,11 @@ public class ChatController {
         chatService.enter(message);
     }
 
+    // 채팅 전송
+    @MessageMapping(value = "/chats/message")
+    public void message(ChatMessage message) throws BaseException{
+        chatService.message(message);
+    }
 
 
 }

@@ -22,4 +22,9 @@ public class ChatService {
         message.setMessage(user.getNickname() + "님이 채팅방에 참여하였습니다.");
         template.convertAndSend("/subscribe/rooms/" + message.getChatRoomId(), message.getMessage());
     }
+
+    public void message(ChatMessage message) throws BaseException {
+        User user = userRepository.findByUserIdxAndStatusEquals(message.getUserIdx(), ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_USER_IDX));
+        template.convertAndSend("/sub/message/" + message.getChatRoomId(), message);
+    }
 }
