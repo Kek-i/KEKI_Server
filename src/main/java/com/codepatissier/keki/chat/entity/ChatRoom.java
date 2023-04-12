@@ -19,7 +19,7 @@ import java.util.UUID;
 public class ChatRoom extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String chatRoomIdx;
+    private String chatRoomId;
 
     @ManyToOne
     @JoinColumn(nullable = false, name = "storeUserIdx")
@@ -35,7 +35,7 @@ public class ChatRoom extends BaseEntity {
     public static ChatRoom create(User store, User user){
         ChatRoom room = new ChatRoom();
 
-        room.chatRoomIdx = UUID.randomUUID().toString();
+        room.chatRoomId = UUID.randomUUID().toString();
         room.store = store;
         room.user = user;
         return room;

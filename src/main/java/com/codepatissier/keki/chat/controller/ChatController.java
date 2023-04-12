@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/chats")
 @RequiredArgsConstructor
-public class ChatRoomController {
+public class ChatController {
     private final ChatService chatService;
 
     //Client가 SEND할 수 있는 경로
