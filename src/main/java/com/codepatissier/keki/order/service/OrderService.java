@@ -220,7 +220,7 @@ public class OrderService {
     public GetOrderStore getStoreDessertsAndOptions(Long storeIdx) throws BaseException{
         Store store = this.storeRepository.findByStoreIdxAndStatus(storeIdx, ACTIVE_STATUS).orElseThrow(() -> new BaseException(INVALID_STORE_IDX));
 
-        return new GetOrderStore(store.getStoreIdx(), store.getUser().getNickname(),
+        return new GetOrderStore(store.getStoreIdx(), store.getUser().getNickname(), store.getUser().getProfileImg(),
                 store.getAccountHolder(), store.getAccountNumber(),getStoreDessertAndOptionList(store));
      }
 
