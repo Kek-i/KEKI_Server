@@ -215,28 +215,23 @@ public class DessertService {
 
             if (!patchDessertReq.getOptions().isEmpty() && !(patchDessertReq.getOptions() == null)) {
                 for (OptionDTO optionDTO : patchDessertReq.getOptions()) {
-                    if(optionDTO.getOptionIdx() == null)
-                        throw new BaseException(NULL_OPTION_IDX);
-                    if(optionDTO.getOptionDescription() == null)
+                    if (optionDTO.getOptionDescription() == null)
                         throw new BaseException(NULL_OPTION_DESCRIPTION);
-                    if(optionDTO.getOptionPrice() == null)
+                    if (optionDTO.getOptionPrice() == null)
                         throw new BaseException(NULL_OPTION_PRICE);
-                }
 
-                List<Long> optionIdxList = new ArrayList<>();
-                for (OptionDTO optionDTO : patchDessertReq.getOptions()) {
-                    optionIdxList.add(optionDTO.getOptionIdx());
-                }
+                    if (optionDTO.getOptionIdx() == null) {  // 새로운 option인 경우
+                        PostDessertReq.Option newOption = new PostDessertReq.Option(optionDTO.getOptionDescription(), optionDTO.getOptionPrice());
+                        saveOption(newOption, dessert);
+                    } else { // 이미 존재하는 option인 경우
+                        Long optionIdx = optionDTO.getOptionIdx();
+                        Option option = optionRepository.findByOptionIdxAndStatus(optionIdx, ACTIVE_STATUS)
+                                .orElseThrow(() -> new BaseException(INVALID_OPTION_IDX));
 
-                for (Long optionIdx : optionIdxList) {
-                    Option option = optionRepository.findByOptionIdxAndStatus(optionIdx, ACTIVE_STATUS)
-                            .orElseThrow(() -> new BaseException(INVALID_OPTION_IDX)); // 없으면 오류말고, addDessert로 새로 옵션 만들기
-
-                    for(OptionDTO modifiedOption : patchDessertReq.getOptions()) {
-                        option.setDescription(modifiedOption.getOptionDescription());
-                        option.setPrice(modifiedOption.getOptionPrice());
+                        option.setDescription(optionDTO.getOptionDescription());
+                        option.setPrice(optionDTO.getOptionPrice());
+                        optionRepository.save(option);
                     }
-                    optionRepository.save(option);
                 }
             }
             dessertRepository.save(dessert);
