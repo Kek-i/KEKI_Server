@@ -14,6 +14,7 @@ import java.util.List;
 public class GetOrderStore {
     Long storeIdx;
     String storeName;
+    String storeImgUrl;
     String accountHolder;
     String accountNumber;
     List<GetStoreDessertAndOptions> getStoreDessertsAndOptions;
