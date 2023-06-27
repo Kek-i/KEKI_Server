@@ -1,16 +1,14 @@
 package com.codepatissier.keki.order.service;
 
 import com.codepatissier.keki.common.BaseException;
-
 import com.codepatissier.keki.common.BaseResponseStatus;
 import com.codepatissier.keki.common.Role;
+import com.codepatissier.keki.dessert.dto.OptionDTO;
 import com.codepatissier.keki.dessert.entity.Dessert;
 import com.codepatissier.keki.dessert.entity.Option;
 import com.codepatissier.keki.dessert.repository.DessertRepository;
 import com.codepatissier.keki.dessert.repository.OptionRepository;
 import com.codepatissier.keki.order.dto.*;
-import com.codepatissier.keki.dessert.dto.OptionDTO;
-
 import com.codepatissier.keki.order.entity.OptionOrder;
 import com.codepatissier.keki.order.entity.Order;
 import com.codepatissier.keki.order.entity.OrderImg;
@@ -34,7 +32,6 @@ import java.util.stream.Collectors;
 import static com.codepatissier.keki.common.BaseResponseStatus.*;
 import static com.codepatissier.keki.common.Constant.ACTIVE_STATUS;
 import static com.codepatissier.keki.common.Constant.INACTIVE_STATUS;
-import static com.codepatissier.keki.order.entity.OrderStatus.getOrderStatusByName;
 import static com.codepatissier.keki.common.Role.*;
 import static com.codepatissier.keki.order.entity.OrderStatus.*;
 
@@ -189,7 +186,7 @@ public class OrderService {
         List<GetOrderImg> orderImgs = getOrderImgs(order);
         List<GetOptionOrder> optionOrders = getOptionOrders(order);
 
-        return new GetOrder(order.getOrderIdx(), order.getOrderStatus().getName(), order.getDessert().getDessertIdx(), order.getDessert().getDessertName(),
+        return new GetOrder(order.getOrderIdx(), order.getOrderStatus().getName(), order.getCreatedDate(), order.getDessert().getDessertIdx(), order.getDessert().getDessertName(),
                 order.getDessert().getDessertPrice(), order.getExtraPrice(), order.getTotalPrice(), order.getRequest(), order.getPickupDate(),
                 null, new GetUserInfo(order.getUser().getUserIdx(), order.getCustomerName(), order.getCustomerPhone()), orderImgs, optionOrders);
     }
@@ -199,7 +196,7 @@ public class OrderService {
         List<GetOrderImg> orderImgs = getOrderImgs(order);
         List<GetOptionOrder> optionOrders = getOptionOrders(order);
 
-        return new GetOrder(order.getOrderIdx(), order.getOrderStatus().getName(), order.getDessert().getDessertIdx(), order.getDessert().getDessertName(),
+        return new GetOrder(order.getOrderIdx(), order.getOrderStatus().getName(), order.getCreatedDate(), order.getDessert().getDessertIdx(), order.getDessert().getDessertName(),
                 order.getDessert().getDessertPrice(), order.getExtraPrice(), order.getTotalPrice(), order.getRequest(), order.getPickupDate(),
                 new GetStoreInfo(order.getStore().getStoreIdx(), order.getStore().getUser().getNickname(), order.getStore().getAccountHolder(), order.getStore().getAccountNumber()), null, orderImgs, optionOrders);
     }
